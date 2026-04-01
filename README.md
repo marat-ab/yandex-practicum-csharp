@@ -22,7 +22,7 @@
 
 `$ dotnet run --project ./EventManagementService/EventManagementService.csproj`
 
-## Загрузка и установки зависимостей
+## Загрузка и установка зависимостей
 
 Для загрузки и установки зависимостей проекта выполните следующую команду из каталога с решением:
 
@@ -33,7 +33,7 @@
 Для работы со Swagger запустите проект и перейдите в браузере по следующему адресу:
 `http://localhost:port/swagger/index.html`
 
-На место `port` впишите порт, с которым запустился EventManagementService
+На место `port` впишите порт, с которым запустился EventManagementService.
 
 # HTTP API
 
