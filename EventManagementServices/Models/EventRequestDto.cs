@@ -2,7 +2,7 @@
 
 namespace EventManagementServices.Models;
 
-public class EventRequest : IValidatableObject
+public class EventRequestDto : IValidatableObject
 {
     [Required(ErrorMessage = "Заголовок обязателен для заполнения")]
     public string Title { get; init; } = string.Empty;

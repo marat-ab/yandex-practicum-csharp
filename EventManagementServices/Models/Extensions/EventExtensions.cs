@@ -4,9 +4,9 @@ namespace EventManagementServices.Models.Extensions;
 
 public static class EventExtensions
 {
-    public static EventResponse ToEventResponse(this Event eventData)
+    public static EventResponseDto ToEventResponse(this Event eventData)
     {
-        var result = new EventResponse()
+        var result = new EventResponseDto()
         {
             Id = eventData.Id,
             Title = eventData.Title,
@@ -18,7 +18,7 @@ public static class EventExtensions
         return result;
     }
 
-    public static Event ToEvent(this EventRequest eventRequest, int id)
+    public static Event ToEvent(this EventRequestDto eventRequest, int id)
     {
         var result = new Event()
         {

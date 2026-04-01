@@ -38,7 +38,7 @@ public class EventsController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult> AddEventAsync([FromBody] EventRequest eventRequest)
+    public async Task<ActionResult> AddEventAsync([FromBody] EventRequestDto eventRequest)
     {
         var eventData = eventRequest.ToEvent(_blankEventId);
 
@@ -48,7 +48,7 @@ public class EventsController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
-    public async Task<ActionResult> UpdateEventAsync(int id, [FromBody] EventRequest eventForUpdate)
+    public async Task<ActionResult> UpdateEventAsync(int id, [FromBody] EventRequestDto eventForUpdate)
     {
         try
         {

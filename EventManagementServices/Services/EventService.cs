@@ -8,7 +8,7 @@ public class EventService : IEventService
     private readonly Dictionary<int, Event> _events = [];
 
     // Т.к. события берутся не из репозитория, а из Dictionary
-    // на всякий случай обращение с ним делаем в рамках lock
+    // на всякий случай обращение с ним сделал в рамках lock'е
     // Альтернативный вариант - использовать ConcurrentDictionary
     private object _lock = new object();
 
@@ -41,17 +41,17 @@ public class EventService : IEventService
     {
         lock (_lock)
         {
-            var id = Interlocked.Increment(ref _lastId);
+            _lastId++;
             var tmpEvent = new Event()
             {
-                Id = id,
+                Id = _lastId,
                 Title = newEvent.Title,
                 Description = newEvent.Description,
                 StartAt = newEvent.StartAt,
                 EndAt = newEvent.EndAt,
             };
 
-            _events.Add(id, tmpEvent);
+            _events.Add(_lastId, tmpEvent);
         }
 
         return Task.CompletedTask;
@@ -62,7 +62,7 @@ public class EventService : IEventService
         lock (_lock)
         {
             if (_events.ContainsKey(eventForUpdate.Id) is false)
-                throw new KeyNotFoundException($"Event with id = {eventForUpdate.Id} is absent");
+                throw new InvalidOperationException($"Event with id = {eventForUpdate.Id} is absent");
 
             _events[eventForUpdate.Id] = eventForUpdate;
         }
@@ -75,7 +75,7 @@ public class EventService : IEventService
         lock (_lock)
         {
             if (_events.ContainsKey(id) is false)
-                throw new KeyNotFoundException($"Event with id = {id} is absent");
+                throw new InvalidOperationException($"Event with id = {id} is absent");
 
             _events.Remove(id);
         }

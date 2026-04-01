@@ -1,6 +1,6 @@
 ﻿namespace EventManagementServices.Models;
 
-public sealed class EventResponse
+public sealed class EventResponseDto
 {
     public required int Id { get; init; }
     public required string Title { get; init; }
