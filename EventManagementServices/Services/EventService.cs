@@ -8,7 +8,7 @@ public class EventService : IEventService
     private readonly Dictionary<int, Event> _events = [];
 
     // Т.к. события берутся не из репозитория, а из Dictionary
-    // на всякий случай обращение с ним сделал в рамках lock'е
+    // на всякий случай обращение с ним сделал в рамках lock'а
     // Альтернативный вариант - использовать ConcurrentDictionary
     private object _lock = new object();
 
