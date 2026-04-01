@@ -1,22 +1,32 @@
-# Сборка и публикация проекта
+# Сборка, публикация и запуск проекта 
 
-Сборка для Windows. В каталоге с проектом выполнить:
-`$ dotnet publish -c Release -r win-x64`
+## Сборка проекта
 
-Сборка для Linux. В каталоге с проектом выполнить:
-`$ dotnet publish -c Release -r linux-x64`
+Для сборки проекта используйте следующую команду из каталога с решением:
 
-# Запуск проекта
+`$ dotnet build ./EventManagementServices/EventManagementServices.csproj`
 
-Находясь в каталоге с собранным проектом запустить для Windows:
+## Публикация проекта
 
-`$ EventManagementServices.exe`
+Для Windows в каталоге с решением выполнить:
 
-для Linux:
+`$ dotnet publish ./EventManagementServices/EventManagementServices.csproj -c Release -r win-x64`
 
-`$ ./EventManagementServices`
+Для Linux в каталоге с проектом выполнить:
 
-В Development доступен Swagger. 
+`$ dotnet publish ./EventManagementServices/EventManagementServices.csproj -c Release -r linux-x64`
+
+## Сборка и запуск проекта
+
+Для сборки с последующим запуском проекта используйте следующую команду из каталога с решением:
+
+`$ dotnet run ./EventManagementServices/EventManagementServices.csproj`
+
+## Загрузка и установки зависимостей
+
+Для загрузки и установки зависимостей проекта используйте следующую команду из каталога с решением:
+
+`$ dotnet restore ./EventManagementServices/EventManagementServices.csproj`
 
 # HTTP API
 
