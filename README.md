@@ -4,29 +4,36 @@
 
 Для сборки проекта выполните следующую команду из каталога с решением:
 
-`$ dotnet build ./EventManagementServices/EventManagementServices.csproj`
+`$ dotnet build ./EventManagementService/EventManagementService.csproj`
 
 ## Публикация проекта
 
 Для Windows в каталоге с решением выполнить:
 
-`$ dotnet publish ./EventManagementServices/EventManagementServices.csproj -c Release -r win-x64`
+`$ dotnet publish ./EventManagementService/EventManagementService.csproj -c Release -r win-x64`
 
 Для Linux в каталоге с проектом выполнить:
 
-`$ dotnet publish ./EventManagementServices/EventManagementServices.csproj -c Release -r linux-x64`
+`$ dotnet publish ./EventManagementService/EventManagementService.csproj -c Release -r linux-x64`
 
 ## Сборка и запуск проекта
 
 Для сборки с последующим запуском проекта выполните следующую команду из каталога с решением:
 
-`$ dotnet run --project ./EventManagementServices/EventManagementServices.csproj`
+`$ dotnet run --project ./EventManagementService/EventManagementService.csproj`
 
 ## Загрузка и установки зависимостей
 
 Для загрузки и установки зависимостей проекта выполните следующую команду из каталога с решением:
 
-`$ dotnet restore ./EventManagementServices/EventManagementServices.csproj`
+`$ dotnet restore ./EventManagementService/EventManagementService.csproj`
+
+# Работа со Swagger
+
+Для работы со Swagger запустите проект и перейдите в браузере по следующему адресу:
+`http://localhost:port/swagger/index.html`
+
+На место `port` впишите порт, с которым запустился EventManagementService
 
 # HTTP API
 

@@ -1,4 +1,4 @@
-﻿using EventManagementServices.Services;
+﻿using EventManagementService.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -1,6 +1,6 @@
-﻿using EventManagementServices.Models;
+﻿using EventManagementService.Models;
 
-namespace EventManagementServices.Services;
+namespace EventManagementService.Services;
 
 public interface IEventService
 {

@@ -1,4 +1,4 @@
-﻿namespace EventManagementServices.Models;
+﻿namespace EventManagementService.Models;
 
 public sealed class Event
 {

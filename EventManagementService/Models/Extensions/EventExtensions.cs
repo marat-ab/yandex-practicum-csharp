@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.Diagnostics;
 
-namespace EventManagementServices.Models.Extensions;
+namespace EventManagementService.Models.Extensions;
 
 public static class EventExtensions
 {

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace EventManagementServices.Models;
+namespace EventManagementService.Models;
 
 public class EventRequestDto : IValidatableObject
 {
