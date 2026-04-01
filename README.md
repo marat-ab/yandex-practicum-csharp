@@ -20,7 +20,7 @@
 
 Для сборки с последующим запуском проекта выполните следующую команду из каталога с решением:
 
-`$ dotnet run ./EventManagementServices/EventManagementServices.csproj`
+`$ dotnet run --project ./EventManagementServices/EventManagementServices.csproj`
 
 ## Загрузка и установки зависимостей
 

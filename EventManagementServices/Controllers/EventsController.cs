@@ -54,9 +54,10 @@ public class EventsController : ControllerBase
         {
             var eventData = eventForUpdate.ToEvent(id);
             await _eventService.UpdateEventAsync(eventData);
+
             return NoContent();
         }
-        catch(KeyNotFoundException)
+        catch(InvalidOperationException)
         {
             return NotFound();
         }
@@ -68,9 +69,10 @@ public class EventsController : ControllerBase
         try
         {            
             await _eventService.RemoveEventAsync(id);
+
             return Ok();
         }
-        catch (KeyNotFoundException)
+        catch (InvalidOperationException)
         {
             return NotFound();
         }
