@@ -47,7 +47,7 @@ public class EventsController : ControllerBase
         return Created();
     }
 
-    [HttpPut("{id:int")]
+    [HttpPut("{id:int}")]
     public async Task<ActionResult> UpdateEventAsync(int id, [FromBody] EventRequest eventForUpdate)
     {
         try
@@ -62,7 +62,7 @@ public class EventsController : ControllerBase
         }
     }
 
-    [HttpDelete("{id:int")]
+    [HttpDelete("{id:int}")]
     public async Task<ActionResult> DeleteEventAsync(int id)
     {
         try
