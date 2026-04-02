@@ -37,7 +37,7 @@ public class EventService : IEventService
         }
     }
 
-    public Task AddEventAsync(Event newEvent)
+    public Task<Event> AddEventAsync(Event newEvent)
     {
         lock (_lock)
         {
@@ -52,9 +52,9 @@ public class EventService : IEventService
             };
 
             _events.Add(_lastId, tmpEvent);
-        }
 
-        return Task.CompletedTask;
+            return Task.FromResult(tmpEvent);
+        }        
     }
 
     public Task UpdateEventAsync(Event eventForUpdate)

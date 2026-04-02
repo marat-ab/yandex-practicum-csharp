@@ -19,36 +19,40 @@ public class EventsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IReadOnlyList<Event>>> GetAllEventsAsync()
+    public async Task<ActionResult<IReadOnlyList<EventResponseDto>>> GetAllEvents()
     {
-        var result = await _eventService.GetAllEventsAsync();
+        var result = (await _eventService.GetAllEventsAsync())
+            .Select(x => x.ToEventResponse())
+            .ToList();
 
         return Ok(result);
     }
 
     [HttpGet("{id:int}")]
-    public async Task<ActionResult<Event>> FindEventByIdAsync(int id)
+    public async Task<ActionResult<EventResponseDto>> FindEventById(int id)
     {
-        var result = await _eventService.FindEventByIdAsync(id);
+        var eventItem = await _eventService.FindEventByIdAsync(id);
 
-        if (result is not null)
-            return Ok(result);
+        if (eventItem is not null)
+            return Ok(eventItem.ToEventResponse());
         else
             return NotFound();
     }
 
     [HttpPost]
-    public async Task<ActionResult> AddEventAsync([FromBody] EventRequestDto eventRequest)
+    public async Task<ActionResult<EventResponseDto>> AddEvent([FromBody] EventRequestDto eventRequest)
     {
-        var eventData = eventRequest.ToEvent(_blankEventId);
+        var eventItem = eventRequest.ToEvent(_blankEventId);
 
-        await _eventService.AddEventAsync(eventData);
+        var eventItemWithId = await _eventService.AddEventAsync(eventItem);
 
-        return Created();
+        var result = eventItemWithId.ToEventResponse();
+
+        return CreatedAtAction(nameof(AddEvent), result);
     }
 
     [HttpPut("{id:int}")]
-    public async Task<ActionResult> UpdateEventAsync(int id, [FromBody] EventRequestDto eventForUpdate)
+    public async Task<ActionResult> UpdateEvent(int id, [FromBody] EventRequestDto eventForUpdate)
     {
         try
         {
@@ -64,7 +68,7 @@ public class EventsController : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
-    public async Task<ActionResult> DeleteEventAsync(int id)
+    public async Task<ActionResult> DeleteEvent(int id)
     {
         try
         {            
