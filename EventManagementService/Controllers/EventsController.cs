@@ -74,7 +74,7 @@ public class EventsController : ControllerBase
         {            
             await _eventService.RemoveEventAsync(id);
 
-            return Ok();
+            return NoContent();
         }
         catch (InvalidOperationException)
         {
