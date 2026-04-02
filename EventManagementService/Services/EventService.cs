@@ -1,4 +1,5 @@
-﻿using EventManagementService.Models;
+﻿using EventManagementService.Exceptions;
+using EventManagementService.Models;
 
 namespace EventManagementService.Services;
 
@@ -62,7 +63,7 @@ public class EventService : IEventService
         lock (_lock)
         {
             if (_events.ContainsKey(eventForUpdate.Id) is false)
-                throw new InvalidOperationException($"Event with id = {eventForUpdate.Id} is absent");
+                throw new EventNotFoundException(eventForUpdate.Id);
 
             _events[eventForUpdate.Id] = eventForUpdate;
         }
@@ -75,7 +76,7 @@ public class EventService : IEventService
         lock (_lock)
         {
             if (_events.ContainsKey(id) is false)
-                throw new InvalidOperationException($"Event with id = {id} is absent");
+                throw new EventNotFoundException(id);
 
             _events.Remove(id);
         }

@@ -1,4 +1,5 @@
-﻿using EventManagementService.Models;
+﻿using EventManagementService.Exceptions;
+using EventManagementService.Models;
 using EventManagementService.Models.Extensions;
 using EventManagementService.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -61,7 +62,7 @@ public class EventsController : ControllerBase
 
             return NoContent();
         }
-        catch(InvalidOperationException)
+        catch(EventNotFoundException)
         {
             return NotFound();
         }
@@ -76,7 +77,7 @@ public class EventsController : ControllerBase
 
             return NoContent();
         }
-        catch (InvalidOperationException)
+        catch (EventNotFoundException)
         {
             return NotFound();
         }
