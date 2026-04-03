@@ -1,0 +1,33 @@
+@EventManagementServices_HostAddress = http://localhost:5082
+
+GET https://localhost:7230/events
+
+###
+
+GET https://localhost:7230/events/1
+
+###
+
+POST https://localhost:7230/events
+Content-Type: application/json
+{
+  "title": "HNY",
+  "description": "",
+  "startAt": "2026-12-31T17:59:27.808Z",
+  "endAt": "2027-12-01T17:59:27.808Z"
+}
+
+###
+
+PUT https://localhost:7230/events/1
+Content-Type: application/json
+{
+  "title": "NY",
+  "description": "",
+  "startAt": "2026-12-31T17:59:27.808Z",
+  "endAt": "2027-12-01T17:59:27.808Z"
+}
+
+###
+
+DELETE https://localhost:7230/events/1
