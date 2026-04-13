@@ -8,12 +8,7 @@ public class EventService : IEventService
     private int _lastId = 0;
 
     // Демо данные для тестов
-    private readonly Dictionary<int, Event> _events = new()
-    {
-        [1] = new Event() { Id = 1, Title = "abc", StartAt = new DateTime(2026, 01, 01), EndAt = new DateTime(2026, 02, 01) },
-        [2] = new Event() { Id = 2, Title = "abcdef", StartAt = new DateTime(2026, 02, 01), EndAt = new DateTime(2026, 03, 01) },
-        [3] = new Event() { Id = 3, Title = "ghi", StartAt = new DateTime(2026, 03, 01), EndAt = new DateTime(2026, 04, 01) }
-    };        
+    private readonly Dictionary<int, Event> _events = new();    
 
     // Т.к. события берутся не из репозитория, а из Dictionary
     // на всякий случай обращение с ним сделал в рамках lock'а
@@ -94,14 +89,12 @@ public class EventService : IEventService
         lock (_lock)
         {
             _lastId++;
-            var tmpEvent = new Event()
-            {
-                Id = _lastId,
-                Title = newEvent.Title,
-                Description = newEvent.Description,
-                StartAt = newEvent.StartAt,
-                EndAt = newEvent.EndAt,
-            };
+            var tmpEvent = new Event(
+                Id: _lastId,
+                Title: newEvent.Title,
+                Description: newEvent.Description,
+                StartAt: newEvent.StartAt,
+                EndAt: newEvent.EndAt);
 
             _events.Add(_lastId, tmpEvent);
 
