@@ -23,6 +23,21 @@ public class EventService : IEventService
         }
     }
 
+    public Task<Event> GetEventByIdAsync(int id)
+    {
+        lock (_lock)
+        {
+            if (_events.TryGetValue(id, out Event? value))
+            {
+                return Task.FromResult<Event>(value);
+            }
+            else
+            {
+                throw new EventNotFoundException(id);
+            }
+        }
+    }
+
     public Task<Event?> FindEventByIdAsync(int id)
     {
         lock (_lock)
