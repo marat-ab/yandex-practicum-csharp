@@ -20,9 +20,12 @@ public class EventsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IReadOnlyList<EventResponseDto>>> GetAllEvents()
+    public async Task<ActionResult<IReadOnlyList<EventResponseDto>>> GetAllEvents(
+        [FromQuery] string? title,
+        [FromQuery] DateTime? from,
+        [FromQuery] DateTime? to)
     {
-        var result = (await _eventService.GetAllEventsAsync())
+        var result = (await _eventService.GetAllEventsAsync(title, from, to))
             .Select(x => x.ToEventResponse())
             .ToList();
 
