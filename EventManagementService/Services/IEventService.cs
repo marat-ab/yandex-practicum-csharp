@@ -4,10 +4,12 @@ namespace EventManagementService.Services;
 
 public interface IEventService
 {
-    Task<IReadOnlyList<Event>> GetAllEventsAsync(
+    Task<PaginatedResult> GetAllEventsAsync(
         string? title,
         DateTime? from,
-        DateTime? to);
+        DateTime? to,
+        int pageNumber = 1,
+        int pageSize = 10);
 
     Task<Event> GetEventByIdAsync(int id);
     Task<Event?> FindEventByIdAsync(int id);

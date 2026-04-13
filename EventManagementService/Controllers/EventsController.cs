@@ -23,11 +23,12 @@ public class EventsController : ControllerBase
     public async Task<ActionResult<IReadOnlyList<EventResponseDto>>> GetAllEvents(
         [FromQuery] string? title,
         [FromQuery] DateTime? from,
-        [FromQuery] DateTime? to)
+        [FromQuery] DateTime? to,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 10)
     {
-        var result = (await _eventService.GetAllEventsAsync(title, from, to))
-            .Select(x => x.ToEventResponse())
-            .ToList();
+        var result = (await _eventService.GetAllEventsAsync(title, from, to, page, pageSize))
+            .ToPaginatedResponseDto();            
 
         return Ok(result);
     }
