@@ -30,14 +30,11 @@ public class EventsController : ControllerBase
     }
 
     [HttpGet("{id:int}")]
-    public async Task<ActionResult<EventResponseDto>> FindEventById(int id)
+    public async Task<ActionResult<EventResponseDto>> GetEventById(int id)
     {
-        var eventItem = await _eventService.FindEventByIdAsync(id);
+        var eventItem = await _eventService.GetEventByIdAsync(id);
 
-        if (eventItem is not null)
-            return Ok(eventItem.ToEventResponse());
-        else
-            return NotFound();
+        return Ok(eventItem.ToEventResponse());
     }
 
     [HttpPost]
@@ -55,32 +52,18 @@ public class EventsController : ControllerBase
     [HttpPut("{id:int}")]
     public async Task<ActionResult> UpdateEvent(int id, [FromBody] EventRequestDto eventForUpdate)
     {
-        try
-        {
-            var eventData = eventForUpdate.ToEvent(id);
-            await _eventService.UpdateEventAsync(eventData);
+        var eventData = eventForUpdate.ToEvent(id);
+        await _eventService.UpdateEventAsync(eventData);
 
-            return NoContent();
-        }
-        catch(EventNotFoundException)
-        {
-            return NotFound();
-        }
+        return NoContent();
     }
 
     [HttpDelete("{id:int}")]
     public async Task<ActionResult> DeleteEvent(int id)
     {
-        try
-        {            
-            await _eventService.RemoveEventAsync(id);
+        await _eventService.RemoveEventAsync(id);
 
-            return NoContent();
-        }
-        catch (EventNotFoundException)
-        {
-            return NotFound();
-        }
+        return NoContent();
     }
 
 }
