@@ -5,11 +5,11 @@ namespace EventManagementService.Services;
 public interface IEventService
 {
     Task<PaginatedResult> GetAllEventsAsync(
-        string? title,
-        DateTime? from,
-        DateTime? to,
-        int pageNumber = 1,
-        int pageSize = 10);
+        string? title = null,
+        DateTime? from = null,
+        DateTime? to = null,
+        int? pageNumber = null,
+        int? pageSize = null);
 
     Task<Event> GetEventByIdAsync(int id);
     Task<Event?> FindEventByIdAsync(int id);

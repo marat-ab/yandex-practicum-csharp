@@ -19,8 +19,8 @@ public class EventService : IEventService
         string? title,
         DateTime? from,
         DateTime? to,
-        int pageNumber = 1,
-        int pageSize = 10)
+        int? pageNumber,
+        int? pageSize)
     {
         lock (_lock)
         {
@@ -37,17 +37,20 @@ public class EventService : IEventService
             
             filtered = filtered.ToList();
 
+            var pgNumber = pageNumber ?? 1;
+            var pgSize = pageSize ?? filtered.Count();
+
             var events = filtered
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
+                .Skip((pgNumber - 1) * pgSize)
+                .Take(pgSize)
                 .ToList();
 
             var result = new PaginatedResult()
             {
                 TotalEventsCount = filtered.Count(),
                 Events = events,
-                PageNumber = pageNumber,
-                EventsCountOnPage = events.Count()
+                PageNumber = pgNumber,
+                EventsCountOnPage = events.Count
             };
 
             return Task.FromResult(result);
@@ -64,7 +67,8 @@ public class EventService : IEventService
             }
             else
             {
-                throw new EventNotFoundException(id);
+                throw new EventNotFoundException(id, 
+                    $"Can't get event with id = {id}. It is absent");
             }
         }
     }
@@ -86,6 +90,18 @@ public class EventService : IEventService
 
     public Task<Event> AddEventAsync(Event newEvent)
     {
+        if (string.IsNullOrWhiteSpace(newEvent.Title))
+            throw new ArgumentException("Title can't be null, empty or white space");
+
+        if (newEvent.StartAt == DateTime.MinValue)
+            throw new ArgumentException("StartAt can't be min value");
+
+        if (newEvent.EndAt == DateTime.MinValue)
+            throw new ArgumentException("EndAt can't be min value");
+
+        if(newEvent.EndAt < newEvent.StartAt)
+            throw new ArgumentException("EndAt can't be less then StartAt");
+
         lock (_lock)
         {
             _lastId++;
@@ -107,7 +123,8 @@ public class EventService : IEventService
         lock (_lock)
         {
             if (_events.ContainsKey(eventForUpdate.Id) is false)
-                throw new EventNotFoundException(eventForUpdate.Id);
+                throw new EventNotFoundException(eventForUpdate.Id, 
+                    $"Can't update event with id = {eventForUpdate.Id}. It is absent");
 
             _events[eventForUpdate.Id] = eventForUpdate;
         }
@@ -120,7 +137,8 @@ public class EventService : IEventService
         lock (_lock)
         {
             if (_events.ContainsKey(id) is false)
-                throw new EventNotFoundException(id);
+                throw new EventNotFoundException(id, 
+                    $"Can't remove event with id = {id}. It is absent");
 
             _events.Remove(id);
         }
