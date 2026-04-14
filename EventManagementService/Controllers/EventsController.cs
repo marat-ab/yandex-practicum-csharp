@@ -20,7 +20,7 @@ public class EventsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IReadOnlyList<EventResponseDto>>> GetAllEvents(
+    public async Task<ActionResult<IReadOnlyList<PaginatedResponseDto>>> GetAllEvents(
         [FromQuery] string? title,
         [FromQuery] DateTime? from,
         [FromQuery] DateTime? to,
