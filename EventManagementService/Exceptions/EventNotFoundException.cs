@@ -4,8 +4,13 @@ public sealed class EventNotFoundException : Exception
 {
     public int EventId { get; init; }
 
-    public EventNotFoundException(int eventId)
-        : base(message: $"Event with id = {eventId} is absent")
+    public EventNotFoundException()
+        :base(message: "Unknown event not found error (without event id)")
+    {
+    }
+
+    public EventNotFoundException(int eventId, string message)
+        : base(message: message)
     {
         EventId = eventId;
     }
