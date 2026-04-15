@@ -8,24 +8,7 @@ public class EventService : IEventService
     private int _lastId = 0;
 
     // Демо данные для тестов
-    private readonly Dictionary<int, Event> _events = new()
-    {
-        [1] = new Event(Id: 1,
-                Title: "event 1",
-                Description: "Description of event 1",
-                StartAt: new DateTime(2026, 01, 01),
-                EndAt: new DateTime(2026, 01, 03)),
-        [2] = new Event(Id: 2,
-                Title: "event 12",
-                Description: "Description of event 2",
-                StartAt: new DateTime(2026, 02, 04),
-                EndAt: new DateTime(2026, 02, 05)),
-        [3] = new Event(Id: 3,
-                Title: "event 3",
-                Description: "Description of event 3",
-                StartAt: new DateTime(2026, 03, 07),
-                EndAt: new DateTime(2026, 03, 10))
-    };
+    private readonly Dictionary<int, Event> _events = new();
 
     // Т.к. события берутся не из репозитория, а из Dictionary
     // на всякий случай обращение с ним сделал в рамках lock'а

@@ -36,6 +36,7 @@ public partial class EventServiceTests : IAsyncLifetime
         yield return new object[] { 1, 1, new List<Event>() { _events[0] } };
         yield return new object[] { 1, 2, new List<Event>() { _events[0], _events[1] } };
         yield return new object[] { 2, 1, new List<Event>() { _events[1] } };
+        yield return new object[] { 3, 2, new List<Event>() { } };
     }
 
     public static IEnumerable<object[]> GetBadEventParams()
