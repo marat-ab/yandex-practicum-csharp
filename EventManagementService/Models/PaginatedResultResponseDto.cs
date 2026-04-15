@@ -1,6 +1,6 @@
 ﻿namespace EventManagementService.Models;
 
-public sealed class PaginatedResponseDto
+public sealed class PaginatedResultResponseDto
 {
     public required int TotalEventsCount { get; set; }
     public required List<EventResponseDto> Events { get; set; }

@@ -2,13 +2,13 @@
 
 public static class PaginatedResultExtensions
 {
-    public static PaginatedResponseDto ToPaginatedResponseDto(this PaginatedResult data)
+    public static PaginatedResultResponseDto ToPaginatedResponseDto(this PaginatedResult data)
     {
         var eventsResponseDto = data.Events
             .Select(x => x.ToEventResponse())
             .ToList();
 
-        var result = new PaginatedResponseDto()
+        var result = new PaginatedResultResponseDto()
         {
             TotalEventsCount = data.TotalEventsCount,
             Events = eventsResponseDto,

@@ -61,6 +61,7 @@ public class CustomExceptionHandlingMiddleware
         => ex switch
         {
             ValidationException _ => StatusCodes.Status400BadRequest,
+            ArgumentException _ => StatusCodes.Status400BadRequest,
             EventNotFoundException _ => StatusCodes.Status404NotFound,
             _ => StatusCodes.Status500InternalServerError
         };
