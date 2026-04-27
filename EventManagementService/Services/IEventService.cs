@@ -4,9 +4,16 @@ namespace EventManagementService.Services;
 
 public interface IEventService
 {
-    public Task<IReadOnlyList<Event>> GetAllEventsAsync();
-    public Task<Event?> FindEventByIdAsync(int id);
-    public Task<Event> AddEventAsync(Event newEvent);
-    public Task UpdateEventAsync(Event eventForUpdate);
-    public Task RemoveEventAsync(int id);
+    Task<PaginatedResult> GetAllEventsAsync(
+        string? title = null,
+        DateTime? from = null,
+        DateTime? to = null,
+        int? pageNumber = null,
+        int? pageSize = null);
+
+    Task<Event> GetEventByIdAsync(int id);
+    Task<Event?> FindEventByIdAsync(int id);
+    Task<Event> AddEventAsync(Event newEvent);
+    Task UpdateEventAsync(Event eventForUpdate);
+    Task RemoveEventAsync(int id);
 }
