@@ -7,7 +7,27 @@ public class EventService : IEventService
 {
     private int _lastId = 0;
 
-    private readonly Dictionary<int, Event> _events = new();
+    private readonly Dictionary<int, Event> _events = new()
+    {
+        [1] = new Event(
+            Id: 1,
+            Title: "a1",
+            Description: "",
+            StartAt: new DateTime(2026, 01, 01),
+            EndAt: new DateTime(2026, 02, 01)),
+        [2] = new Event(
+            Id: 2,
+            Title: "b2",
+            Description: "",
+            StartAt: new DateTime(2026, 02, 02),
+            EndAt: new DateTime(2026, 03, 01)),
+        [3] = new Event(
+            Id: 3,
+            Title: "c3",
+            Description: "",
+            StartAt: new DateTime(2026, 03, 02),
+            EndAt: new DateTime(2026, 04, 01))
+    };
 
     // Т.к. события берутся не из репозитория, а из Dictionary
     // на всякий случай обращение с ним сделал в рамках lock'а

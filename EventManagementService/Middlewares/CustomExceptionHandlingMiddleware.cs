@@ -63,6 +63,7 @@ public class CustomExceptionHandlingMiddleware
             ValidationException _ => StatusCodes.Status400BadRequest,
             ArgumentException _ => StatusCodes.Status400BadRequest,
             EventNotFoundException _ => StatusCodes.Status404NotFound,
+            BookingNotFoundException _ => StatusCodes.Status404NotFound,
             _ => StatusCodes.Status500InternalServerError
         };
 }
