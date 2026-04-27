@@ -1,4 +1,5 @@
-﻿using EventManagementService.Middlewares;
+﻿using EventManagementService.HostedServices;
+using EventManagementService.Middlewares;
 using EventManagementService.Repository;
 using EventManagementService.Services;
 
@@ -11,6 +12,8 @@ builder.Services.AddSingleton<IBookingRepository, BookingRepository>();
 
 builder.Services.AddSingleton<IEventService, EventService>();
 builder.Services.AddSingleton<IBookingService, BookingService>();
+
+builder.Services.AddHostedService<BookingHostedService>();
 
 builder.Services.AddSwaggerGen();
 

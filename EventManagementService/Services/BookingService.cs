@@ -26,7 +26,7 @@ public class BookingService : IBookingService
 
         var bookingForStore = newBooking.ToBookingEntity();
 
-        await _bookingRepository.InsertBooking(bookingForStore);
+        await _bookingRepository.InsertBookingAsync(bookingForStore);
 
         return newBooking;
     }

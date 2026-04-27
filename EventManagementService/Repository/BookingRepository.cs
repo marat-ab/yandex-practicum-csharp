@@ -46,13 +46,45 @@ internal sealed class BookingRepository : IBookingRepository
         }
     }
 
-    public Task InsertBooking(BookingEntity entity, CancellationToken ct = default)
+    public Task<IReadOnlyList<BookingEntity>> SelectAllBookingByStatusAsync(
+        BookingStatus status, 
+        CancellationToken ct = default)
+    {
+        lock (_lock)
+        {
+            var result = _bookings
+                .Where(kv => kv.Value.Status == status)
+                .Select(kv => kv.Value)
+                .ToList();
+
+            return Task.FromResult((IReadOnlyList<BookingEntity>)result);
+        }
+    }
+
+    public Task InsertBookingAsync(BookingEntity entity, CancellationToken ct = default)
     {
         lock (_lock)
         {            
             _bookings[entity.Id] = entity;
 
             return Task.CompletedTask;
+        }
+    }
+
+    public Task UpdateBookingAsync(Guid id, BookingEntity newBooking, CancellationToken ct = default)
+    {
+        lock (_lock)
+        {
+            if (_bookings.ContainsKey(id))
+            {
+                _bookings[id] = newBooking;
+                return Task.CompletedTask;
+            }
+            else
+            {
+                throw new BookingNotFoundException(id,
+                    $"Can't get booking with id = {id}. It is absent");
+            }
         }
     }
 }
