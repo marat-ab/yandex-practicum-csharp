@@ -7,7 +7,6 @@ public class EventService : IEventService
 {
     private int _lastId = 0;
 
-    // Демо данные для тестов
     private readonly Dictionary<int, Event> _events = new();
 
     // Т.к. события берутся не из репозитория, а из Dictionary
