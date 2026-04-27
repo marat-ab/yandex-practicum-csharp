@@ -8,14 +8,10 @@ namespace EventManagementService.Services;
 public class BookingService : IBookingService
 {
     public readonly IBookingRepository _bookingRepository;
-    public readonly ILogger<BookingService> _logger;
 
-    public BookingService(
-        IBookingRepository bookingRepository,
-        ILogger<BookingService> logger)
+    public BookingService(IBookingRepository bookingRepository)
     {
         _bookingRepository = bookingRepository;
-        _logger = logger;
     }
 
     public async Task<Booking> CreateBookingAsync(int eventId)

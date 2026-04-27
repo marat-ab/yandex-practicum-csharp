@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace EventManagementService.Tests;
+namespace EventManagementService.Tests.EventService;
 
 public partial class EventServiceTests
 {

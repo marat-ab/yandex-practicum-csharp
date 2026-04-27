@@ -2,7 +2,7 @@
 using EventManagementService.Services;
 using Microsoft.Extensions.Logging;
 
-namespace EventManagementService.Tests;
+namespace EventManagementService.Tests.EventService;
 
 public partial class EventServiceTests : IAsyncLifetime
 {
