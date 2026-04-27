@@ -1,8 +1,10 @@
-﻿namespace EventManagementService.Services;
+﻿using EventManagementService.Models;
+
+namespace EventManagementService.Services;
 
 public interface IBookingService
 {
-    Task CreateBookingAsync(int eventId);
+    Task<Booking> CreateBookingAsync(int eventId);
 
-    Task GetBookingByIdAsync(Guid bookingId);
+    Task<Booking> GetBookingByIdAsync(Guid bookingId);
 }

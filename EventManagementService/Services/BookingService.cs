@@ -19,7 +19,7 @@ public class BookingService : IBookingService
         _logger = logger;
     }
 
-    public Task CreateBookingAsync(int eventId)
+    public Task<Booking> CreateBookingAsync(int eventId)
     {
         lock (_lock)
         {
@@ -29,11 +29,11 @@ public class BookingService : IBookingService
 
             _bookings[newGuid] = newBooking;
 
-            return Task.CompletedTask;
+            return Task.FromResult(newBooking);
         }
     }
 
-    public Task GetBookingByIdAsync(Guid bookingId)
+    public Task<Booking> GetBookingByIdAsync(Guid bookingId)
     {
         lock (_lock)
         {

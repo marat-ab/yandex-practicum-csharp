@@ -4,7 +4,7 @@ namespace EventManagementService.Models.Extensions;
 
 public static class EventExtensions
 {
-    public static EventResponseDto ToEventResponse(this Event eventData)
+    public static EventResponseDto ToEventResponseDto(this Event eventData)
     {
         var result = new EventResponseDto()
         {

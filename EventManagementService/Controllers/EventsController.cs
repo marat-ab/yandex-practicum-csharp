@@ -13,12 +13,17 @@ public class EventsController : ControllerBase
     private readonly int _blankEventId = -1;
 
     private readonly IEventService _eventService;
+    private readonly IBookingService _bookingService;
 
-    public EventsController(IEventService eventService)
+    public EventsController(
+        IEventService eventService, 
+        IBookingService bookingService)
     {
         _eventService = eventService;
+        _bookingService = bookingService;
     }
 
+    // Events
     [HttpGet]
     public async Task<ActionResult<IReadOnlyList<PaginatedResultResponseDto>>> GetAllEvents(
         [FromQuery] string? title,
@@ -38,7 +43,7 @@ public class EventsController : ControllerBase
     {
         var eventItem = await _eventService.GetEventByIdAsync(id);
 
-        return Ok(eventItem.ToEventResponse());
+        return Ok(eventItem.ToEventResponseDto());
     }
 
     [HttpPost]
@@ -48,7 +53,7 @@ public class EventsController : ControllerBase
 
         var eventItemWithId = await _eventService.AddEventAsync(eventItem);
 
-        var result = eventItemWithId.ToEventResponse();
+        var result = eventItemWithId.ToEventResponseDto();
 
         return CreatedAtAction(nameof(AddEvent), result);
     }
@@ -70,4 +75,17 @@ public class EventsController : ControllerBase
         return NoContent();
     }
 
+    // Booking
+    [HttpPost("{id:int}/book")]
+    public async Task<ActionResult<BookingResponseDto>> BookingEvent(int id)
+    {
+        var bookingItem = await _bookingService.CreateBookingAsync(id);
+
+        var url = $"/bookings/{bookingItem.Id}";
+        Response.Headers.Location = url;
+
+        var result = bookingItem.ToBookingResponseDto();
+
+        return Accepted(result);
+    }
 }
