@@ -1,51 +1,42 @@
 ﻿using EventManagementService.Exceptions;
 using EventManagementService.Models;
+using EventManagementService.Repository;
+using EventManagementService.Repository.Extensions;
 
 namespace EventManagementService.Services;
 
 public class BookingService : IBookingService
 {
+    public readonly IBookingRepository _bookingRepository;
     public readonly ILogger<BookingService> _logger;
 
-    private readonly Dictionary<Guid, Booking> _bookings = new();
-
-    // Т.к. события берутся не из репозитория, а из Dictionary
-    // на всякий случай обращение с ним сделал в рамках lock'а
-    // Альтернативный вариант - использовать ConcurrentDictionary
-    private object _lock = new object();
-
-    public BookingService(ILogger<BookingService> logger)
+    public BookingService(
+        IBookingRepository bookingRepository,
+        ILogger<BookingService> logger)
     {
+        _bookingRepository = bookingRepository;
         _logger = logger;
     }
 
-    public Task<Booking> CreateBookingAsync(int eventId)
+    public async Task<Booking> CreateBookingAsync(int eventId)
     {
-        lock (_lock)
-        {
-            var newGuid = Guid.NewGuid();
-            var createdAt = DateTime.UtcNow;
-            var newBooking = new Booking(Id: newGuid, EventId: eventId, Status: BookingStatus.Pending, CreatedAt: createdAt);
+        var newGuid = Guid.NewGuid();
+        var createdAt = DateTime.UtcNow;
+        var newBooking = new Booking(Id: newGuid, EventId: eventId, Status: BookingStatus.Pending, CreatedAt: createdAt);
 
-            _bookings[newGuid] = newBooking;
+        var bookingForStore = newBooking.ToBookingEntity();
 
-            return Task.FromResult(newBooking);
-        }
+        await _bookingRepository.InsertBooking(bookingForStore);
+
+        return newBooking;
     }
 
-    public Task<Booking> GetBookingByIdAsync(Guid bookingId)
+    public async Task<Booking> GetBookingByIdAsync(Guid bookingId)
     {
-        lock (_lock)
-        {
-            if (_bookings.TryGetValue(bookingId, out Booking? value))
-            {
-                return Task.FromResult<Booking>(value);
-            }
-            else
-            {
-                throw new BookingNotFoundException(bookingId,
-                    $"Can't get booking with id = {bookingId}. It is absent");
-            }
-        }
+        var bookingEntity = await _bookingRepository.SelectBookingByIdAsync(bookingId);
+
+        var result = bookingEntity.ToBooking();
+
+        return result;
     }
 }
