@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.Diagnostics;
+﻿using EventManagementService.Models.Dto;
+using Microsoft.AspNetCore.Mvc.Diagnostics;
 
 namespace EventManagementService.Models.Extensions;
 

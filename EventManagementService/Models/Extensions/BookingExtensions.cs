@@ -1,4 +1,6 @@
-﻿namespace EventManagementService.Models.Extensions;
+﻿using EventManagementService.Models.Dto;
+
+namespace EventManagementService.Models.Extensions;
 
 public static class BookingExtensions
 {

@@ -1,5 +1,5 @@
 ﻿using EventManagementService.Exceptions;
-using EventManagementService.Models;
+using EventManagementService.Models.Dto;
 using EventManagementService.Models.Extensions;
 using EventManagementService.Services;
 using Microsoft.AspNetCore.Mvc;

@@ -1,4 +1,4 @@
-﻿using EventManagementService.Models;
+﻿using EventManagementService.Models.Entities;
 
 namespace EventManagementService.Models.Extensions;
 
