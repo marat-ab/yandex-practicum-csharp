@@ -1,6 +1,6 @@
 ﻿using EventManagementService.Exceptions;
 using EventManagementService.Models;
-using EventManagementService.Repository.Extensions;
+using EventManagementService.Models.Extensions;
 using FluentAssertions;
 using System;
 using System.Collections.Generic;

@@ -1,7 +1,7 @@
 ﻿using EventManagementService.Exceptions;
 using EventManagementService.Models;
+using EventManagementService.Models.Extensions;
 using EventManagementService.Repository;
-using EventManagementService.Repository.Extensions;
 
 namespace EventManagementService.Services;
 

@@ -1,7 +1,6 @@
 ﻿using EventManagementService.Models;
-using EventManagementService.Repository.Models;
 
-namespace EventManagementService.Repository.Extensions;
+namespace EventManagementService.Models.Extensions;
 
 public static class BookingRepositoryExtensions
 {

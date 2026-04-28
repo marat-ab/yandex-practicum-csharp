@@ -1,6 +1,4 @@
-﻿using EventManagementService.Models;
-
-namespace EventManagementService.Repository.Models;
+﻿namespace EventManagementService.Models;
 
 public sealed record BookingEntity(
     Guid Id,
