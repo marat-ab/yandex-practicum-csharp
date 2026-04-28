@@ -14,31 +14,31 @@ public class EventService : IEventService
 
     public EventService()
     {
-        var eventId1 = Guid.NewGuid();
-        var eventId2 = Guid.NewGuid();
-        var eventId3 = Guid.NewGuid();
+        //var eventId1 = Guid.NewGuid();
+        //var eventId2 = Guid.NewGuid();
+        //var eventId3 = Guid.NewGuid();
 
-        _events = new()
-        {
-            [eventId1] = new Event(
-                Id: eventId1,
-                Title: "a1",
-                Description: "",
-                StartAt: new DateTime(2026, 01, 01),
-                EndAt: new DateTime(2026, 02, 01)),
-            [eventId2] = new Event(
-                Id: eventId2,
-                Title: "b2",
-                Description: "",
-                StartAt: new DateTime(2026, 02, 02),
-                EndAt: new DateTime(2026, 03, 01)),
-            [eventId3] = new Event(
-                Id: eventId3,
-                Title: "c3",
-                Description: "",
-                StartAt: new DateTime(2026, 03, 02),
-                EndAt: new DateTime(2026, 04, 01))
-        };
+        //_events = new()
+        //{
+        //    [eventId1] = new Event(
+        //        Id: eventId1,
+        //        Title: "a1",
+        //        Description: "",
+        //        StartAt: new DateTime(2026, 01, 01),
+        //        EndAt: new DateTime(2026, 02, 01)),
+        //    [eventId2] = new Event(
+        //        Id: eventId2,
+        //        Title: "b2",
+        //        Description: "",
+        //        StartAt: new DateTime(2026, 02, 02),
+        //        EndAt: new DateTime(2026, 03, 01)),
+        //    [eventId3] = new Event(
+        //        Id: eventId3,
+        //        Title: "c3",
+        //        Description: "",
+        //        StartAt: new DateTime(2026, 03, 02),
+        //        EndAt: new DateTime(2026, 04, 01))
+        //};
     }
 
     public Task<PaginatedResult> GetAllEventsAsync(
