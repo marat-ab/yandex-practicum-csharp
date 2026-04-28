@@ -18,7 +18,7 @@ public static class EventExtensions
         return result;
     }
 
-    public static Event ToEvent(this EventRequestDto eventRequest, int id)
+    public static Event ToEvent(this EventRequestDto eventRequest, Guid id)
     {
         if (eventRequest.StartAt == null || eventRequest.EndAt == null)
             throw new ArgumentException("StartAt and EndAt can't be null!");

@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace EventManagementService.Tests.EventService;
+namespace EventManagementService.Tests.EventServices;
 
 public partial class EventServiceTests
 {
@@ -16,12 +16,10 @@ public partial class EventServiceTests
     {
         // Arrange
 
-        var eventId = (await _eventService.GetAllEventsAsync()).Events
-            .Select(x => x.Id)
-            .Max() + 1;
+        var eventId = Guid.NewGuid();
 
         var eventForAdd = new Event(
-            Id: 0,
+            Id: eventId,
             Title: "Some event",
             Description: "Description of event",
             StartAt: new DateTime(2026, 01, 01),
@@ -57,8 +55,8 @@ public partial class EventServiceTests
     public async Task GetEventById()
     {
         // Arrange
-        var eventId = 1;
-        var expectedEvent = _events.First(x => x.Id == eventId);
+        var eventId = _events[0].Id;
+        var expectedEvent = _events[0];
 
         // Act
         var eventWithSpecifiedId = await _eventService.GetEventByIdAsync(eventId);
@@ -73,7 +71,7 @@ public partial class EventServiceTests
     public async Task GetUpdateEvent()
     {
         // Arrange
-        var eventId = 1;
+        var eventId = _events[0].Id;
         var eventForUpdate = new Event(Id: eventId,
                 Title: "event 1 [updated]",
                 Description: "Description of event 1 [updated]",
@@ -94,7 +92,7 @@ public partial class EventServiceTests
     public async Task RemoveEvent()
     {
         // Arrange
-        var eventId = 1;
+        var eventId = _events[0].Id;
         var eventForDelete = await _eventService.GetEventByIdAsync(eventId);
 
         // Act

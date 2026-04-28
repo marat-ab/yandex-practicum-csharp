@@ -14,7 +14,7 @@ public class BookingService : IBookingService
         _bookingRepository = bookingRepository;
     }
 
-    public async Task<Booking> CreateBookingAsync(int eventId)
+    public async Task<Booking> CreateBookingAsync(Guid eventId)
     {
         var newGuid = Guid.NewGuid();
         var createdAt = DateTime.UtcNow;

@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace EventManagementService.Tests.BookingService;
+namespace EventManagementService.Tests.BookingServices;
 
 public partial class BookingServiceTests
 {

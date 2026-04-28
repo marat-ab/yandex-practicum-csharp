@@ -2,24 +2,24 @@
 using EventManagementService.Services;
 using Microsoft.Extensions.Logging;
 
-namespace EventManagementService.Tests.EventService;
+namespace EventManagementService.Tests.EventServices;
 
 public partial class EventServiceTests : IAsyncLifetime
 {
     private readonly IEventService _eventService;
 
     private static readonly List<Event> _events = [
-            new Event(Id: 0,
+            new Event(Id: Guid.NewGuid(),
                 Title: "event 1",
                 Description: "Description of event 1",
                 StartAt: new DateTime(2026, 01, 01),
                 EndAt: new DateTime(2026, 01, 03)),
-            new Event(Id: 0,
+            new Event(Id: Guid.NewGuid(),
                 Title: "event 2",
                 Description: "Description of event 2",
                 StartAt: new DateTime(2026, 02, 04),
                 EndAt: new DateTime(2026, 02, 05)),
-            new Event(Id: 0,
+            new Event(Id: Guid.NewGuid(),
                 Title: "event 3",
                 Description: "Description of event 3",
                 StartAt: new DateTime(2026, 03, 07),

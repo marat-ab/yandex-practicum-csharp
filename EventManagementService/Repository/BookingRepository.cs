@@ -4,7 +4,7 @@ using EventManagementService.Repository.Models;
 
 namespace EventManagementService.Repository;
 
-internal sealed class BookingRepository : IBookingRepository
+public sealed class BookingRepository : IBookingRepository
 {
     private readonly Dictionary<Guid, BookingEntity> _bookings = new();
 
@@ -12,11 +12,6 @@ internal sealed class BookingRepository : IBookingRepository
     // на всякий случай обращение с ним сделал в рамках lock'а
     // Альтернативный вариант - использовать ConcurrentDictionary
     private object _lock = new object();
-
-    public BookingRepository(CancellationToken ct = default)
-    {
-        
-    }
 
     public Task<IReadOnlyList<BookingEntity>> SelectAllBookingAsync(CancellationToken ct = default)
     {

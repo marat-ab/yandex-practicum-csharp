@@ -1,7 +1,7 @@
 ﻿namespace EventManagementService.Models;
 
 public sealed record Event(
-    int Id,
+    Guid Id,
     string Title,
     string Description,
     DateTime StartAt,

@@ -5,29 +5,7 @@ namespace EventManagementService.Services;
 
 public class EventService : IEventService
 {
-    private int _lastId = 0;
-
-    private readonly Dictionary<int, Event> _events = new()
-    {
-        [1] = new Event(
-            Id: 1,
-            Title: "a1",
-            Description: "",
-            StartAt: new DateTime(2026, 01, 01),
-            EndAt: new DateTime(2026, 02, 01)),
-        [2] = new Event(
-            Id: 2,
-            Title: "b2",
-            Description: "",
-            StartAt: new DateTime(2026, 02, 02),
-            EndAt: new DateTime(2026, 03, 01)),
-        [3] = new Event(
-            Id: 3,
-            Title: "c3",
-            Description: "",
-            StartAt: new DateTime(2026, 03, 02),
-            EndAt: new DateTime(2026, 04, 01))
-    };
+    private readonly Dictionary<Guid, Event> _events = new();    
 
     // Т.к. события берутся не из репозитория, а из Dictionary
     // на всякий случай обращение с ним сделал в рамках lock'а
@@ -85,7 +63,7 @@ public class EventService : IEventService
         }
     }
 
-    public Task<Event> GetEventByIdAsync(int id)
+    public Task<Event> GetEventByIdAsync(Guid id)
     {
         lock (_lock)
         {
@@ -101,7 +79,7 @@ public class EventService : IEventService
         }
     }
 
-    public Task<Event?> FindEventByIdAsync(int id)
+    public Task<Event?> FindEventByIdAsync(Guid id)
     {
         lock (_lock)
         {
@@ -132,15 +110,15 @@ public class EventService : IEventService
 
         lock (_lock)
         {
-            _lastId++;
+            var id = newEvent.Id == Guid.Empty ? Guid.NewGuid() : newEvent.Id;
             var tmpEvent = new Event(
-                Id: _lastId,
+                Id: id,
                 Title: newEvent.Title,
                 Description: newEvent.Description,
                 StartAt: newEvent.StartAt,
                 EndAt: newEvent.EndAt);
 
-            _events.Add(_lastId, tmpEvent);
+            _events.Add(id, tmpEvent);
 
             return Task.FromResult(tmpEvent);
         }        
@@ -160,7 +138,7 @@ public class EventService : IEventService
         return Task.CompletedTask;
     }
 
-    public Task RemoveEventAsync(int id)
+    public Task RemoveEventAsync(Guid id)
     {
         lock (_lock)
         {

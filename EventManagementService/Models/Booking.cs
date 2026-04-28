@@ -2,7 +2,7 @@
 
 public sealed record Booking(
     Guid Id,
-    int EventId,
+    Guid EventId,
     BookingStatus Status,
     DateTime CreatedAt,
     DateTime? ProcessedAt = null);

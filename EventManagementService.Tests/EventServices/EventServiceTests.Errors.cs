@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace EventManagementService.Tests.EventService;
+namespace EventManagementService.Tests.EventServices;
 
 public partial class EventServiceTests
 {
@@ -15,7 +15,7 @@ public partial class EventServiceTests
     public async Task GetEventByNonExistentId()
     {
         // Arrange
-        var eventId = 5;
+        var eventId = Guid.NewGuid();
 
         // Act
         Func<Task> act = async () => await _eventService.GetEventByIdAsync(eventId);
@@ -31,7 +31,7 @@ public partial class EventServiceTests
     public async Task GetUpdateEventWithNonExistentId()
     {
         // Arrange
-        var eventId = 5;
+        var eventId = Guid.NewGuid();
         var eventForUpdate = new Event(Id: eventId,
                 Title: "event 1 [updated]",
                 Description: "Description of event 1 [updated]",
@@ -54,7 +54,7 @@ public partial class EventServiceTests
     public async Task AddEventWithBadData(string title, DateTime startAt, DateTime endAt, string errorMsg)
     {
         // Arrange
-        var eventForAdd = new Event(Id: 0,
+        var eventForAdd = new Event(Id: Guid.Empty,
                 Title: title,
                 Description: "Description",
                 StartAt: startAt,
