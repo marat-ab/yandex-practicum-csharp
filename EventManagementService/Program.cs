@@ -1,4 +1,6 @@
-﻿using EventManagementService.Middlewares;
+﻿using EventManagementService.HostedServices;
+using EventManagementService.Middlewares;
+using EventManagementService.Repository;
 using EventManagementService.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -6,7 +8,12 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllers();
 
+builder.Services.AddSingleton<IBookingRepository, BookingRepository>();
+
 builder.Services.AddSingleton<IEventService, EventService>();
+builder.Services.AddSingleton<IBookingService, BookingService>();
+
+builder.Services.AddHostedService<BookingHostedService>();
 
 builder.Services.AddSwaggerGen();
 

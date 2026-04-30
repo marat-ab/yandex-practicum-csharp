@@ -1,4 +1,4 @@
-﻿namespace EventManagementService.Models;
+﻿namespace EventManagementService.Models.Dto;
 
 public sealed class PaginatedResultResponseDto
 {

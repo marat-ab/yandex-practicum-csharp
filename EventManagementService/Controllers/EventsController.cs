@@ -1,5 +1,5 @@
 ﻿using EventManagementService.Exceptions;
-using EventManagementService.Models;
+using EventManagementService.Models.Dto;
 using EventManagementService.Models.Extensions;
 using EventManagementService.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -10,15 +10,18 @@ namespace EventManagementService.Controllers;
 [Route("/[controller]")]
 public class EventsController : ControllerBase
 {
-    private readonly int _blankEventId = -1;
-
     private readonly IEventService _eventService;
+    private readonly IBookingService _bookingService;
 
-    public EventsController(IEventService eventService)
+    public EventsController(
+        IEventService eventService, 
+        IBookingService bookingService)
     {
         _eventService = eventService;
+        _bookingService = bookingService;
     }
 
+    // Events
     [HttpGet]
     public async Task<ActionResult<IReadOnlyList<PaginatedResultResponseDto>>> GetAllEvents(
         [FromQuery] string? title,
@@ -33,28 +36,31 @@ public class EventsController : ControllerBase
         return Ok(result);
     }
 
-    [HttpGet("{id:int}")]
-    public async Task<ActionResult<EventResponseDto>> GetEventById(int id)
+    [HttpGet("{id:Guid}")]
+    public async Task<ActionResult<EventResponseDto>> GetEventById(Guid id)
     {
         var eventItem = await _eventService.GetEventByIdAsync(id);
 
-        return Ok(eventItem.ToEventResponse());
+        return Ok(eventItem.ToEventResponseDto());
     }
 
     [HttpPost]
     public async Task<ActionResult<EventResponseDto>> AddEvent([FromBody] EventRequestDto eventRequest)
     {
-        var eventItem = eventRequest.ToEvent(_blankEventId);
+        var eventItem = eventRequest.ToEvent(Guid.Empty);
 
         var eventItemWithId = await _eventService.AddEventAsync(eventItem);
 
-        var result = eventItemWithId.ToEventResponse();
+        var result = eventItemWithId.ToEventResponseDto();
 
-        return CreatedAtAction(nameof(AddEvent), result);
+        return CreatedAtAction(
+            nameof(GetEventById),
+            new { id = result.Id },
+            result);
     }
 
-    [HttpPut("{id:int}")]
-    public async Task<ActionResult> UpdateEvent(int id, [FromBody] EventRequestDto eventForUpdate)
+    [HttpPut("{id:Guid}")]
+    public async Task<ActionResult> UpdateEvent(Guid id, [FromBody] EventRequestDto eventForUpdate)
     {
         var eventData = eventForUpdate.ToEvent(id);
         await _eventService.UpdateEventAsync(eventData);
@@ -62,12 +68,25 @@ public class EventsController : ControllerBase
         return NoContent();
     }
 
-    [HttpDelete("{id:int}")]
-    public async Task<ActionResult> DeleteEvent(int id)
+    [HttpDelete("{id:Guid}")]
+    public async Task<ActionResult> DeleteEvent(Guid id)
     {
         await _eventService.RemoveEventAsync(id);
 
         return NoContent();
     }
 
+    // Booking
+    [HttpPost("{eventId:Guid}/book")]
+    public async Task<ActionResult<BookingResponseDto>> BookingEvent(Guid eventId)
+    {
+        var bookingItem = await _bookingService.CreateBookingAsync(eventId);
+
+        var url = $"/bookings/{bookingItem.Id}";
+        Response.Headers.Location = url;
+
+        var result = bookingItem.ToBookingResponseDto();
+
+        return Accepted(result);
+    }
 }

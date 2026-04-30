@@ -1,10 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc.Diagnostics;
+﻿using EventManagementService.Models.Dto;
+using Microsoft.AspNetCore.Mvc.Diagnostics;
 
 namespace EventManagementService.Models.Extensions;
 
 public static class EventExtensions
 {
-    public static EventResponseDto ToEventResponse(this Event eventData)
+    public static EventResponseDto ToEventResponseDto(this Event eventData)
     {
         var result = new EventResponseDto()
         {
@@ -18,7 +19,7 @@ public static class EventExtensions
         return result;
     }
 
-    public static Event ToEvent(this EventRequestDto eventRequest, int id)
+    public static Event ToEvent(this EventRequestDto eventRequest, Guid id)
     {
         if (eventRequest.StartAt == null || eventRequest.EndAt == null)
             throw new ArgumentException("StartAt and EndAt can't be null!");

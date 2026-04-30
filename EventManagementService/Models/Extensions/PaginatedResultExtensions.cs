@@ -1,11 +1,13 @@
-﻿namespace EventManagementService.Models.Extensions;
+﻿using EventManagementService.Models.Dto;
+
+namespace EventManagementService.Models.Extensions;
 
 public static class PaginatedResultExtensions
 {
     public static PaginatedResultResponseDto ToPaginatedResponseDto(this PaginatedResult data)
     {
         var eventsResponseDto = data.Events
-            .Select(x => x.ToEventResponse())
+            .Select(x => x.ToEventResponseDto())
             .ToList();
 
         var result = new PaginatedResultResponseDto()
