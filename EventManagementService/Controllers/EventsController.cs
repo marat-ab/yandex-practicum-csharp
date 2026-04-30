@@ -53,7 +53,10 @@ public class EventsController : ControllerBase
 
         var result = eventItemWithId.ToEventResponseDto();
 
-        return CreatedAtAction(nameof(AddEvent), result);
+        return CreatedAtAction(
+            nameof(GetEventById),
+            new { id = result.Id },
+            result);
     }
 
     [HttpPut("{id:Guid}")]
