@@ -25,11 +25,12 @@ public static class EventExtensions
             throw new ArgumentException("StartAt and EndAt can't be null!");
 
         var result = new Event(
-            Id: id,
-            Title: eventRequest.Title,
-            Description: eventRequest.Description,
-            StartAt: eventRequest.StartAt.Value,
-            EndAt: eventRequest.EndAt.Value);
+            id: id,
+            title: eventRequest.Title,
+            description: eventRequest.Description,
+            totalSeats: eventRequest.TotalSeats,
+            startAt: eventRequest.StartAt.Value,
+            endAt: eventRequest.EndAt.Value);
 
         return result;
     }

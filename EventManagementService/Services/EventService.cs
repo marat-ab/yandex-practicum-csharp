@@ -137,15 +137,19 @@ public class EventService : IEventService
         if(newEvent.EndAt < newEvent.StartAt)
             throw new ArgumentException("EndAt can't be less then StartAt");
 
+        if (newEvent.TotalSeats <= 0)
+            throw new ArgumentException("TotalSeats can't be less or equal zero");
+
         lock (_lock)
         {
             var id = newEvent.Id == Guid.Empty ? Guid.NewGuid() : newEvent.Id;
             var tmpEvent = new Event(
-                Id: id,
-                Title: newEvent.Title,
-                Description: newEvent.Description,
-                StartAt: newEvent.StartAt,
-                EndAt: newEvent.EndAt);
+                id: id,
+                title: newEvent.Title,
+                description: newEvent.Description,
+                totalSeats: newEvent.TotalSeats,
+                startAt: newEvent.StartAt,
+                endAt: newEvent.EndAt);
 
             _events.Add(id, tmpEvent);
 
