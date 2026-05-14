@@ -15,6 +15,9 @@ public class EventRequestDto : IValidatableObject
     [Required(ErrorMessage = "Дата/время окончания события (EndAt) обязателено для заполнения")]
     public DateTime? EndAt { get; init; }
 
+    [Required(ErrorMessage = "Общее количество мест на событии (TotalSeats) обязателено для заполнения")]
+    public int? TotalSeats { get; init; }
+
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
         if (EndAt < StartAt)
