@@ -20,7 +20,7 @@ public class BookingService : IBookingService
         _eventService = eventService;
     }
 
-    public async Task<Booking> CreateBookingAsync(Guid eventId)
+    public async Task<Booking> CreateBookingAsync(Guid eventId, CancellationToken ct = default)
     {
         lock (_bookingLock)
         {
@@ -47,12 +47,29 @@ public class BookingService : IBookingService
         }
     }
 
-    public async Task<Booking> GetBookingByIdAsync(Guid bookingId)
+    public async Task<Booking> GetBookingByIdAsync(Guid bookingId, CancellationToken ct = default)
     {
-        var bookingEntity = await _bookingRepository.SelectBookingByIdAsync(bookingId);
+        var bookingEntity = await _bookingRepository.SelectBookingByIdAsync(bookingId, ct);
 
         var result = bookingEntity.ToBooking();
 
         return result;
+    }
+
+    public async Task<IReadOnlyList<Booking>> GetAllBookingByStatusAsync(BookingStatus status, CancellationToken ct = default)
+    {
+        var bookingEntityes = await _bookingRepository.SelectAllBookingByStatusAsync(status, ct);
+
+        var result = bookingEntityes
+            .Select(x => x.ToBooking())
+            .ToList();
+
+        return result;
+    }
+
+    public async Task UpdateBookingAsync(Guid id, Booking newBooking, CancellationToken ct = default)
+    {
+        var newBookingEntity = newBooking.ToBookingEntity();
+        await _bookingRepository.UpdateBookingAsync(id, newBookingEntity, ct);
     }
 }

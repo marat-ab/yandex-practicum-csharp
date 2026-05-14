@@ -1,18 +1,25 @@
 ﻿using EventManagementService.Middlewares;
 using EventManagementService.Models;
 using EventManagementService.Repository;
+using EventManagementService.Services;
 
 namespace EventManagementService.HostedServices;
 
 public class BookingHostedService : BackgroundService
 {
-    public readonly IBookingRepository _bookingRepository;
+    public readonly IBookingService _bookingService;
+    public readonly IEventService _eventService;
     private readonly ILogger<BookingHostedService> _logger;
+
+    private readonly SemaphoreSlim _processingSemaphore = new(1, 1);
+
     public BookingHostedService(
-        IBookingRepository bookingRepository,
+        IBookingService bookingService,
+        IEventService eventService,
         ILogger<BookingHostedService> logger)
     {
-        _bookingRepository = bookingRepository;
+        _bookingService = bookingService;
+        _eventService = eventService;
         _logger = logger;
     }
 
@@ -24,33 +31,12 @@ public class BookingHostedService : BackgroundService
             try
             {
                 // Получение списка бронирований в статусе Pending
-                var pendingBooking = await _bookingRepository.SelectAllBookingByStatusAsync(BookingStatus.Pending, stoppingToken);
+                var pendingBookings = await _bookingService.GetAllBookingByStatusAsync(BookingStatus.Pending, stoppingToken);
 
-                // Имитация обращений к внешней системе
-                var tasks = pendingBooking
-                    .Select(_ => Task.Delay(TimeSpan.FromSeconds(2), stoppingToken))
-                    .ToList();
+                // Обработка броней
+                var tasks = pendingBookings.Select(booking => ProcessBookingAsync(booking, stoppingToken));
 
                 await Task.WhenAll(tasks);
-
-                // Перевод брони в статус Confirmed и установка ProcessedAt
-                foreach (var booking in pendingBooking)
-                {
-                    var updatedBooking = booking with
-                    {
-                        Status = BookingStatus.Confirmed,
-                        ProcessedAt = DateTime.UtcNow,
-                    };
-                    
-                    try
-                    {
-                        await _bookingRepository.UpdateBookingAsync(booking.Id, updatedBooking, stoppingToken);
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError(exception: ex, message: ex.Message);
-                    }                    
-                }
             }
             catch (Exception ex)
             {
@@ -59,5 +45,71 @@ public class BookingHostedService : BackgroundService
 
             await Task.Delay(TimeSpan.FromSeconds(1), stoppingToken);
         }
+    }
+
+    private async Task ProcessBookingAsync(Booking booking, CancellationToken stoppingToken)
+    {
+        await Task.Delay(TimeSpan.FromSeconds(2), stoppingToken);
+
+        try
+        {
+            await _processingSemaphore.WaitAsync();
+
+            var eventTmp = await _eventService.FindEventByIdAsync(booking.EventId);
+
+            // Событие не найдено
+            if(eventTmp is null)
+            {
+                var rejectedBooking = booking with
+                {
+                    Status = BookingStatus.Rejected,
+                    ProcessedAt = DateTime.UtcNow,
+                };
+
+                await _bookingService.UpdateBookingAsync(booking.Id, rejectedBooking, stoppingToken);
+                _logger.LogWarning($"Event with id {booking.EventId} is absent.");
+            }
+
+            // Событие найдено
+            var confirmedBooking = booking with
+            {
+                Status = BookingStatus.Confirmed,
+                ProcessedAt = DateTime.UtcNow,
+            };
+
+            await _bookingService.UpdateBookingAsync(booking.Id, confirmedBooking, stoppingToken);
+
+        }
+        catch(OperationCanceledException)
+        {
+
+        }
+        catch (Exception ex)
+        { 
+            // Отклонить бронь
+            var rejectedBooking = booking with
+            {
+                Status = BookingStatus.Rejected,
+                ProcessedAt = DateTime.UtcNow,
+            };
+
+            await _bookingService.UpdateBookingAsync(booking.Id, rejectedBooking, stoppingToken);
+
+            // Вернуть место
+            var eventTmp = await _eventService.FindEventByIdAsync(booking.EventId);
+            if (eventTmp is not null)
+            {
+                eventTmp.ReleaseSeats();
+                await _eventService.UpdateEventAsync(eventTmp);
+            }
+
+            _logger.LogError(exception: ex, message: ex.Message);
+        }
+        finally
+        {
+            _processingSemaphore.Release();
+        }
+
+
     }
 }
