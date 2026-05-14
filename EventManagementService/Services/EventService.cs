@@ -123,6 +123,21 @@ public class EventService : IEventService
         }
     }
 
+    public Event? FindEventById(Guid id)
+    {
+        lock (_lock)
+        {
+            if (_events.TryGetValue(id, out Event? value))
+            {
+                return value;
+            }
+            else
+            {
+                return null;
+            }
+        }
+    }
+
     public Task<Event> AddEventAsync(Event newEvent)
     {
         if (string.IsNullOrWhiteSpace(newEvent.Title))
@@ -169,6 +184,18 @@ public class EventService : IEventService
         }
 
         return Task.CompletedTask;
+    }
+
+    public void UpdateEvent(Event eventForUpdate)
+    {
+        lock (_lock)
+        {
+            if (_events.ContainsKey(eventForUpdate.Id) is false)
+                throw new EventNotFoundException(eventForUpdate.Id,
+                    $"Can't update event with id = {eventForUpdate.Id}. It is absent");
+
+            _events[eventForUpdate.Id] = eventForUpdate;
+        }
     }
 
     public Task RemoveEventAsync(Guid id)

@@ -10,6 +10,8 @@ public class BookingService : IBookingService
     public readonly IBookingRepository _bookingRepository;
     public readonly IEventService _eventService;
 
+    private readonly object _bookingLock = new();
+
     public BookingService(
         IBookingRepository bookingRepository,
         IEventService eventService)
@@ -20,20 +22,29 @@ public class BookingService : IBookingService
 
     public async Task<Booking> CreateBookingAsync(Guid eventId)
     {
-        var eventTmp = await _eventService.FindEventByIdAsync(eventId);
+        lock (_bookingLock)
+        {
+            var eventTmp = _eventService.FindEventById(eventId);
 
-        if (eventTmp is null)
-            throw new EventNotFoundException(eventId, $"Absent event with id: {eventId}");
+            if (eventTmp is null)
+                throw new EventNotFoundException(eventId, $"Absent event with id: {eventId}");
 
-        var newGuid = Guid.NewGuid();
-        var createdAt = DateTime.UtcNow;
-        var newBooking = new Booking(Id: newGuid, EventId: eventId, Status: BookingStatus.Pending, CreatedAt: createdAt);
+            var isReservOk = eventTmp.TryReserveSeats();
+            if (isReservOk is false)
+                throw new NoAvailableSeatsException(eventId, $"No available seats for event with id {eventId}");
 
-        var bookingForStore = newBooking.ToBookingEntity();
+            _eventService.UpdateEvent(eventTmp);
 
-        await _bookingRepository.InsertBookingAsync(bookingForStore);
+            var newGuid = Guid.NewGuid();
+            var createdAt = DateTime.UtcNow;
+            var newBooking = new Booking(Id: newGuid, EventId: eventId, Status: BookingStatus.Pending, CreatedAt: createdAt);
 
-        return newBooking;
+            var bookingForStore = newBooking.ToBookingEntity();
+
+            _bookingRepository.InsertBooking(bookingForStore);
+
+            return newBooking;
+        }
     }
 
     public async Task<Booking> GetBookingByIdAsync(Guid bookingId)

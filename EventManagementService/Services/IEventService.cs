@@ -12,8 +12,16 @@ public interface IEventService
         int? pageSize = null);
 
     Task<Event> GetEventByIdAsync(Guid id);
+
     Task<Event?> FindEventByIdAsync(Guid id);
+
+    Event? FindEventById(Guid id);
+
     Task<Event> AddEventAsync(Event newEvent);
+
     Task UpdateEventAsync(Event eventForUpdate);
+
+    void UpdateEvent(Event eventForUpdate);
+
     Task RemoveEventAsync(Guid id);
 }
