@@ -63,7 +63,10 @@ public class BookingHostedService : BackgroundService
                 var rejectedBooking = booking.Reject();
 
                 await _bookingService.UpdateBookingAsync(booking.Id, rejectedBooking, stoppingToken);
+                
                 _logger.LogWarning($"Event with id {booking.EventId} is absent.");
+
+                return;
             }
 
             // Событие найдено
