@@ -10,7 +10,6 @@ public interface IBookingRepository
     Task<IReadOnlyList<BookingEntity>> SelectAllBookingByStatusAsync(BookingStatus status, CancellationToken ct = default);
 
     Task InsertBookingAsync(BookingEntity entity, CancellationToken ct = default);
-    void InsertBooking(BookingEntity entity);
 
     Task UpdateBookingAsync(Guid id, BookingEntity newBooking, CancellationToken ct = default);
 }

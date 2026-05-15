@@ -66,14 +66,6 @@ public sealed class BookingRepository : IBookingRepository
         }
     }
 
-    public void InsertBooking(BookingEntity entity)
-    {
-        lock (_lock)
-        {
-            _bookings[entity.Id] = entity;
-        }
-    }
-
     public Task UpdateBookingAsync(Guid id, BookingEntity newBooking, CancellationToken ct = default)
     {
         lock (_lock)

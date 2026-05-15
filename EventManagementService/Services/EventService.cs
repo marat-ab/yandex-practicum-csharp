@@ -46,7 +46,8 @@ public class EventService : IEventService
         DateTime? from,
         DateTime? to,
         int? pageNumber,
-        int? pageSize)
+        int? pageSize, 
+        CancellationToken ct = default)
     {
         if (to < from)
             throw new ArgumentException("DateTime to can't be less then from");
@@ -92,7 +93,7 @@ public class EventService : IEventService
         }
     }
 
-    public Task<Event> GetEventByIdAsync(Guid id)
+    public Task<Event> GetEventByIdAsync(Guid id, CancellationToken ct = default)
     {
         lock (_lock)
         {
@@ -108,7 +109,7 @@ public class EventService : IEventService
         }
     }
 
-    public Task<Event?> FindEventByIdAsync(Guid id)
+    public Task<Event?> FindEventByIdAsync(Guid id, CancellationToken ct = default)
     {
         lock (_lock)
         {
@@ -123,22 +124,7 @@ public class EventService : IEventService
         }
     }
 
-    public Event? FindEventById(Guid id)
-    {
-        lock (_lock)
-        {
-            if (_events.TryGetValue(id, out Event? value))
-            {
-                return value;
-            }
-            else
-            {
-                return null;
-            }
-        }
-    }
-
-    public Task<Event> AddEventAsync(Event newEvent)
+    public Task<Event> AddEventAsync(Event newEvent, CancellationToken ct = default)
     {
         if (string.IsNullOrWhiteSpace(newEvent.Title))
             throw new ArgumentException("Title can't be null, empty or white space");
@@ -172,7 +158,7 @@ public class EventService : IEventService
         }        
     }
 
-    public Task UpdateEventAsync(Event eventForUpdate)
+    public Task UpdateEventAsync(Event eventForUpdate, CancellationToken ct = default)
     {
         lock (_lock)
         {
@@ -186,19 +172,7 @@ public class EventService : IEventService
         return Task.CompletedTask;
     }
 
-    public void UpdateEvent(Event eventForUpdate)
-    {
-        lock (_lock)
-        {
-            if (_events.ContainsKey(eventForUpdate.Id) is false)
-                throw new EventNotFoundException(eventForUpdate.Id,
-                    $"Can't update event with id = {eventForUpdate.Id}. It is absent");
-
-            _events[eventForUpdate.Id] = eventForUpdate;
-        }
-    }
-
-    public Task RemoveEventAsync(Guid id)
+    public Task RemoveEventAsync(Guid id, CancellationToken ct = default)
     {
         lock (_lock)
         {

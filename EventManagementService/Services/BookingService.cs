@@ -10,7 +10,7 @@ public class BookingService : IBookingService
     public readonly IBookingRepository _bookingRepository;
     public readonly IEventService _eventService;
 
-    private readonly object _bookingLock = new();
+    private readonly SemaphoreSlim _bookingSemaphore = new(1, 1);
 
     public BookingService(
         IBookingRepository bookingRepository,
@@ -22,9 +22,11 @@ public class BookingService : IBookingService
 
     public async Task<Booking> CreateBookingAsync(Guid eventId, CancellationToken ct = default)
     {
-        lock (_bookingLock)
+        try
         {
-            var eventTmp = _eventService.FindEventById(eventId);
+            await _bookingSemaphore.WaitAsync();
+
+            var eventTmp = await _eventService.FindEventByIdAsync(eventId, ct);
 
             if (eventTmp is null)
                 throw new EventNotFoundException(eventId, $"Absent event with id: {eventId}");
@@ -33,7 +35,7 @@ public class BookingService : IBookingService
             if (isReservOk is false)
                 throw new NoAvailableSeatsException(eventId, $"No available seats for event with id {eventId}");
 
-            _eventService.UpdateEvent(eventTmp);
+            await _eventService.UpdateEventAsync(eventTmp, ct);
 
             var newGuid = Guid.NewGuid();
             var createdAt = DateTime.UtcNow;
@@ -41,9 +43,13 @@ public class BookingService : IBookingService
 
             var bookingForStore = newBooking.ToBookingEntity();
 
-            _bookingRepository.InsertBooking(bookingForStore);
+            await _bookingRepository.InsertBookingAsync(bookingForStore, ct);
 
             return newBooking;
+        }
+        finally
+        {
+            _bookingSemaphore.Release();
         }
     }
 

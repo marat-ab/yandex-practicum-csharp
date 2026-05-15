@@ -9,19 +9,16 @@ public interface IEventService
         DateTime? from = null,
         DateTime? to = null,
         int? pageNumber = null,
-        int? pageSize = null);
+        int? pageSize = null,
+        CancellationToken ct = default);
 
-    Task<Event> GetEventByIdAsync(Guid id);
+    Task<Event> GetEventByIdAsync(Guid id, CancellationToken ct = default);
 
-    Task<Event?> FindEventByIdAsync(Guid id);
+    Task<Event?> FindEventByIdAsync(Guid id, CancellationToken ct = default);
 
-    Event? FindEventById(Guid id);
+    Task<Event> AddEventAsync(Event newEvent, CancellationToken ct = default);
 
-    Task<Event> AddEventAsync(Event newEvent);
+    Task UpdateEventAsync(Event eventForUpdate, CancellationToken ct = default);
 
-    Task UpdateEventAsync(Event eventForUpdate);
-
-    void UpdateEvent(Event eventForUpdate);
-
-    Task RemoveEventAsync(Guid id);
+    Task RemoveEventAsync(Guid id, CancellationToken ct = default);
 }
