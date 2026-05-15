@@ -18,6 +18,7 @@ public partial class BookingServiceTests
         // Arrange
         var eventId = _events[0].Id;
 
+        var expectedAvailableSeats = 0;
         var expectedBookingStatus = BookingStatus.Pending;
 
         // Act
@@ -25,6 +26,7 @@ public partial class BookingServiceTests
 
         // Assert
         booking.Status.Should().Be(expectedBookingStatus);
+        _events[0].AvailableSeats.Should().Be(expectedAvailableSeats);
     }
 
     // Создание нескольких броней для одного события 
@@ -33,8 +35,12 @@ public partial class BookingServiceTests
     public async Task CreateMultipleBookingForExistingEvent()
     {
         // Arrange
-        var eventId = _events[0].Id;
+        var eventId = _events[0].Id;        
         var countOfBookings = 10;
+        _events[0].TotalSeats = countOfBookings;
+        _events[0].AvailableSeats = countOfBookings;
+
+        var expectedAvailableSeats = 0;
 
         // Act
         var ids = new HashSet<Guid>();
@@ -46,7 +52,8 @@ public partial class BookingServiceTests
 
         // Assert
         ids.Count.Should().Be(countOfBookings);
-    }
+        _events[0].AvailableSeats.Should().Be(expectedAvailableSeats);
+    }    
 
     // Получение брони по Id
     [Fact]

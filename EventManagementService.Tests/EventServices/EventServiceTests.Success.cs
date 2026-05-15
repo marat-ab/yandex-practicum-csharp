@@ -18,14 +18,14 @@ public partial class EventServiceTests
 
         var eventId = Guid.NewGuid();
 
-        var eventForAdd = new Event(
-            Id: eventId,
-            Title: "Some event",
-            Description: "Description of event",
-            StartAt: new DateTime(2026, 01, 01),
-            EndAt: new DateTime(2026, 01, 03));
+        var eventForAdd = new Event(id: eventId,
+            title: "Some event",
+            description: "Description of event",
+            totalSeats: 1,
+            startAt: new DateTime(2026, 01, 01),
+            endAt: new DateTime(2026, 01, 03));
 
-        var expectedEvent = eventForAdd with { Id = eventId };
+        var expectedEvent = eventForAdd.Id = eventId;
 
         // Act
         var eventWithId = await _eventService.AddEventAsync(eventForAdd);
@@ -72,11 +72,12 @@ public partial class EventServiceTests
     {
         // Arrange
         var eventId = _events[0].Id;
-        var eventForUpdate = new Event(Id: eventId,
-                Title: "event 1 [updated]",
-                Description: "Description of event 1 [updated]",
-                StartAt: new DateTime(2026, 05, 01),
-                EndAt: new DateTime(2026, 05, 03));
+        var eventForUpdate = new Event(id: eventId,
+                title: "event 1 [updated]",
+                description: "Description of event 1 [updated]",
+                totalSeats: 1,
+                startAt: new DateTime(2026, 05, 01),
+                endAt: new DateTime(2026, 05, 03));
 
         // Act
         await _eventService.UpdateEventAsync(eventForUpdate);

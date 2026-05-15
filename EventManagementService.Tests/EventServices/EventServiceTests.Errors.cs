@@ -32,11 +32,12 @@ public partial class EventServiceTests
     {
         // Arrange
         var eventId = Guid.NewGuid();
-        var eventForUpdate = new Event(Id: eventId,
-                Title: "event 1 [updated]",
-                Description: "Description of event 1 [updated]",
-                StartAt: new DateTime(2026, 05, 01),
-                EndAt: new DateTime(2026, 05, 03));
+        var eventForUpdate = new Event(id: eventId,
+                title: "event 1 [updated]",
+                description: "Description of event 1 [updated]",
+                totalSeats: 1,
+                startAt: new DateTime(2026, 05, 01),
+                endAt: new DateTime(2026, 05, 03));
 
         // Act
         Func<Task> act = async () => await _eventService.UpdateEventAsync(eventForUpdate);
@@ -54,11 +55,12 @@ public partial class EventServiceTests
     public async Task AddEventWithBadData(string title, DateTime startAt, DateTime endAt, string errorMsg)
     {
         // Arrange
-        var eventForAdd = new Event(Id: Guid.Empty,
-                Title: title,
-                Description: "Description",
-                StartAt: startAt,
-                EndAt: endAt);
+        var eventForAdd = new Event(id: Guid.Empty,
+                title: title,
+                description: "Description",
+                totalSeats: 1,
+                startAt: startAt,
+                endAt: endAt);
 
         // Act
         Func<Task> act = async () => await _eventService.AddEventAsync(eventForAdd);

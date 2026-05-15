@@ -25,6 +25,35 @@ public partial class BookingServiceTests
            .WithMessage($"Absent event with id: {eventId}");
     }
 
+    // Создание нескольких броней для одного события с исчерпанием количества свободных мест
+    [Fact]
+    [Trait("Category", "Success")]
+    public async Task CreateMultipleBookingForExistingEventMoreThenAvailableSeats()
+    {
+        // Arrange
+        var eventId = _events[0].Id;
+        var countOfBookings = 10;
+        _events[0].TotalSeats = countOfBookings - 1;
+        _events[0].AvailableSeats = countOfBookings - 1;
+
+        // Act
+        Func<Task>? act = null;
+        for (int i = 0; i < countOfBookings; i++)
+        {
+            if (_events[0].AvailableSeats == 0)
+            {
+                act = async () => await _bookingService.CreateBookingAsync(eventId);
+                break;
+            }
+
+            await _bookingService.CreateBookingAsync(eventId);
+        }
+
+        // Assert
+        await act.Should().ThrowAsync<NoAvailableSeatsException>()
+           .WithMessage($"No available seats for event with id {eventId}");
+    }
+
     // Создание брони для удаленного события
     [Fact]
     [Trait("Category", "Success")]
