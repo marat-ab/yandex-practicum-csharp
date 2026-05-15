@@ -12,6 +12,8 @@ public static class EventExtensions
             Id = eventData.Id,
             Title = eventData.Title,
             Description = eventData.Description,
+            TotalSeats = eventData.TotalSeats,
+            AvailableSeats = eventData.AvailableSeats,
             StartAt = eventData.StartAt,
             EndAt = eventData.EndAt,
         };
