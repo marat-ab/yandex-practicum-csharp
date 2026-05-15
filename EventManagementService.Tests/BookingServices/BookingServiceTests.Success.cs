@@ -16,17 +16,26 @@ public partial class BookingServiceTests
     public async Task CreateBookingForExistingEvent()
     {
         // Arrange
-        var eventId = _events[0].Id;
+        var eventId = Guid.NewGuid();
+        var newEvent = new Event(id: eventId,
+               title: "event 4",
+               description: "Description of event 4",
+               totalSeats: 1,
+               startAt: new DateTime(2026, 01, 01),
+               endAt: new DateTime(2026, 01, 03));
 
         var expectedAvailableSeats = 0;
         var expectedBookingStatus = BookingStatus.Pending;
 
+        await _eventService.AddEventAsync(newEvent);
+
         // Act
         var booking = await _bookingService.CreateBookingAsync(eventId);
+        var eventAfterBooking = await _eventService.GetEventByIdAsync(eventId);
 
         // Assert
         booking.Status.Should().Be(expectedBookingStatus);
-        _events[0].AvailableSeats.Should().Be(expectedAvailableSeats);
+        eventAfterBooking.AvailableSeats.Should().Be(expectedAvailableSeats);
     }
 
     // Создание нескольких броней для одного события 
@@ -68,7 +77,7 @@ public partial class BookingServiceTests
         var bookingFromService = await _bookingService.GetBookingByIdAsync(booking.Id);
 
         // Assert
-        booking.Should().Be(bookingFromService);
+        booking.Should().BeEquivalentTo(bookingFromService);
     }
 
     // Получение брони отражает изменение статуса

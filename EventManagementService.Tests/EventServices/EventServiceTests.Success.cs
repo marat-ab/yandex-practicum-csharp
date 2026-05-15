@@ -25,13 +25,14 @@ public partial class EventServiceTests
             startAt: new DateTime(2026, 01, 01),
             endAt: new DateTime(2026, 01, 03));
 
-        var expectedEvent = eventForAdd.Id = eventId;
+        var expectedEvent = eventForAdd;
 
         // Act
-        var eventWithId = await _eventService.AddEventAsync(eventForAdd);
+        await _eventService.AddEventAsync(eventForAdd);
+        var eventFromStore = await _eventService.GetEventByIdAsync(eventId);
 
         // Assert
-        eventWithId.Should().Be(expectedEvent);
+        eventFromStore.Should().BeEquivalentTo(expectedEvent);
     }
 
     // Получение всех событий
