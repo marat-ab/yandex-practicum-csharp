@@ -24,6 +24,8 @@ public class BookingService : IBookingService
     {
         try
         {
+            // Защита критической секции реализована через SemaphoreSlim
+            // по согласованию с Вероникой Смирнягиной
             await _bookingSemaphore.WaitAsync();
 
             var eventTmp = await _eventService.FindEventByIdAsync(eventId, ct);
