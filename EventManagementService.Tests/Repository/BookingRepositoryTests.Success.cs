@@ -64,8 +64,8 @@ public partial class BookingRepositoryTests
     {
         // Arrange
         var bookingId = Guid.NewGuid();
-        var newBooking = new Booking(Id: bookingId, EventId: Guid.NewGuid(),
-           Status: BookingStatus.Pending, CreatedAt: new DateTime(2026, 04, 01));
+        var newBooking = new Booking(id: bookingId, eventId: Guid.NewGuid(),
+           status: BookingStatus.Pending, createdAt: new DateTime(2026, 04, 01));
 
         // Act
         await _bookingRepository.InsertBookingAsync(newBooking.ToBookingEntity());
@@ -82,10 +82,7 @@ public partial class BookingRepositoryTests
     {
         // Arrange
         var updatedBookingId = _booking[0].Id;
-        var updatedBooking = _booking[0] with
-        {
-            Status = BookingStatus.Confirmed,
-        };
+        var updatedBooking = _booking[0].Confirm();
 
         // Act
         await _bookingRepository.UpdateBookingAsync(updatedBookingId, updatedBooking.ToBookingEntity());

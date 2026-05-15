@@ -11,12 +11,12 @@ public partial class BookingRepositoryTests : IAsyncLifetime
     private readonly IBookingRepository _bookingRepository;
 
     private static readonly List<Booking> _booking = [
-        new Booking(Id: Guid.NewGuid(), EventId: Guid.NewGuid(), 
-            Status: BookingStatus.Pending, CreatedAt: new DateTime(2026, 01, 01)),
-        new Booking(Id: Guid.NewGuid(), EventId: Guid.NewGuid(),
-            Status: BookingStatus.Pending, CreatedAt: new DateTime(2026, 02, 01)),
-        new Booking(Id: Guid.NewGuid(), EventId: Guid.NewGuid(),
-            Status: BookingStatus.Confirmed, CreatedAt: new DateTime(2026, 03, 01)),
+        new Booking(id: Guid.NewGuid(), eventId: Guid.NewGuid(), 
+            status: BookingStatus.Pending, createdAt: new DateTime(2026, 01, 01)),
+        new Booking(id: Guid.NewGuid(), eventId: Guid.NewGuid(),
+            status: BookingStatus.Pending, createdAt: new DateTime(2026, 02, 01)),
+        new Booking(id: Guid.NewGuid(), eventId: Guid.NewGuid(),
+            status: BookingStatus.Confirmed, createdAt: new DateTime(2026, 03, 01)),
            ];
 
     public BookingRepositoryTests()

@@ -83,16 +83,89 @@ public partial class BookingServiceTests
         var expectedStatus = newBookingStatus;
         // Act
         var booking = await _bookingService.CreateBookingAsync(eventId);
-        var updatedBooking = booking with
+        var updatedBooking = newBookingStatus switch
         {
-            Status = newBookingStatus,
-            ProcessedAt = DateTime.UtcNow,
+            BookingStatus.Confirmed => booking.Confirm(),
+            BookingStatus.Rejected => booking.Reject(),
+            _ => throw new ArgumentException($"Test not work with booking status: {newBookingStatus}")
         };
+
         await _bookingRepository.UpdateBookingAsync(booking.Id, updatedBooking.ToBookingEntity());
 
         var bookingFromService = await _bookingService.GetBookingByIdAsync(booking.Id);
 
         // Assert
         bookingFromService.Status.Should().Be(newBookingStatus);
+        bookingFromService.ProcessedAt.Should().NotBeNull();
+    }
+
+    // Защита от овербукинга
+    [Fact]
+    [Trait("Category", "Success")]
+    public async Task OverbookingProtection()
+    {
+        // Arrange
+        var countOfSeats = 5;
+        var eventId = _events[0].Id;
+        _events[0].TotalSeats = countOfSeats;
+        _events[0].AvailableSeats = countOfSeats;
+
+        var countOfConcurrencyRequests = 20;
+        var expectedCountWithExceptionNotAvailable = 15;
+        var expectedAvailableSeats = 0;
+
+        var tasks = new List<Task>(countOfConcurrencyRequests);
+        for (int i = 0; i < countOfConcurrencyRequests; i++)
+            tasks.Add(_bookingService.CreateBookingAsync(eventId));
+
+        // Act
+        var resultTask = Task.WhenAll(tasks);
+
+        try
+        {
+            await resultTask;
+        }
+        catch { }
+
+        var bookingsWithExceptionNotAvailable = 0;
+        foreach(var task in tasks)
+        {
+            if (task.IsFaulted && task.Exception.InnerException is NoAvailableSeatsException)
+                bookingsWithExceptionNotAvailable++;
+        }
+
+        var bookings = await _bookingService.GetAllBookingByStatusAsync(BookingStatus.Pending);
+        var eventValue = await _eventService.GetEventByIdAsync(eventId);
+
+        // Assert
+        bookings.Count.Should().Be(countOfSeats);
+        bookingsWithExceptionNotAvailable.Should().Be(expectedCountWithExceptionNotAvailable);
+        eventValue.AvailableSeats.Should().Be(expectedAvailableSeats);
+    }
+
+    // Тест на уникальность Id при конкурентных запросах
+    [Fact]
+    [Trait("Category", "Success")]
+    public async Task UnicIdForConcurrencyRequests()
+    {
+        // Arrange
+        var countOfSeats = 10;
+        var eventId = _events[0].Id;
+        _events[0].TotalSeats = countOfSeats;
+        _events[0].AvailableSeats = countOfSeats;
+
+        var countOfExpectedBookings = 10;
+
+        var tasks = new List<Task>(countOfExpectedBookings);
+        for (int i = 0; i < countOfExpectedBookings; i++)
+            tasks.Add(_bookingService.CreateBookingAsync(eventId));
+
+        // Act
+        await Task.WhenAll(tasks);
+                
+        var bookings = await _bookingService.GetAllBookingByStatusAsync(BookingStatus.Pending);
+        
+        // Assert
+        bookings.Count.Should().Be(countOfExpectedBookings);
     }
 }

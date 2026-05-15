@@ -60,22 +60,14 @@ public class BookingHostedService : BackgroundService
             // Событие не найдено
             if(eventTmp is null)
             {
-                var rejectedBooking = booking with
-                {
-                    Status = BookingStatus.Rejected,
-                    ProcessedAt = DateTime.UtcNow,
-                };
+                var rejectedBooking = booking.Reject();
 
                 await _bookingService.UpdateBookingAsync(booking.Id, rejectedBooking, stoppingToken);
                 _logger.LogWarning($"Event with id {booking.EventId} is absent.");
             }
 
             // Событие найдено
-            var confirmedBooking = booking with
-            {
-                Status = BookingStatus.Confirmed,
-                ProcessedAt = DateTime.UtcNow,
-            };
+            var confirmedBooking = booking.Confirm();
 
             await _bookingService.UpdateBookingAsync(booking.Id, confirmedBooking, stoppingToken);
 
@@ -85,13 +77,9 @@ public class BookingHostedService : BackgroundService
 
         }
         catch (Exception ex)
-        { 
+        {
             // Отклонить бронь
-            var rejectedBooking = booking with
-            {
-                Status = BookingStatus.Rejected,
-                ProcessedAt = DateTime.UtcNow,
-            };
+            var rejectedBooking = booking.Reject();
 
             await _bookingService.UpdateBookingAsync(booking.Id, rejectedBooking, stoppingToken);
 

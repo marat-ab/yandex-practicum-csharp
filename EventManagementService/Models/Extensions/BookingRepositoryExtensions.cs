@@ -19,11 +19,11 @@ public static class BookingRepositoryExtensions
     public static Booking ToBooking(this BookingEntity booking)
     {
         var result = new Booking(
-            Id: booking.Id,
-            EventId: booking.EventId,
-            Status: booking.Status,
-            CreatedAt: booking.CreatedAt,
-            ProcessedAt: booking.ProcessedAt);
+            id: booking.Id,
+            eventId: booking.EventId,
+            status: booking.Status,
+            createdAt: booking.CreatedAt,
+            processedAt: booking.ProcessedAt);
 
         return result;
     }

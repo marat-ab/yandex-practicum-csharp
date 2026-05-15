@@ -39,7 +39,10 @@ public class BookingService : IBookingService
 
             var newGuid = Guid.NewGuid();
             var createdAt = DateTime.UtcNow;
-            var newBooking = new Booking(Id: newGuid, EventId: eventId, Status: BookingStatus.Pending, CreatedAt: createdAt);
+            var newBooking = new Booking(id: newGuid, 
+                eventId: eventId, 
+                status: BookingStatus.Pending, 
+                createdAt: createdAt);
 
             var bookingForStore = newBooking.ToBookingEntity();
 
