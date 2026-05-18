@@ -46,7 +46,8 @@ public class EventService : IEventService
         DateTime? from,
         DateTime? to,
         int? pageNumber,
-        int? pageSize)
+        int? pageSize, 
+        CancellationToken ct = default)
     {
         if (to < from)
             throw new ArgumentException("DateTime to can't be less then from");
@@ -92,7 +93,7 @@ public class EventService : IEventService
         }
     }
 
-    public Task<Event> GetEventByIdAsync(Guid id)
+    public Task<Event> GetEventByIdAsync(Guid id, CancellationToken ct = default)
     {
         lock (_lock)
         {
@@ -108,7 +109,7 @@ public class EventService : IEventService
         }
     }
 
-    public Task<Event?> FindEventByIdAsync(Guid id)
+    public Task<Event?> FindEventByIdAsync(Guid id, CancellationToken ct = default)
     {
         lock (_lock)
         {
@@ -123,7 +124,7 @@ public class EventService : IEventService
         }
     }
 
-    public Task<Event> AddEventAsync(Event newEvent)
+    public Task<Event> AddEventAsync(Event newEvent, CancellationToken ct = default)
     {
         if (string.IsNullOrWhiteSpace(newEvent.Title))
             throw new ArgumentException("Title can't be null, empty or white space");
@@ -137,15 +138,19 @@ public class EventService : IEventService
         if(newEvent.EndAt < newEvent.StartAt)
             throw new ArgumentException("EndAt can't be less then StartAt");
 
+        if (newEvent.TotalSeats <= 0)
+            throw new ArgumentException("TotalSeats can't be less or equal zero");
+
         lock (_lock)
         {
             var id = newEvent.Id == Guid.Empty ? Guid.NewGuid() : newEvent.Id;
             var tmpEvent = new Event(
-                Id: id,
-                Title: newEvent.Title,
-                Description: newEvent.Description,
-                StartAt: newEvent.StartAt,
-                EndAt: newEvent.EndAt);
+                id: id,
+                title: newEvent.Title,
+                description: newEvent.Description,
+                totalSeats: newEvent.TotalSeats,
+                startAt: newEvent.StartAt,
+                endAt: newEvent.EndAt);
 
             _events.Add(id, tmpEvent);
 
@@ -153,7 +158,7 @@ public class EventService : IEventService
         }        
     }
 
-    public Task UpdateEventAsync(Event eventForUpdate)
+    public Task UpdateEventAsync(Event eventForUpdate, CancellationToken ct = default)
     {
         lock (_lock)
         {
@@ -167,7 +172,7 @@ public class EventService : IEventService
         return Task.CompletedTask;
     }
 
-    public Task RemoveEventAsync(Guid id)
+    public Task RemoveEventAsync(Guid id, CancellationToken ct = default)
     {
         lock (_lock)
         {

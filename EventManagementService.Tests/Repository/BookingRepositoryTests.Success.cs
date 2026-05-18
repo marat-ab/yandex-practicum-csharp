@@ -38,7 +38,7 @@ public partial class BookingRepositoryTests
         var booking = (await _bookingRepository.SelectBookingByIdAsync(bookingId)).ToBooking();
 
         // Assert
-        booking.Should().Be(expectedBooking);
+        booking.Should().BeEquivalentTo(expectedBooking);
     }
 
     // Выборка бронирования из репозитория по BookingStatus
@@ -64,15 +64,15 @@ public partial class BookingRepositoryTests
     {
         // Arrange
         var bookingId = Guid.NewGuid();
-        var newBooking = new Booking(Id: bookingId, EventId: Guid.NewGuid(),
-           Status: BookingStatus.Pending, CreatedAt: new DateTime(2026, 04, 01));
+        var newBooking = new Booking(id: bookingId, eventId: Guid.NewGuid(),
+           status: BookingStatus.Confirmed, createdAt: new DateTime(2026, 04, 01));
 
         // Act
         await _bookingRepository.InsertBookingAsync(newBooking.ToBookingEntity());
         var booking = (await _bookingRepository.SelectBookingByIdAsync(bookingId)).ToBooking();
 
         // Assert
-        booking.Should().Be(newBooking);
+        booking.Should().BeEquivalentTo(newBooking);
     }
 
     // Обновление бронирования в репозиторий
@@ -81,17 +81,14 @@ public partial class BookingRepositoryTests
     public async Task UpdateBookingToRepository()
     {
         // Arrange
-        var updatedBookingId = _booking[0].Id;
-        var updatedBooking = _booking[0] with
-        {
-            Status = BookingStatus.Confirmed,
-        };
+        var updatedBookingId = _booking[2].Id;
+        var updatedBooking = _booking[2].Confirm();
 
         // Act
         await _bookingRepository.UpdateBookingAsync(updatedBookingId, updatedBooking.ToBookingEntity());
         var booking = (await _bookingRepository.SelectBookingByIdAsync(updatedBookingId)).ToBooking();
 
         // Assert
-        booking.Should().Be(updatedBooking);
+        booking.Should().BeEquivalentTo(updatedBooking);
     }
 }

@@ -33,8 +33,8 @@ public partial class BookingRepositoryTests
     {
         // Arrange
         var bookingId = Guid.NewGuid();
-        var booking = new Booking(Id: bookingId, EventId: Guid.NewGuid(),
-            Status: BookingStatus.Pending, CreatedAt: new DateTime(2026, 01, 01));
+        var booking = new Booking(id: bookingId, eventId: Guid.NewGuid(),
+            status: BookingStatus.Pending, createdAt: new DateTime(2026, 01, 01));
 
         // Act
         Func<Task> act = async () => await _bookingRepository.UpdateBookingAsync(bookingId, booking.ToBookingEntity());

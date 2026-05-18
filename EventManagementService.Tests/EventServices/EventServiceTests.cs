@@ -9,21 +9,24 @@ public partial class EventServiceTests : IAsyncLifetime
     private readonly IEventService _eventService;
 
     private static readonly List<Event> _events = [
-            new Event(Id: Guid.NewGuid(),
-                Title: "event 1",
-                Description: "Description of event 1",
-                StartAt: new DateTime(2026, 01, 01),
-                EndAt: new DateTime(2026, 01, 03)),
-            new Event(Id: Guid.NewGuid(),
-                Title: "event 2",
-                Description: "Description of event 2",
-                StartAt: new DateTime(2026, 02, 04),
-                EndAt: new DateTime(2026, 02, 05)),
-            new Event(Id: Guid.NewGuid(),
-                Title: "event 3",
-                Description: "Description of event 3",
-                StartAt: new DateTime(2026, 03, 07),
-                EndAt: new DateTime(2026, 03, 10))];
+            new Event(id: Guid.NewGuid(),
+                title: "event 1",
+                description: "Description of event 1",
+                totalSeats: 1,
+                startAt: new DateTime(2026, 01, 01),
+                endAt: new DateTime(2026, 01, 03)),
+            new Event(id: Guid.NewGuid(),
+                title: "event 2",
+                description: "Description of event 2",
+                totalSeats: 1,
+                startAt: new DateTime(2026, 02, 04),
+                endAt: new DateTime(2026, 02, 05)),
+            new Event(id: Guid.NewGuid(),
+                title: "event 3",
+                description: "Description of event 3",
+                totalSeats: 1,
+                startAt: new DateTime(2026, 03, 07),
+                endAt: new DateTime(2026, 03, 10))];
 
     public EventServiceTests()
     {

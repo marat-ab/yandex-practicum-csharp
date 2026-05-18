@@ -10,6 +10,8 @@ public class BookingService : IBookingService
     public readonly IBookingRepository _bookingRepository;
     public readonly IEventService _eventService;
 
+    private readonly SemaphoreSlim _bookingSemaphore = new(1, 1);
+
     public BookingService(
         IBookingRepository bookingRepository,
         IEventService eventService)
@@ -18,30 +20,67 @@ public class BookingService : IBookingService
         _eventService = eventService;
     }
 
-    public async Task<Booking> CreateBookingAsync(Guid eventId)
+    public async Task<Booking> CreateBookingAsync(Guid eventId, CancellationToken ct = default)
     {
-        var eventTmp = await _eventService.FindEventByIdAsync(eventId);
+        try
+        {
+            // Защита критической секции реализована через SemaphoreSlim
+            // по согласованию с Вероникой Смирнягиной
+            await _bookingSemaphore.WaitAsync();
 
-        if (eventTmp is null)
-            throw new EventNotFoundException(eventId, $"Absent event with id: {eventId}");
+            var eventTmp = await _eventService.FindEventByIdAsync(eventId, ct);
 
-        var newGuid = Guid.NewGuid();
-        var createdAt = DateTime.UtcNow;
-        var newBooking = new Booking(Id: newGuid, EventId: eventId, Status: BookingStatus.Pending, CreatedAt: createdAt);
+            if (eventTmp is null)
+                throw new EventNotFoundException(eventId, $"Absent event with id: {eventId}");
 
-        var bookingForStore = newBooking.ToBookingEntity();
+            var isReservOk = eventTmp.TryReserveSeats();
+            if (isReservOk is false)
+                throw new NoAvailableSeatsException(eventId, $"No available seats for event with id {eventId}");
 
-        await _bookingRepository.InsertBookingAsync(bookingForStore);
+            await _eventService.UpdateEventAsync(eventTmp, ct);
 
-        return newBooking;
+            var newGuid = Guid.NewGuid();
+            var createdAt = DateTime.UtcNow;
+            var newBooking = new Booking(id: newGuid, 
+                eventId: eventId, 
+                status: BookingStatus.Pending, 
+                createdAt: createdAt);
+
+            var bookingForStore = newBooking.ToBookingEntity();
+
+            await _bookingRepository.InsertBookingAsync(bookingForStore, ct);
+
+            return newBooking;
+        }
+        finally
+        {
+            _bookingSemaphore.Release();
+        }
     }
 
-    public async Task<Booking> GetBookingByIdAsync(Guid bookingId)
+    public async Task<Booking> GetBookingByIdAsync(Guid bookingId, CancellationToken ct = default)
     {
-        var bookingEntity = await _bookingRepository.SelectBookingByIdAsync(bookingId);
+        var bookingEntity = await _bookingRepository.SelectBookingByIdAsync(bookingId, ct);
 
         var result = bookingEntity.ToBooking();
 
         return result;
+    }
+
+    public async Task<IReadOnlyList<Booking>> GetAllBookingByStatusAsync(BookingStatus status, CancellationToken ct = default)
+    {
+        var bookingEntityes = await _bookingRepository.SelectAllBookingByStatusAsync(status, ct);
+
+        var result = bookingEntityes
+            .Select(x => x.ToBooking())
+            .ToList();
+
+        return result;
+    }
+
+    public async Task UpdateBookingAsync(Guid id, Booking newBooking, CancellationToken ct = default)
+    {
+        var newBookingEntity = newBooking.ToBookingEntity();
+        await _bookingRepository.UpdateBookingAsync(id, newBookingEntity, ct);
     }
 }

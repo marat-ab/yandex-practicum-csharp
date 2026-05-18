@@ -15,11 +15,20 @@ public class EventRequestDto : IValidatableObject
     [Required(ErrorMessage = "Дата/время окончания события (EndAt) обязателено для заполнения")]
     public DateTime? EndAt { get; init; }
 
+    [Required(ErrorMessage = "Общее количество мест на событии (TotalSeats) обязателено для заполнения")]
+    public int TotalSeats { get; init; }
+
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
         if (EndAt < StartAt)
         {
             var result = new ValidationResult("EndAt должно быть позже StartAt.");
+            yield return result;
+        }
+
+        if(TotalSeats <= 0)
+        {
+            var result = new ValidationResult("TotalSeats должно быть больше нуля.");
             yield return result;
         }
     }
