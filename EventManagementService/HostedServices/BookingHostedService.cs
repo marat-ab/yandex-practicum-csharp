@@ -6,19 +6,19 @@ namespace EventManagementService.HostedServices;
 
 public class BookingHostedService : BackgroundService
 {
-    public readonly IBookingService _bookingService;
-    public readonly IEventService _eventService;
+    private readonly IServiceScopeFactory _scopeFactory;
     private readonly ILogger<BookingHostedService> _logger;
+
+    private IBookingService? _bookingService;
+    private IEventService? _eventService;
 
     private readonly SemaphoreSlim _processingSemaphore = new(1, 1);
 
     public BookingHostedService(
-        IBookingService bookingService,
-        IEventService eventService,
+        IServiceScopeFactory scopeFactory,
         ILogger<BookingHostedService> logger)
     {
-        _bookingService = bookingService;
-        _eventService = eventService;
+        _scopeFactory = scopeFactory;
         _logger = logger;
     }
 
@@ -29,6 +29,10 @@ public class BookingHostedService : BackgroundService
             // Try/catch для перехвата исключений, которые могут быть выброшены при выгрузке всех бронирований
             try
             {
+                using var scope = _scopeFactory.CreateScope();
+                _bookingService = scope.ServiceProvider.GetRequiredService<IBookingService>();
+                _eventService = scope.ServiceProvider.GetRequiredService<IEventService>();
+
                 // Получение списка бронирований в статусе Pending
                 var pendingBookings = await _bookingService.GetAllBookingByStatusAsync(BookingStatus.Pending, stoppingToken);
 
@@ -48,6 +52,9 @@ public class BookingHostedService : BackgroundService
 
     private async Task ProcessBookingAsync(Booking booking, CancellationToken stoppingToken)
     {
+        if (_bookingService is null || _eventService is null)
+            throw new Exception("Booking and event services are not available");
+
         await Task.Delay(TimeSpan.FromSeconds(2), stoppingToken);
 
         try
