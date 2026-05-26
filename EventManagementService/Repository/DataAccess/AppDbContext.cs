@@ -1,7 +1,7 @@
 ﻿using EventManagementService.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace EventManagementService.Repository.DbContexts;
+namespace EventManagementService.Repository.DataAccess;
 
 public class AppDbContext : DbContext
 {
