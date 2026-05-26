@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace EventManagementService.Repository.DataAccess.Configurations;
+namespace EventManagementService.DataAccess.Configurations;
 
 public class BookingConfiguration : IEntityTypeConfiguration<Booking>
 {

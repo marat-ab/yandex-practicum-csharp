@@ -1,6 +1,6 @@
-﻿using EventManagementService.Exceptions;
+﻿using EventManagementService.DataAccess;
+using EventManagementService.Exceptions;
 using EventManagementService.Models;
-using EventManagementService.Repository.DataAccess;
 using Microsoft.EntityFrameworkCore;
 
 namespace EventManagementService.Services;

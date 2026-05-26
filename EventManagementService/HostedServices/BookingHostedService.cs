@@ -1,6 +1,5 @@
 ﻿using EventManagementService.Middlewares;
 using EventManagementService.Models;
-using EventManagementService.Repository;
 using EventManagementService.Services;
 
 namespace EventManagementService.HostedServices;

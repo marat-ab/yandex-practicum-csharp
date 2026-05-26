@@ -1,8 +1,7 @@
-﻿using EventManagementService.Exceptions;
+﻿using EventManagementService.DataAccess;
+using EventManagementService.Exceptions;
 using EventManagementService.Models;
 using EventManagementService.Models.Extensions;
-using EventManagementService.Repository;
-using EventManagementService.Repository.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using System.Net.NetworkInformation;
 
