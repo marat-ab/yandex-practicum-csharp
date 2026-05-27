@@ -1,6 +1,8 @@
 ﻿using EventManagementService.Exceptions;
 using EventManagementService.Models;
+using EventManagementService.Services;
 using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -15,6 +17,8 @@ public partial class EventServiceTests
     public async Task CreateEvent()
     {
         // Arrange
+        using var scope = _serviceProvider.CreateScope();
+        var eventService = scope.ServiceProvider.GetRequiredService<IEventService>();
 
         var eventId = Guid.NewGuid();
 
@@ -25,11 +29,11 @@ public partial class EventServiceTests
             startAt: new DateTime(2026, 01, 01),
             endAt: new DateTime(2026, 01, 03));
 
-        var expectedEvent = eventForAdd;
+        var expectedEvent = eventForAdd;        
 
         // Act
-        await _eventService.AddEventAsync(eventForAdd);
-        var eventFromStore = await _eventService.GetEventByIdAsync(eventId);
+        await eventService.AddEventAsync(eventForAdd);
+        var eventFromStore = await eventService.GetEventByIdAsync(eventId);
 
         // Assert
         eventFromStore.Should().BeEquivalentTo(expectedEvent);
@@ -41,10 +45,13 @@ public partial class EventServiceTests
     public async Task GetAllEvents()
     {
         // Arrange
-        var expectedEvents = _events;
+        using var scope = _serviceProvider.CreateScope();
+        var eventService = scope.ServiceProvider.GetRequiredService<IEventService>();
+
+        var expectedEvents = _events;        
 
         // Act
-        var events = (await _eventService.GetAllEventsAsync()).Events;
+        var events = (await eventService.GetAllEventsAsync()).Events;
 
         // Assert
         events.Should().BeEquivalentTo(expectedEvents);
@@ -56,14 +63,17 @@ public partial class EventServiceTests
     public async Task GetEventById()
     {
         // Arrange
+        using var scope = _serviceProvider.CreateScope();
+        var eventService = scope.ServiceProvider.GetRequiredService<IEventService>();
+
         var eventId = _events[0].Id;
-        var expectedEvent = _events[0];
+        var expectedEvent = _events[0];        
 
         // Act
-        var eventWithSpecifiedId = await _eventService.GetEventByIdAsync(eventId);
+        var eventWithSpecifiedId = await eventService.GetEventByIdAsync(eventId);
 
         // Assert
-        eventWithSpecifiedId.Should().Be(expectedEvent);
+        eventWithSpecifiedId.Should().BeEquivalentTo(expectedEvent);
     }
 
     // Обновление существующего события
@@ -72,20 +82,23 @@ public partial class EventServiceTests
     public async Task GetUpdateEvent()
     {
         // Arrange
+        using var scope = _serviceProvider.CreateScope();
+        var eventService = scope.ServiceProvider.GetRequiredService<IEventService>();
+
         var eventId = _events[0].Id;
         var eventForUpdate = new Event(id: eventId,
                 title: "event 1 [updated]",
                 description: "Description of event 1 [updated]",
                 totalSeats: 1,
                 startAt: new DateTime(2026, 05, 01),
-                endAt: new DateTime(2026, 05, 03));
+                endAt: new DateTime(2026, 05, 03));        
 
         // Act
-        await _eventService.UpdateEventAsync(eventForUpdate);
-        var eventFromService = await _eventService.GetEventByIdAsync(eventId);
+        await eventService.UpdateEventAsync(eventForUpdate);
+        var eventFromService = await eventService.GetEventByIdAsync(eventId);
 
         // Assert
-        eventFromService.Should().Be(eventForUpdate);
+        eventFromService.Should().BeEquivalentTo(eventForUpdate);
     }
 
     // Удаление существующего события
@@ -94,13 +107,16 @@ public partial class EventServiceTests
     public async Task RemoveEvent()
     {
         // Arrange
+        using var scope = _serviceProvider.CreateScope();
+        var eventService = scope.ServiceProvider.GetRequiredService<IEventService>();
+
         var eventId = _events[0].Id;
-        var eventForDelete = await _eventService.GetEventByIdAsync(eventId);
+        var eventForDelete = await eventService.GetEventByIdAsync(eventId);        
 
         // Act
-        await _eventService.RemoveEventAsync(eventId);
+        await eventService.RemoveEventAsync(eventId);
 
-        Func<Task> act = async () => await _eventService.GetEventByIdAsync(eventId);
+        Func<Task> act = async () => await eventService.GetEventByIdAsync(eventId);
 
         // Assert
         await act.Should().ThrowAsync<EventNotFoundException>()
@@ -113,11 +129,14 @@ public partial class EventServiceTests
     public async Task GetEventsWithSpecifiedTitle_OneEvent()
     {
         // Arrange        
+        using var scope = _serviceProvider.CreateScope();
+        var eventService = scope.ServiceProvider.GetRequiredService<IEventService>();
+
         var title = "event 1";
-        List<Event> expectedEvents = [_events[0]];
+        List<Event> expectedEvents = [_events[0]];        
 
         // Act
-        var events = (await _eventService.GetAllEventsAsync(title: title)).Events;
+        var events = (await eventService.GetAllEventsAsync(title: title)).Events;
 
         // Assert
         events.Should().BeEquivalentTo(expectedEvents);
@@ -128,11 +147,14 @@ public partial class EventServiceTests
     public async Task GetEventsWithSpecifiedTitle_ManyEvents()
     {
         // Arrange
+        using var scope = _serviceProvider.CreateScope();
+        var eventService = scope.ServiceProvider.GetRequiredService<IEventService>();
+
         var title = "event";
-        List<Event> expectedEvents = _events;
+        List<Event> expectedEvents = _events;        
 
         // Act
-        var events = (await _eventService.GetAllEventsAsync(title: title)).Events;
+        var events = (await eventService.GetAllEventsAsync(title: title)).Events;
 
         // Assert
         events.Should().BeEquivalentTo(expectedEvents);
@@ -144,11 +166,14 @@ public partial class EventServiceTests
     public async Task GetEventsWithSpecifiedStartDate()
     {
         // Arrange
+        using var scope = _serviceProvider.CreateScope();
+        var eventService = scope.ServiceProvider.GetRequiredService<IEventService>();
+
         var startDate = new DateTime(2026, 02, 01);
-        List<Event> expectedEvents = [_events[1], _events[2]];
+        List<Event> expectedEvents = [_events[1], _events[2]];        
 
         // Act
-        var events = (await _eventService.GetAllEventsAsync(from: startDate)).Events;
+        var events = (await eventService.GetAllEventsAsync(from: startDate)).Events;
 
         // Assert
         events.Should().BeEquivalentTo(expectedEvents);
@@ -159,11 +184,14 @@ public partial class EventServiceTests
     public async Task GetEventsWithSpecifiedEndDate()
     {
         // Arrange
+        using var scope = _serviceProvider.CreateScope();
+        var eventService = scope.ServiceProvider.GetRequiredService<IEventService>();
+
         var endDate = new DateTime(2026, 02, 05);
         List<Event> expectedEvents = [_events[0], _events[1]];
-
+        
         // Act
-        var events = (await _eventService.GetAllEventsAsync(to: endDate)).Events;
+        var events = (await eventService.GetAllEventsAsync(to: endDate)).Events;
 
         // Assert
         events.Should().BeEquivalentTo(expectedEvents);
@@ -174,12 +202,15 @@ public partial class EventServiceTests
     public async Task GetEventsWithSpecifiedStartAndEndDate()
     {
         // Arrange
+        using var scope = _serviceProvider.CreateScope();
+        var eventService = scope.ServiceProvider.GetRequiredService<IEventService>();
+
         var startDate = new DateTime(2026, 02, 01);
         var endDate = new DateTime(2026, 02, 20);
         List<Event> expectedEvents = [_events[1]];
-
+        
         // Act
-        var events = (await _eventService.GetAllEventsAsync(from: startDate, to: endDate)).Events;
+        var events = (await eventService.GetAllEventsAsync(from: startDate, to: endDate)).Events;
 
         // Assert
         events.Should().BeEquivalentTo(expectedEvents);
@@ -192,16 +223,19 @@ public partial class EventServiceTests
     public async Task GetEventsWithPaging(int pageNumber, int pageSize, List<Event> expectedEvents)
     {
         // Arrange
+        using var scope = _serviceProvider.CreateScope();
+        var eventService = scope.ServiceProvider.GetRequiredService<IEventService>();
+
         var expectedPaginatedResult = new PaginatedResult()
         {
             TotalEventsCount = _events.Count,
             Events = expectedEvents,
             PageNumber = pageNumber,
             EventsCountOnPage = expectedEvents.Count
-        };
+        };              
 
         // Act
-        var result = await _eventService.GetAllEventsAsync(pageNumber: pageNumber, pageSize: pageSize);
+        var result = await eventService.GetAllEventsAsync(pageNumber: pageNumber, pageSize: pageSize);
 
         // Assert
         result.Should().BeEquivalentTo(expectedPaginatedResult);
@@ -213,13 +247,16 @@ public partial class EventServiceTests
     public async Task GetEventsWithSpecifiedFilters()
     {
         // Arrange
+        using var scope = _serviceProvider.CreateScope();
+        var eventService = scope.ServiceProvider.GetRequiredService<IEventService>();
+
         var title = "event";
         var startDate = new DateTime(2026, 02, 01);
         var endDate = new DateTime(2026, 02, 20);
-        List<Event> expectedEvents = [_events[1]];
+        List<Event> expectedEvents = [_events[1]];        
 
         // Act
-        var events = (await _eventService.GetAllEventsAsync(title: title, from: startDate, to: endDate)).Events;
+        var events = (await eventService.GetAllEventsAsync(title: title, from: startDate, to: endDate)).Events;
 
         // Assert
         events.Should().BeEquivalentTo(expectedEvents);

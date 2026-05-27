@@ -1,6 +1,8 @@
 ﻿using EventManagementService.Exceptions;
 using EventManagementService.Models;
+using EventManagementService.Services;
 using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -15,10 +17,13 @@ public partial class EventServiceTests
     public async Task GetEventByNonExistentId()
     {
         // Arrange
+        using var scope = _serviceProvider.CreateScope();
+        var eventService = scope.ServiceProvider.GetRequiredService<IEventService>();
+
         var eventId = Guid.NewGuid();
 
         // Act
-        Func<Task> act = async () => await _eventService.GetEventByIdAsync(eventId);
+        Func<Task> act = async () => await eventService.GetEventByIdAsync(eventId);
 
         // Assert
         await act.Should().ThrowAsync<EventNotFoundException>()
@@ -31,6 +36,9 @@ public partial class EventServiceTests
     public async Task GetUpdateEventWithNonExistentId()
     {
         // Arrange
+        using var scope = _serviceProvider.CreateScope();
+        var eventService = scope.ServiceProvider.GetRequiredService<IEventService>();
+
         var eventId = Guid.NewGuid();
         var eventForUpdate = new Event(id: eventId,
                 title: "event 1 [updated]",
@@ -40,7 +48,7 @@ public partial class EventServiceTests
                 endAt: new DateTime(2026, 05, 03));
 
         // Act
-        Func<Task> act = async () => await _eventService.UpdateEventAsync(eventForUpdate);
+        Func<Task> act = async () => await eventService.UpdateEventAsync(eventForUpdate);
 
         // Assert
         await act.Should().ThrowAsync<EventNotFoundException>()
@@ -55,6 +63,9 @@ public partial class EventServiceTests
     public async Task AddEventWithBadData(string title, DateTime startAt, DateTime endAt, string errorMsg)
     {
         // Arrange
+        using var scope = _serviceProvider.CreateScope();
+        var eventService = scope.ServiceProvider.GetRequiredService<IEventService>();
+
         var eventForAdd = new Event(id: Guid.Empty,
                 title: title,
                 description: "Description",
@@ -63,7 +74,7 @@ public partial class EventServiceTests
                 endAt: endAt);
 
         // Act
-        Func<Task> act = async () => await _eventService.AddEventAsync(eventForAdd);
+        Func<Task> act = async () => await eventService.AddEventAsync(eventForAdd);
 
         // Assert
         await act.Should().ThrowAsync<ArgumentException>()
