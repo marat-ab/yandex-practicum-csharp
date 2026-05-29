@@ -18,10 +18,9 @@ public class BookingConfiguration : IEntityTypeConfiguration<Booking>
            .IsRequired();
 
         builder.Property(b => b.Status)
-           .IsRequired();
-        builder.Property(x => x.Status)
-            .HasConversion<string>();
-
+           .IsRequired()
+           .HasConversion<string>();
+        
         builder.Property(b => b.CreatedAt)
            .IsRequired();
 
