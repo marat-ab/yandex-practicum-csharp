@@ -224,8 +224,10 @@ public partial class BookingServiceTests
         await Task.WhenAll(tasks);
                 
         var bookings = await bookingService.GetAllBookingByStatusAsync(BookingStatus.Pending);
+        var ids = bookings.Select(x => x.Id).ToHashSet();
         
         // Assert
         bookings.Count.Should().Be(countOfExpectedBookings);
+        ids.Count.Should().Be(countOfExpectedBookings);
     }
 }
