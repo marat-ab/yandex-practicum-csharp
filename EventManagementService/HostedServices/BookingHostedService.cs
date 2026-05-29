@@ -9,6 +9,9 @@ public class BookingHostedService : BackgroundService
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly ILogger<BookingHostedService> _logger;
 
+    private readonly TimeSpan _bookingCheckCycleDelay = TimeSpan.FromSeconds(1);
+    private readonly TimeSpan _bookingProcessingEmulationTime= TimeSpan.FromSeconds(2);
+
     private readonly SemaphoreSlim _processingSemaphore = new(1, 1);
 
     public BookingHostedService(
@@ -49,7 +52,7 @@ public class BookingHostedService : BackgroundService
                 _logger.LogError(exception: ex, message: ex.Message);
             }
 
-            await Task.Delay(TimeSpan.FromSeconds(1), stoppingToken);
+            await Task.Delay(_bookingCheckCycleDelay, stoppingToken);
         }
     }
 
@@ -60,7 +63,7 @@ public class BookingHostedService : BackgroundService
         var bookingService = scope.ServiceProvider.GetRequiredService<IBookingService>();
         var eventService = scope.ServiceProvider.GetRequiredService<IEventService>();
 
-        await Task.Delay(TimeSpan.FromSeconds(2), stoppingToken);
+        await Task.Delay(_bookingProcessingEmulationTime, stoppingToken);
 
         try
         {
