@@ -134,24 +134,29 @@ public partial class BookingServiceTests
     public async Task OverbookingProtection()
     {
         // Arrange
-        using var scope = _serviceProvider.CreateScope();
-        var eventService = scope.ServiceProvider.GetRequiredService<IEventService>();
-        var bookingService = scope.ServiceProvider.GetRequiredService<IBookingService>();
-
         var countOfSeats = 5;
         var eventId = _events[0].Id;
         _events[0].TotalSeats = countOfSeats;
         _events[0].AvailableSeats = countOfSeats;
 
-        await eventService.UpdateEventAsync(_events[0]);
+        using (var scopeArrange = _serviceProvider.CreateScope())
+        {
+            var eventServiceArrange = scopeArrange.ServiceProvider.GetRequiredService<IEventService>();
+            await eventServiceArrange.UpdateEventAsync(_events[0]);
+        }            
 
         var countOfConcurrencyRequests = 20;
         var expectedCountWithExceptionNotAvailable = 15;
         var expectedAvailableSeats = 0;
 
-        var tasks = new List<Task>(countOfConcurrencyRequests);
-        for (int i = 0; i < countOfConcurrencyRequests; i++)
-            tasks.Add(bookingService.CreateBookingAsync(eventId));
+        var tasks = Enumerable.Range(0, countOfConcurrencyRequests)
+            .Select(_ => Task.Run(async () =>
+            {
+                using var scope = _serviceProvider.CreateScope();
+                var bookingService = scope.ServiceProvider.GetRequiredService<IBookingService>();
+                await bookingService.CreateBookingAsync(eventId);
+            }))
+            .ToList();        
 
         // Act
         var resultTask = Task.WhenAll(tasks);
@@ -168,6 +173,10 @@ public partial class BookingServiceTests
             if (task.IsFaulted && task.Exception.InnerException is NoAvailableSeatsException)
                 bookingsWithExceptionNotAvailable++;
         }
+
+        using var scopeAct = _serviceProvider.CreateScope();
+        var eventService = scopeAct.ServiceProvider.GetRequiredService<IEventService>();
+        var bookingService = scopeAct.ServiceProvider.GetRequiredService<IBookingService>();
 
         var bookings = await bookingService.GetAllBookingByStatusAsync(BookingStatus.Pending);
         var eventValue = await eventService.GetEventByIdAsync(eventId);
