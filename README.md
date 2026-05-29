@@ -47,11 +47,29 @@
 
 # Использованные примитивы синхронизации
 
-Для синхронизации доступа к коллекциям, с которыми работают `EventService` и `BookingRepository` используется блокировка `lock`.
+Для синхронизации доступа к коллекциям, с которыми работают `EventService` и `BookingService`, используется `SemaphoreSlim`.
 
-В `BookingService` в методе `CreateBookingAsync` используется `SemaphoreSlim`, а не `lock`, т.к. в нем используются асинхронные методы сервиса `EventService` и репозитория `BookingRepository`.
+# Требование PostgreSQL для запуска приложения
 
-В `BookingHostedService` в методе обработки броней `ProcessBookingAsync` также используется `SemaphoreSlim`, т.к. в нем используются асинхронные методы сервиса `EventService` и `BookingService`.
+В проекте используется база данных PostgreSQL. Для описание контейнера с БД представлено в `docker-compose.yml`. Для запуска БД в корне репозитория выполните команду: `docker compose up -d`, для остановки: `docker compose down`.
+
+Для подключения к БД используется строка подключения из файла `appsettings.json` раздел `ConnectionStrings`:
+``` json
+"ConnectionStrings": {
+  "Default": "Host=localhost;Port=5432;Database=eventapi;Username=postgres;Password=postgres"
+},
+```
+Параметры подключения:
+
+* Host - хост, на котором развернута БД;
+* Port - порт, через который можно подключиться к БД;
+* Database - имя БД;
+* Username - имя пользователя, под которым будет осуществляться подключение к БД;
+* Password - пароль пользователя.
+
+Схема БД создаётся автоматически при запуске через `EnsureCreated`.
+
+В тестах используется InMemory-вариант БД.
 
 # HTTP API
 
