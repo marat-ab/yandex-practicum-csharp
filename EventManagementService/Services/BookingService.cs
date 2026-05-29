@@ -11,7 +11,7 @@ public class BookingService : IBookingService
 {
     private readonly AppDbContext _dbc;
 
-    private readonly SemaphoreSlim _bookingSemaphore = new(1, 1);
+    private static readonly SemaphoreSlim _bookingSemaphore = new(1, 1);
 
     public BookingService(AppDbContext dbc)
     {
