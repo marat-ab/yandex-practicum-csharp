@@ -1,5 +1,6 @@
 ﻿using EventManagementService.DataAccess;
 using EventManagementService.Models;
+using EventManagementService.Repositories;
 using EventManagementService.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -41,6 +42,7 @@ public partial class EventServiceTests : IAsyncLifetime
         services.AddDbContext<AppDbContext>(options =>
             options.UseInMemoryDatabase(dbName));
 
+        services.AddScoped<IEventRepository, EventRepository>();
         services.AddScoped<IEventService, EventService>();
 
         _serviceProvider = services.BuildServiceProvider();
