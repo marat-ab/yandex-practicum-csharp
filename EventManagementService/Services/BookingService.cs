@@ -2,6 +2,7 @@
 using EventManagementService.Exceptions;
 using EventManagementService.Models;
 using EventManagementService.Models.Extensions;
+using EventManagementService.Repositories;
 using Microsoft.EntityFrameworkCore;
 using System.Net.NetworkInformation;
 
@@ -9,13 +10,17 @@ namespace EventManagementService.Services;
 
 public class BookingService : IBookingService
 {
-    private readonly AppDbContext _dbc;
+    private readonly IBookingRepository _bookingRepository;
+    private readonly IEventService _eventService;
 
     private static readonly SemaphoreSlim _bookingSemaphore = new(1, 1);
 
-    public BookingService(AppDbContext dbc)
+    public BookingService(
+        IBookingRepository bookingRepository,
+        IEventService eventService)
     {
-        _dbc = dbc;
+        _bookingRepository = bookingRepository;
+        _eventService = eventService;
     }
 
     public async Task<Booking> CreateBookingAsync(Guid eventId, CancellationToken ct = default)
@@ -24,9 +29,7 @@ public class BookingService : IBookingService
         {
             await _bookingSemaphore.WaitAsync(ct);
 
-            var eventTmp = _dbc.Events
-                .Where(x => x.Id == eventId)
-                .FirstOrDefault();
+            var eventTmp = await _eventService.FindEventByIdAsync(eventId, ct);
 
             if (eventTmp is null)
                 throw new EventNotFoundException(eventId, $"Absent event with id: {eventId}");
@@ -34,7 +37,9 @@ public class BookingService : IBookingService
             var isReservOk = eventTmp.TryReserveSeats();
             if (isReservOk is false)
                 throw new NoAvailableSeatsException(eventId, $"No available seats for event with id {eventId}");
-                        
+
+            await _eventService.UpdateEventAsync(eventTmp, ct);
+            
             var newGuid = Guid.NewGuid();
             var createdAt = DateTime.UtcNow;
             var newBooking = new Booking(id: newGuid, 
@@ -42,9 +47,7 @@ public class BookingService : IBookingService
                 status: BookingStatus.Pending, 
                 createdAt: createdAt);
 
-            await _dbc.Bookings.AddAsync(newBooking, ct);
-
-            await _dbc.SaveChangesAsync(ct);
+            await _bookingRepository.InsertBookingAsync(newBooking, ct);
 
             return newBooking;
         }
@@ -56,75 +59,20 @@ public class BookingService : IBookingService
 
     public async Task<Booking> GetBookingByIdAsync(Guid bookingId, CancellationToken ct = default)
     {
-        try
-        {
-            await _bookingSemaphore.WaitAsync(ct);
+        var result = await _bookingRepository.SelectBookingByIdAsync(bookingId, ct);
 
-            var result = await _dbc.Bookings
-                .Where(x => x.Id == bookingId)
-                .FirstOrDefaultAsync(ct);
-
-            if (result != null)
-            {
-                return result;
-            }
-            else
-            {
-                throw new BookingNotFoundException(bookingId,
-                    $"Can't get booking with id = {bookingId}. It is absent");
-            }
-        }
-        finally
-        {
-            _bookingSemaphore.Release();
-        }
+        return result;
     }
 
     public async Task<IReadOnlyList<Booking>> GetAllBookingByStatusAsync(BookingStatus status, CancellationToken ct = default)
     {
-        try
-        {
-            await _bookingSemaphore.WaitAsync(ct);
+        var result = await _bookingRepository.SelectAllBookingByStatusAsync(status, ct);
 
-            var result = await _dbc.Bookings
-                .Where(x => x.Status == status)
-                .ToListAsync(ct);
-
-            return result;
-        }
-        finally
-        {
-            _bookingSemaphore.Release();
-        }
+        return result;
     }
 
     public async Task UpdateBookingAsync(Guid id, Booking newBooking, CancellationToken ct = default)
     {
-        try
-        {
-            await _bookingSemaphore.WaitAsync(ct);
-
-            var bookingForUpdate = await _dbc.Bookings
-                .Where(x => x.Id == id)
-                .FirstOrDefaultAsync(ct);
-
-            if (bookingForUpdate is null)
-            {
-                throw new BookingNotFoundException(id,
-                   $"Can't get booking with id = {id}. It is absent");
-            }
-
-            bookingForUpdate.EventId = newBooking.EventId;
-            bookingForUpdate.Status = newBooking.Status;
-            bookingForUpdate.CreatedAt = newBooking.CreatedAt;
-            bookingForUpdate.ProcessedAt = newBooking.ProcessedAt;
-
-
-            await _dbc.SaveChangesAsync(ct);
-        }
-        finally
-        {
-            _bookingSemaphore.Release();
-        }
+        await _bookingRepository.UpdateBookingAsync(id, newBooking, ct);
     }
 }
