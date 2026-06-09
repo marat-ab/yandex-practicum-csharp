@@ -1,6 +1,8 @@
 ﻿using EventManagementService.Exceptions;
 using EventManagementService.Models;
+using EventManagementService.Services;
 using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -15,10 +17,14 @@ public partial class BookingServiceTests
     public async Task CreateBookingForNotExistingEvent()
     {
         // Arrange
+        using var scope = _serviceProvider.CreateScope();
+        var eventService = scope.ServiceProvider.GetRequiredService<IEventService>();
+        var bookingService = scope.ServiceProvider.GetRequiredService<IBookingService>();
+
         var eventId = Guid.NewGuid();
 
         // Act
-        Func<Task> act = async () => await _bookingService.CreateBookingAsync(eventId);
+        Func<Task> act = async () => await bookingService.CreateBookingAsync(eventId);
 
         // Assert
         await act.Should().ThrowAsync<EventNotFoundException>()
@@ -31,22 +37,30 @@ public partial class BookingServiceTests
     public async Task CreateMultipleBookingForExistingEventMoreThenAvailableSeats()
     {
         // Arrange
+        using var scope = _serviceProvider.CreateScope();
+        var eventService = scope.ServiceProvider.GetRequiredService<IEventService>();
+        var bookingService = scope.ServiceProvider.GetRequiredService<IBookingService>();
+
         var eventId = _events[0].Id;
         var countOfBookings = 10;
         _events[0].TotalSeats = countOfBookings - 1;
         _events[0].AvailableSeats = countOfBookings - 1;
 
+        await eventService.UpdateEventAsync(_events[0]);
+
         // Act
         Func<Task>? act = null;
         for (int i = 0; i < countOfBookings; i++)
         {
-            if (_events[0].AvailableSeats == 0)
+            var eventFromDb = await eventService.GetEventByIdAsync(eventId);
+
+            if (eventFromDb.AvailableSeats == 0)
             {
-                act = async () => await _bookingService.CreateBookingAsync(eventId);
+                act = async () => await bookingService.CreateBookingAsync(eventId);
                 break;
             }
 
-            await _bookingService.CreateBookingAsync(eventId);
+            await bookingService.CreateBookingAsync(eventId);
         }
 
         // Assert
@@ -60,12 +74,16 @@ public partial class BookingServiceTests
     public async Task CreateBookingForDeletedEvent()
     {
         // Arrange
+        using var scope = _serviceProvider.CreateScope();
+        var eventService = scope.ServiceProvider.GetRequiredService<IEventService>();
+        var bookingService = scope.ServiceProvider.GetRequiredService<IBookingService>();
+
         var eventId = _events[0].Id;
 
         // Act
-        await _eventService.RemoveEventAsync(eventId);
+        await eventService.RemoveEventAsync(eventId);
 
-        Func<Task> act = async () => await _bookingService.CreateBookingAsync(eventId);
+        Func<Task> act = async () => await bookingService.CreateBookingAsync(eventId);
 
         // Assert
         await act.Should().ThrowAsync<EventNotFoundException>()
@@ -78,10 +96,14 @@ public partial class BookingServiceTests
     public async Task GetBookingWithNotExistingId()
     {
         // Arrange
+        using var scope = _serviceProvider.CreateScope();
+        var eventService = scope.ServiceProvider.GetRequiredService<IEventService>();
+        var bookingService = scope.ServiceProvider.GetRequiredService<IBookingService>();
+
         var bookingId = Guid.NewGuid();
 
         // Act
-        Func<Task> act = async () => await _bookingService.GetBookingByIdAsync(bookingId);
+        Func<Task> act = async () => await bookingService.GetBookingByIdAsync(bookingId);
 
         // Assert
         await act.Should().ThrowAsync<BookingNotFoundException>()

@@ -1,14 +1,39 @@
 ﻿namespace EventManagementService.Models;
 
-public sealed class Event(Guid id, string title, string description, int totalSeats, DateTime startAt, DateTime endAt)
+public sealed class Event
 {
-    public Guid Id { get; set; } = id;
-    public string Title { get; set; } = title;
-    public string Description { get; set; } = description;
-    public int TotalSeats { get; set; } = totalSeats;
-    public int AvailableSeats { get; set; } = totalSeats;
-    public DateTime StartAt { get; set; } = startAt;
-    public DateTime EndAt { get; set; } = endAt;
+    private Event() 
+    {
+        Title = string.Empty;
+        Description = string.Empty;
+    }
+
+    public Event(
+        Guid id, 
+        string title, 
+        string description, 
+        int totalSeats, 
+        DateTime startAt, 
+        DateTime endAt)
+    {
+        Id = id;
+        Title = title;
+        Description = description;
+        TotalSeats = totalSeats;
+        AvailableSeats = totalSeats;
+        StartAt = startAt;
+        EndAt = endAt;
+    }
+
+    public Guid Id { get; set; }
+    public string Title { get; set; }
+    public string Description { get; set; }
+    public int TotalSeats { get; set; }
+    public int AvailableSeats { get; set; }
+    public DateTime StartAt { get; set; }
+    public DateTime EndAt { get; set; }
+
+    public List<Booking> Bookings { get; set; }
 
     public bool TryReserveSeats(int count = 1)
     {

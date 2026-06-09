@@ -1,23 +1,34 @@
-﻿using EventManagementService.HostedServices;
+﻿using EventManagementService.DataAccess;
+using EventManagementService.HostedServices;
 using EventManagementService.Middlewares;
-using EventManagementService.Repository;
 using EventManagementService.Services;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers();
 
-builder.Services.AddSingleton<IBookingRepository, BookingRepository>();
-
-builder.Services.AddSingleton<IEventService, EventService>();
-builder.Services.AddSingleton<IBookingService, BookingService>();
+builder.Services.AddScoped<IEventService, EventService>();
+builder.Services.AddScoped<IBookingService, BookingService>();
 
 builder.Services.AddHostedService<BookingHostedService>();
+
+var connectionString = builder.Configuration.GetConnectionString("Default")
+    ?? throw new InvalidOperationException("Connection string 'Default' not found.");
+
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseNpgsql(connectionString));
 
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    db.Database.EnsureCreated();
+}
 
 // Configure the HTTP request pipeline.
 app.UseMiddleware<CustomExceptionHandlingMiddleware>();

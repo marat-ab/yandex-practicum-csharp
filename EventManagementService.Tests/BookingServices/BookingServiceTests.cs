@@ -1,16 +1,14 @@
-﻿using EventManagementService.Models;
-using EventManagementService.Repository;
+﻿using EventManagementService.DataAccess;
+using EventManagementService.Models;
 using EventManagementService.Services;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace EventManagementService.Tests.BookingServices;
 
 public partial class BookingServiceTests : IAsyncLifetime
 {
-    private readonly IBookingRepository _bookingRepository;
-    private readonly IEventService _eventService;
-    private readonly IBookingService _bookingService;
-
     private static readonly List<Event> _events = [
             new Event(id: Guid.NewGuid(),
                 title: "event 1",
@@ -31,20 +29,33 @@ public partial class BookingServiceTests : IAsyncLifetime
                 startAt: new DateTime(2026, 03, 07),
                 endAt: new DateTime(2026, 03, 10))];
 
+    private readonly ServiceProvider _serviceProvider;
+
     public BookingServiceTests()
     {
-        _bookingRepository = new BookingRepository();
-        _eventService = new EventService();
-        _bookingService = new BookingService(_bookingRepository, _eventService);
+        var dbName = Guid.NewGuid().ToString();
+
+        var services = new ServiceCollection();
+
+        services.AddDbContext<AppDbContext>(options =>
+            options.UseInMemoryDatabase(dbName));
+
+        services.AddScoped<IEventService, EventService>();
+        services.AddScoped<IBookingService, BookingService>();
+
+        _serviceProvider = services.BuildServiceProvider();
     }
 
    
     // IAsyncLifetime
     public async Task InitializeAsync()
     {
+        using var scope = _serviceProvider.CreateScope();
+        var eventService = scope.ServiceProvider.GetRequiredService<IEventService>();
+
         for (int i = 0; i < _events.Count; i++)
         {
-            var addedEvent = await _eventService.AddEventAsync(_events[i]);
+            var addedEvent = await eventService.AddEventAsync(_events[i]);
             _events[i] = addedEvent;
         }
     }
