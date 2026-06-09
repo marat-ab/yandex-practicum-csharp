@@ -6,13 +6,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EventManagementService.Repositories;
 
-public class EventsRepository : IEventsRepository
+public class EventRepository : IEventRepository
 {
     private readonly AppDbContext _dbc;
 
     private readonly SemaphoreSlim _eventSemaphore = new(1, 1);
 
-    public EventsRepository(AppDbContext dbc)
+    public EventRepository(AppDbContext dbc)
     {
         _dbc = dbc;
     }

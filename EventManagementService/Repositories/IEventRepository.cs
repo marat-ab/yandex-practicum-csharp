@@ -2,7 +2,7 @@
 
 namespace EventManagementService.Repositories;
 
-public interface IEventsRepository
+public interface IEventRepository
 {
     Task<PaginatedResult> SelectAllEventsAsync(
         string? title = null,
