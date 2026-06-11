@@ -33,7 +33,7 @@ public class EventRepository : IEventRepository
             var filtered = _dbc.Events.Select(x => x);
 
             if (title != null)
-                filtered = filtered.Where(x => x.Title.Contains(title, StringComparison.CurrentCultureIgnoreCase));
+                filtered = filtered.Where(x => x.Title.ToLower().Contains(title.ToLower()));
 
             if (from != null)
                 filtered = filtered.Where(x => x.StartAt >= from.Value);
