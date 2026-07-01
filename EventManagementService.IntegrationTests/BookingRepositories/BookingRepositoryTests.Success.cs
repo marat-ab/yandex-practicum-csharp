@@ -1,16 +1,7 @@
 ﻿using EventManagementService.Domain.Models;
-using EventManagementService.Exceptions;
-using EventManagementService.Models;
-using EventManagementService.Models.Extensions;
-using EventManagementService.Repositories;
-using EventManagementService.Services;
+using EventManagementService.Infrastructure.Repositories;
 using FluentAssertions;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace EventManagementService.IntegrationTests.BookingRepositories;
 

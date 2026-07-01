@@ -1,15 +1,8 @@
-﻿using Docker.DotNet.Models;
-using EventManagementService.Domain.Exceptions;
+﻿using EventManagementService.Domain.Exceptions;
 using EventManagementService.Domain.Models;
-using EventManagementService.Models;
-using EventManagementService.Repositories;
-using EventManagementService.Services;
+using EventManagementService.Infrastructure.Repositories;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace EventManagementService.IntegrationTests.EventRepositories;
 
@@ -230,7 +223,7 @@ public partial class EventRepositoryTests
 
         // Arrange
         await using var context = CreateContext();
-        
+
         foreach (var eventExample in _events)
             context.Events.Add(eventExample);
 
@@ -350,7 +343,7 @@ public partial class EventRepositoryTests
             context.Events.Add(eventExample);
 
         await context.SaveChangesAsync();
-                
+
         var title = "event";
         var startDate = new DateTime(2026, 02, 01, 0, 0, 0, DateTimeKind.Utc);
         var endDate = new DateTime(2026, 02, 20, 0, 0, 0, DateTimeKind.Utc);
