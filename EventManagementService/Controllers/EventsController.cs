@@ -1,7 +1,7 @@
-﻿using EventManagementService.Exceptions;
-using EventManagementService.Models.Dto;
+﻿using EventManagementService.Application.Models.Dto;
+using EventManagementService.Application.Models.Extensions;
+using EventManagementService.Application.Services;
 using EventManagementService.Models.Extensions;
-using EventManagementService.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EventManagementService.Controllers;
@@ -14,7 +14,7 @@ public class EventsController : ControllerBase
     private readonly IBookingService _bookingService;
 
     public EventsController(
-        IEventService eventService, 
+        IEventService eventService,
         IBookingService bookingService)
     {
         _eventService = eventService;
@@ -31,7 +31,7 @@ public class EventsController : ControllerBase
         [FromQuery] int pageSize = 10)
     {
         var result = (await _eventService.GetAllEventsAsync(title, from, to, page, pageSize))
-            .ToPaginatedResponseDto();            
+            .ToPaginatedResponseDto();
 
         return Ok(result);
     }
