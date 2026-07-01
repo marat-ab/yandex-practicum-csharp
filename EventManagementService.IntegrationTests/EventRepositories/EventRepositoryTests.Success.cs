@@ -1,5 +1,6 @@
 ﻿using Docker.DotNet.Models;
-using EventManagementService.Exceptions;
+using EventManagementService.Domain.Exceptions;
+using EventManagementService.Domain.Models;
 using EventManagementService.Models;
 using EventManagementService.Repositories;
 using EventManagementService.Services;

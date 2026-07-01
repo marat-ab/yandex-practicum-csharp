@@ -1,4 +1,4 @@
-﻿using EventManagementService.Exceptions;
+﻿using EventManagementService.Domain.Exceptions;
 using EventManagementService.Models;
 using EventManagementService.Repositories;
 using EventManagementService.Services;
