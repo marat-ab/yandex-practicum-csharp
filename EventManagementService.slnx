@@ -1,5 +1,7 @@
 <Solution>
-  <Project Path="EventManagementService.IntegrationTests/EventManagementService.IntegrationTests.csproj" Id="3d2d69b2-61f5-411b-b077-0a64ea03cd08" />
+  <Project Path="EventManagementService.IntegrationTests/EventManagementService.IntegrationTests.csproj" Id="3d2d69b2-61f5-411b-b077-0a64ea03cd08">
+    <Build Solution="Debug|*" Project="false" />
+  </Project>
   <Project Path="EventManagementService.Tests/EventManagementService.Tests.csproj" Id="ddcc9040-0ca7-4515-a3bf-db98f8685e3a" />
   <Project Path="EventManagementService/EventManagementService.csproj" />
 </Solution>
