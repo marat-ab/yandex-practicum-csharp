@@ -49,7 +49,8 @@
 
 Для синхронизации доступа к коллекциям, с которыми работают `EventService` и `BookingService`, используется `SemaphoreSlim`.
 
-# Требование PostgreSQL для запуска приложения
+# Работа с БД
+## Требование PostgreSQL для запуска приложения
 
 В проекте используется база данных PostgreSQL. Описание контейнера с БД представлено в `docker-compose.yml`. Для запуска БД в корне репозитория выполните команду: `docker compose up -d`, для остановки: `docker compose down`.
 
@@ -71,6 +72,31 @@
 Схема БД создаётся автоматически при запуске через `EnsureCreated`.
 
 В тестах используется InMemory-вариант БД.
+
+## Миграции
+
+Схема БД управляется миграциями EF Core. 
+
+На текущий момент создана одна миграция с именем `InitialCreate`, команда для создания миграции: 
+`dotnet ef migrations add InitialCreate`.
+
+Миграция применяется автоматически при запуске проекта, для этого в `Program.cs` предусмотрен следующий вызов:
+``` csharp
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    db.Database.Migrate();
+}
+```
+
+# Тесты
+
+Тесты разделены на две группы:
+
+* Unit-тесты - проект `EventManagementService.Tests`
+* Интеграционные тесты - проект `EventManagementService.IntegrationTests`
+
+Для запуска интеграционных тестов нужен Docker.
 
 # HTTP API
 
