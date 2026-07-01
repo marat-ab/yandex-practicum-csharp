@@ -1,11 +1,7 @@
-﻿using EventManagementService.Exceptions;
-using EventManagementService.Models;
-using EventManagementService.Services;
+﻿using EventManagementService.Application.Services;
+using EventManagementService.Domain.Exceptions;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace EventManagementService.Tests.BookingServices;
 

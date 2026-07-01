@@ -1,10 +1,10 @@
-﻿using EventManagementService.DataAccess;
-using EventManagementService.Models;
-using EventManagementService.Repositories;
-using EventManagementService.Services;
+﻿using EventManagementService.Application.Repositories;
+using EventManagementService.Application.Services;
+using EventManagementService.DataAccess;
+using EventManagementService.Domain.Models;
+using EventManagementService.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 
 namespace EventManagementService.Tests.EventServices;
 
@@ -49,7 +49,7 @@ public partial class EventServiceTests : IAsyncLifetime
     }
 
     public static IEnumerable<object[]> GetEventsWithPagingData()
-    {        
+    {
         yield return new object[] { 1, 10, _events };
         yield return new object[] { 1, 1, new List<Event>() { _events[0] } };
         yield return new object[] { 1, 2, new List<Event>() { _events[0], _events[1] } };
@@ -81,6 +81,6 @@ public partial class EventServiceTests : IAsyncLifetime
 
     public async Task DisposeAsync()
     {
-        
+
     }
 }

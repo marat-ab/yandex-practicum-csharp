@@ -1,11 +1,8 @@
-﻿using EventManagementService.Exceptions;
-using EventManagementService.Models;
-using EventManagementService.Services;
+﻿using EventManagementService.Application.Services;
+using EventManagementService.Domain.Exceptions;
+using EventManagementService.Domain.Models;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace EventManagementService.Tests.EventServices;
 
@@ -79,5 +76,5 @@ public partial class EventServiceTests
         // Assert
         await act.Should().ThrowAsync<ArgumentException>()
            .WithMessage(errorMsg);
-    }    
+    }
 }

@@ -1,11 +1,8 @@
-﻿using EventManagementService.Exceptions;
-using EventManagementService.Models;
-using EventManagementService.Services;
+﻿using EventManagementService.Application.Services;
+using EventManagementService.Domain.Exceptions;
+using EventManagementService.Domain.Models;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace EventManagementService.Tests.EventServices;
 
@@ -29,7 +26,7 @@ public partial class EventServiceTests
             startAt: new DateTime(2026, 01, 01),
             endAt: new DateTime(2026, 01, 03));
 
-        var expectedEvent = eventForAdd;        
+        var expectedEvent = eventForAdd;
 
         // Act
         await eventService.AddEventAsync(eventForAdd);
@@ -48,7 +45,7 @@ public partial class EventServiceTests
         using var scope = _serviceProvider.CreateScope();
         var eventService = scope.ServiceProvider.GetRequiredService<IEventService>();
 
-        var expectedEvents = _events;        
+        var expectedEvents = _events;
 
         // Act
         var events = (await eventService.GetAllEventsAsync()).Events;
@@ -67,7 +64,7 @@ public partial class EventServiceTests
         var eventService = scope.ServiceProvider.GetRequiredService<IEventService>();
 
         var eventId = _events[0].Id;
-        var expectedEvent = _events[0];        
+        var expectedEvent = _events[0];
 
         // Act
         var eventWithSpecifiedId = await eventService.GetEventByIdAsync(eventId);
@@ -91,7 +88,7 @@ public partial class EventServiceTests
                 description: "Description of event 1 [updated]",
                 totalSeats: 1,
                 startAt: new DateTime(2026, 05, 01),
-                endAt: new DateTime(2026, 05, 03));        
+                endAt: new DateTime(2026, 05, 03));
 
         // Act
         await eventService.UpdateEventAsync(eventForUpdate);
@@ -111,7 +108,7 @@ public partial class EventServiceTests
         var eventService = scope.ServiceProvider.GetRequiredService<IEventService>();
 
         var eventId = _events[0].Id;
-        var eventForDelete = await eventService.GetEventByIdAsync(eventId);        
+        var eventForDelete = await eventService.GetEventByIdAsync(eventId);
 
         // Act
         await eventService.RemoveEventAsync(eventId);
@@ -133,7 +130,7 @@ public partial class EventServiceTests
         var eventService = scope.ServiceProvider.GetRequiredService<IEventService>();
 
         var title = "event 1";
-        List<Event> expectedEvents = [_events[0]];        
+        List<Event> expectedEvents = [_events[0]];
 
         // Act
         var events = (await eventService.GetAllEventsAsync(title: title)).Events;
@@ -151,7 +148,7 @@ public partial class EventServiceTests
         var eventService = scope.ServiceProvider.GetRequiredService<IEventService>();
 
         var title = "event";
-        List<Event> expectedEvents = _events;        
+        List<Event> expectedEvents = _events;
 
         // Act
         var events = (await eventService.GetAllEventsAsync(title: title)).Events;
@@ -170,7 +167,7 @@ public partial class EventServiceTests
         var eventService = scope.ServiceProvider.GetRequiredService<IEventService>();
 
         var startDate = new DateTime(2026, 02, 01);
-        List<Event> expectedEvents = [_events[1], _events[2]];        
+        List<Event> expectedEvents = [_events[1], _events[2]];
 
         // Act
         var events = (await eventService.GetAllEventsAsync(from: startDate)).Events;
@@ -189,7 +186,7 @@ public partial class EventServiceTests
 
         var endDate = new DateTime(2026, 02, 05);
         List<Event> expectedEvents = [_events[0], _events[1]];
-        
+
         // Act
         var events = (await eventService.GetAllEventsAsync(to: endDate)).Events;
 
@@ -208,7 +205,7 @@ public partial class EventServiceTests
         var startDate = new DateTime(2026, 02, 01);
         var endDate = new DateTime(2026, 02, 20);
         List<Event> expectedEvents = [_events[1]];
-        
+
         // Act
         var events = (await eventService.GetAllEventsAsync(from: startDate, to: endDate)).Events;
 
@@ -232,7 +229,7 @@ public partial class EventServiceTests
             Events = expectedEvents,
             PageNumber = pageNumber,
             EventsCountOnPage = expectedEvents.Count
-        };              
+        };
 
         // Act
         var result = await eventService.GetAllEventsAsync(pageNumber: pageNumber, pageSize: pageSize);
@@ -253,7 +250,7 @@ public partial class EventServiceTests
         var title = "event";
         var startDate = new DateTime(2026, 02, 01);
         var endDate = new DateTime(2026, 02, 20);
-        List<Event> expectedEvents = [_events[1]];        
+        List<Event> expectedEvents = [_events[1]];
 
         // Act
         var events = (await eventService.GetAllEventsAsync(title: title, from: startDate, to: endDate)).Events;
