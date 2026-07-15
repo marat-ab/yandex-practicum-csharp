@@ -7,12 +7,14 @@ public sealed class Booking
     public Booking(
         Guid id,
         Guid eventId,
+        long userId,
         BookingStatus status,
         DateTime createdAt,
         DateTime? processedAt = null)
     {
         Id = id;
         EventId = eventId;
+        UserId = userId;
         Status = status;
         CreatedAt = createdAt;
         ProcessedAt = processedAt;
@@ -20,6 +22,7 @@ public sealed class Booking
 
     public Guid Id { get; set; }
     public Guid EventId { get; set; }
+    public long UserId { get; set; }
     public BookingStatus Status { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? ProcessedAt { get; set; }

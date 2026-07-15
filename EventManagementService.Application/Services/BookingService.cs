@@ -19,7 +19,7 @@ public class BookingService : IBookingService
         _eventService = eventService;
     }
 
-    public async Task<Booking> CreateBookingAsync(Guid eventId, CancellationToken ct = default)
+    public async Task<Booking> CreateBookingAsync(Guid eventId, long userId, CancellationToken ct = default)
     {
         try
         {
@@ -40,6 +40,7 @@ public class BookingService : IBookingService
             var createdAt = DateTime.UtcNow;
             var newBooking = new Booking(id: newGuid,
                 eventId: eventId,
+                userId: userId,
                 status: BookingStatus.Pending,
                 createdAt: createdAt);
 
