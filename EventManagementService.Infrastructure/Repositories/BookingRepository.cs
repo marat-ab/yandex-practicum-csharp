@@ -61,7 +61,7 @@ public class BookingRepository : IBookingRepository
         }
     }
 
-    public async Task<IReadOnlyList<Booking>> SelectAllActiveBookingForUserAsync(long userId, CancellationToken ct = default)
+    public async Task<IReadOnlyList<Booking>> SelectAllActiveBookingForUserAsync(Guid userId, CancellationToken ct = default)
     {
         try
         {

@@ -5,7 +5,7 @@ namespace EventManagementService.Infrastructure.Models.Entities;
 public sealed record BookingEntity(
     Guid Id,
     Guid EventId,
-    long UserId,
+    Guid UserId,
     BookingStatus Status,
     DateTime CreatedAt,
     DateTime? ProcessedAt = null);

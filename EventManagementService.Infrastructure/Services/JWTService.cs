@@ -1,4 +1,5 @@
-﻿using EventManagementService.Domain.Models.Auth;
+﻿using EventManagementService.Application.Services;
+using EventManagementService.Domain.Models.Auth;
 using EventManagementService.Infrastructure.Models;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.JsonWebTokens;
@@ -19,7 +20,7 @@ internal class JWTService : IJWTService
         _jwtSettings = options.Value;
     }
 
-    public string CreateJWTToken(long userId, string login, Role role)
+    public string CreateJWTToken(Guid userId, string login, Role role)
     {        
         var claims = new Dictionary<string, object>
         {
@@ -27,12 +28,10 @@ internal class JWTService : IJWTService
             [ClaimTypes.Role] = role,            
         };
 
-        // 2. Ключ и алгоритм подписи
         var key = new SymmetricSecurityKey(
             Encoding.UTF8.GetBytes(_jwtSettings.Key));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-        // 3. Описание токена
+                
         var descriptor = new SecurityTokenDescriptor
         {            
             Issuer = _jwtSettings.Issuer,
