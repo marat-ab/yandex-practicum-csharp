@@ -65,7 +65,7 @@ public class CustomExceptionHandlingMiddleware
             EventNotFoundException _ => StatusCodes.Status404NotFound,
             EventAlreadyStartedException _ => StatusCodes.Status400BadRequest,
             BookingNotFoundException _ => StatusCodes.Status404NotFound,
-            BookingUserOverflowException _ => StatusCodes.Status404NotFound,
+            BookingUserOverflowException _ => StatusCodes.Status409Conflict,
             BookingCancelAccessDeniedException _ => StatusCodes.Status403Forbidden,
             NoAvailableSeatsException _ => StatusCodes.Status409Conflict,
             _ => StatusCodes.Status500InternalServerError
