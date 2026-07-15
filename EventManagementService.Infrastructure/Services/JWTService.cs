@@ -25,7 +25,7 @@ internal class JWTService : IJWTService
         var claims = new Dictionary<string, object>
         {
             [ClaimTypes.NameIdentifier] = userId.ToString(),
-            [ClaimTypes.Role] = role,            
+            [ClaimTypes.Role] = role.ToString(),            
         };
 
         var key = new SymmetricSecurityKey(
