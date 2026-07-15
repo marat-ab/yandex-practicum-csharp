@@ -7,7 +7,7 @@ namespace EventManagementService.Application.Services;
 
 public interface IUserService
 {
-    Task<User> CreateUserAsync(string login, string passwordHash, Role role, CancellationToken ct);
+    Task<User> CreateUserAsync(string login, string password, Role role, CancellationToken ct = default);
 
-    Task<string?> LoginAsync(string login, string passwordHash, CancellationToken ct);
+    Task<string?> LoginAsync(string login, string password, CancellationToken ct = default);
 }

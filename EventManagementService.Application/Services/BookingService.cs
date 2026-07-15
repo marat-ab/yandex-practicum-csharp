@@ -78,7 +78,7 @@ public class BookingService : IBookingService
         if (role is null)
             throw new UserRoleNotFoundException(userId, $"Role for user with id {userId} not found");
 
-        var booking = await _bookingRepository.SelectBookingByIdAsync(bookingId, ct);
+        var booking = await _bookingRepository.SelectBookingByIdAsync(bookingId, userId, ct);
 
         if (role.Value != Role.Admin.ToString())
         {
@@ -95,9 +95,9 @@ public class BookingService : IBookingService
         await UpdateBookingAsync(bookingId, booking, ct);
     }
 
-    public async Task<Booking> GetBookingByIdAsync(Guid bookingId, CancellationToken ct = default)
+    public async Task<Booking> GetBookingByIdAsync(Guid bookingId, Guid userId, CancellationToken ct = default)
     {
-        var result = await _bookingRepository.SelectBookingByIdAsync(bookingId, ct);
+        var result = await _bookingRepository.SelectBookingByIdAsync(bookingId, userId, ct);
 
         return result;
     }
