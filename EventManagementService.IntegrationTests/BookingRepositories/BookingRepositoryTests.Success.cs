@@ -15,6 +15,8 @@ public partial class BookingRepositoryTests
         await ResetDatabaseAsync();
 
         // Arrange
+        var userId = Guid.NewGuid();
+
         await using var context = CreateContext();
 
         var eventId = Guid.NewGuid();
@@ -22,8 +24,8 @@ public partial class BookingRepositoryTests
             title: "Some event",
             description: "Description of event",
             totalSeats: 1,
-            startAt: new DateTime(2026, 01, 01, 0, 0, 0, DateTimeKind.Utc),
-            endAt: new DateTime(2026, 01, 03, 0, 0, 0, DateTimeKind.Utc));
+            startAt: new DateTime(DateTime.Now.Year + 1, 01, 01, 0, 0, 0, DateTimeKind.Utc),
+            endAt: new DateTime(DateTime.Now.Year + 1, 01, 03, 0, 0, 0, DateTimeKind.Utc));
 
         context.Events.Add(eventForAdd);
 
@@ -32,6 +34,7 @@ public partial class BookingRepositoryTests
 
         var newBooking = new Booking(id: bookingId,
             eventId: eventId,
+            userId: userId,
             status: BookingStatus.Pending,
             createdAt: createdAt);
 
@@ -65,6 +68,8 @@ public partial class BookingRepositoryTests
         await ResetDatabaseAsync();
 
         // Arrange
+        var userId = Guid.NewGuid();
+
         await using var context = CreateContext();
 
         var eventId = Guid.NewGuid();
@@ -72,16 +77,17 @@ public partial class BookingRepositoryTests
             title: "Some event",
             description: "Description of event",
             totalSeats: 1,
-            startAt: new DateTime(2026, 01, 01, 0, 0, 0, DateTimeKind.Utc),
-            endAt: new DateTime(2026, 01, 03, 0, 0, 0, DateTimeKind.Utc));
+            startAt: new DateTime(DateTime.Now.Year + 1, 01, 01, 0, 0, 0, DateTimeKind.Utc),
+            endAt: new DateTime(DateTime.Now.Year + 1, 01, 03, 0, 0, 0, DateTimeKind.Utc));
 
         context.Events.Add(eventForAdd);
 
         var bookingId = Guid.NewGuid();
-        var createdAt = new DateTime(2026, 01, 05, 0, 0, 0, DateTimeKind.Utc);
+        var createdAt = new DateTime(DateTime.Now.Year + 1, 01, 05, 0, 0, 0, DateTimeKind.Utc);
 
         var newBooking = new Booking(id: bookingId,
             eventId: eventId,
+            userId: userId,
             status: BookingStatus.Pending,
             createdAt: createdAt);
 
@@ -92,7 +98,7 @@ public partial class BookingRepositoryTests
 
         // Act
         var repository = new BookingRepository(context);
-        var bookingFromDb = await repository.SelectBookingByIdAsync(bookingId);
+        var bookingFromDb = await repository.SelectBookingByIdAsync(bookingId, userId);
 
         // Assert
         bookingFromDb.Should().NotBeNull();
@@ -114,6 +120,8 @@ public partial class BookingRepositoryTests
         await ResetDatabaseAsync();
 
         // Arrange
+        var userId = Guid.NewGuid();
+
         await using var context = CreateContext();
 
         var eventId = Guid.NewGuid();
@@ -121,8 +129,8 @@ public partial class BookingRepositoryTests
             title: "Some event",
             description: "Description of event",
             totalSeats: 1,
-            startAt: new DateTime(2026, 01, 01, 0, 0, 0, DateTimeKind.Utc),
-            endAt: new DateTime(2026, 01, 03, 0, 0, 0, DateTimeKind.Utc));
+            startAt: new DateTime(DateTime.Now.Year + 1, 01, 01, 0, 0, 0, DateTimeKind.Utc),
+            endAt: new DateTime(DateTime.Now.Year + 1, 01, 03, 0, 0, 0, DateTimeKind.Utc));
 
         context.Events.Add(eventForAdd);
 
@@ -131,13 +139,15 @@ public partial class BookingRepositoryTests
 
         var booking1 = new Booking(id: booking1Id,
             eventId: eventId,
+            userId: userId,
             status: BookingStatus.Pending,
             createdAt: DateTime.UtcNow.AddMinutes(-1));
 
-        var createdAt = new DateTime(2026, 01, 05, 0, 0, 0, DateTimeKind.Utc);
+        var createdAt = new DateTime(DateTime.Now.Year + 1, 01, 05, 0, 0, 0, DateTimeKind.Utc);
 
         var booking2 = new Booking(id: booking2Id,
             eventId: eventId,
+            userId: userId,
             status: BookingStatus.Confirmed,
             createdAt: createdAt);
 
@@ -171,6 +181,8 @@ public partial class BookingRepositoryTests
         await ResetDatabaseAsync();
 
         // Arrange
+        var userId = Guid.NewGuid();
+
         await using var context = CreateContext();
 
         var eventId = Guid.NewGuid();
@@ -178,21 +190,23 @@ public partial class BookingRepositoryTests
             title: "Some event",
             description: "Description of event",
             totalSeats: 1,
-            startAt: new DateTime(2026, 01, 01, 0, 0, 0, DateTimeKind.Utc),
-            endAt: new DateTime(2026, 01, 03, 0, 0, 0, DateTimeKind.Utc));
+            startAt: new DateTime(DateTime.Now.Year + 1, 01, 01, 0, 0, 0, DateTimeKind.Utc),
+            endAt: new DateTime(DateTime.Now.Year + 1, 01, 03, 0, 0, 0, DateTimeKind.Utc));
 
         context.Events.Add(eventForAdd);
 
         var bookingId = Guid.NewGuid();
-        var createdAt = new DateTime(2026, 01, 05, 0, 0, 0, DateTimeKind.Utc);
+        var createdAt = new DateTime(DateTime.Now.Year + 1, 01, 05, 0, 0, 0, DateTimeKind.Utc);
 
         var newBooking = new Booking(id: bookingId,
             eventId: eventId,
+            userId: userId,
             status: BookingStatus.Pending,
             createdAt: createdAt);
 
         var bookingForUpdate = new Booking(id: bookingId,
             eventId: eventId,
+            userId: userId,
             status: BookingStatus.Confirmed,
             createdAt: createdAt);
 

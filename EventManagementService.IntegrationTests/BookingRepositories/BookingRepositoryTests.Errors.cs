@@ -14,12 +14,13 @@ public partial class BookingRepositoryTests
         await ResetDatabaseAsync();
 
         // Arrange
+        var userId = Guid.NewGuid();
         await using var context = CreateContext();
         var bookingId = Guid.NewGuid();
 
         // Act
         var repository = new BookingRepository(context);
-        Func<Task> act = async () => await repository.SelectBookingByIdAsync(bookingId);
+        Func<Task> act = async () => await repository.SelectBookingByIdAsync(bookingId, userId);
 
         // Assert
         await act.Should().ThrowAsync<BookingNotFoundException>()
