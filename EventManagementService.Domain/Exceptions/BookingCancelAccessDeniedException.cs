@@ -6,14 +6,14 @@ namespace EventManagementService.Domain.Exceptions;
 
 public sealed class BookingCancelAccessDeniedException : Exception
 {
-    public long UserId { get; init; }
+    public Guid UserId { get; init; }
 
     public BookingCancelAccessDeniedException()
         : base(message: "Booking cancel access denied by role error (without user id)")
     {
     }
 
-    public BookingCancelAccessDeniedException(long userId, string message)
+    public BookingCancelAccessDeniedException(Guid userId, string message)
         : base(message: message)
     {
         UserId = userId;

@@ -6,16 +6,18 @@ namespace EventManagementService.Domain.Models.Auth;
 
 public class User
 {
-    public User(long id, string login, string passHash, Role role)
+    public User(Guid id, string login, string passwordHash, Role role)
     {
         Id = id;
         Login = login;
-        PasswordHash = passHash;
+        PasswordHash = passwordHash;
         Role = role;
     }
 
-    public long Id { get; set; }
+    public Guid Id { get; set; }
     public string Login { get; set; } = string.Empty;
     public string PasswordHash { get; set; } = string.Empty;
     public Role Role { get; set; }
+
+    public List<Booking> Bookings { get; set; }
 }

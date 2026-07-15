@@ -2,14 +2,14 @@
 
 public sealed class UserRoleNotFoundException : Exception
 {
-    public long UserId { get; init; }
+    public Guid UserId { get; init; }
 
     public UserRoleNotFoundException()
         :base(message: "User role not found error (without user id)")
     {
     }
 
-    public UserRoleNotFoundException(long userId, string message)
+    public UserRoleNotFoundException(Guid userId, string message)
         : base(message: message)
     {
         UserId = userId;
