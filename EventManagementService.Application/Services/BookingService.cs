@@ -34,6 +34,10 @@ public class BookingService : IBookingService
             if (isReservOk is false)
                 throw new NoAvailableSeatsException(eventId, $"No available seats for event with id {eventId}");
 
+            var currentDt = DateTime.UtcNow;
+            if (currentDt >= eventTmp.StartAt)
+                throw new EventAlreadyStartedException(eventId, $"Event with id {eventId} is already started");
+
             await _eventService.UpdateEventAsync(eventTmp, ct);
 
             var newGuid = Guid.NewGuid();

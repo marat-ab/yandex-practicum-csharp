@@ -1,7 +1,7 @@
-﻿using EventManagementService.Application.Models.Entities;
-using EventManagementService.Domain.Models;
+﻿using EventManagementService.Domain.Models;
+using EventManagementService.Infrastructure.Models.Entities;
 
-namespace EventManagementService.Application.Models.Extensions;
+namespace EventManagementService.Infrastructure.Models.Extensions;
 
 public static class BookingRepositoryExtensions
 {

@@ -63,6 +63,7 @@ public class CustomExceptionHandlingMiddleware
             ValidationException _ => StatusCodes.Status400BadRequest,
             ArgumentException _ => StatusCodes.Status400BadRequest,
             EventNotFoundException _ => StatusCodes.Status404NotFound,
+            EventAlreadyStartedException _ => StatusCodes.Status400BadRequest,
             BookingNotFoundException _ => StatusCodes.Status404NotFound,
             NoAvailableSeatsException _ => StatusCodes.Status409Conflict,
             _ => StatusCodes.Status500InternalServerError
