@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Text;
 
 namespace EventManagementService.Infrastructure.Services;
@@ -22,8 +23,8 @@ internal class JWTService : IJWTService
     {        
         var claims = new Dictionary<string, object>
         {
-            [JwtRegisteredClaimNames.Sub] = userId.ToString(),
-            ["role"] = role,            
+            [ClaimTypes.NameIdentifier] = userId.ToString(),
+            [ClaimTypes.Role] = role,            
         };
 
         // 2. Ключ и алгоритм подписи
@@ -33,7 +34,7 @@ internal class JWTService : IJWTService
 
         // 3. Описание токена
         var descriptor = new SecurityTokenDescriptor
-        {
+        {            
             Issuer = _jwtSettings.Issuer,
             Audience = _jwtSettings.Audience,
             Claims = claims,

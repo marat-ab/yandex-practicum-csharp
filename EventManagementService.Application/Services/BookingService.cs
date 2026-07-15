@@ -1,20 +1,27 @@
 ﻿using EventManagementService.Application.Repositories;
 using EventManagementService.Domain.Exceptions;
 using EventManagementService.Domain.Models;
+using EventManagementService.Domain.Models.Auth;
+using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 
 namespace EventManagementService.Application.Services;
 
 public class BookingService : IBookingService
 {
+    private readonly IHttpContextAccessor _httpContextAccessor;
+
     private readonly IBookingRepository _bookingRepository;
     private readonly IEventService _eventService;
 
     private static readonly SemaphoreSlim _bookingSemaphore = new(1, 1);
 
     public BookingService(
+        IHttpContextAccessor httpContextAccessor,
         IBookingRepository bookingRepository,
         IEventService eventService)
     {
+        _httpContextAccessor = httpContextAccessor;
         _bookingRepository = bookingRepository;
         _eventService = eventService;
     }
@@ -62,9 +69,23 @@ public class BookingService : IBookingService
         }
     }
 
-    public async Task CancelBookingAsync(Guid bookingId, CancellationToken ct = default)
+    public async Task CancelBookingAsync(Guid bookingId, long userId, CancellationToken ct = default)
     {
+        var user = _httpContextAccessor.HttpContext?.User;
+
+        var role = user?.FindFirst(ClaimTypes.Role);
+
+        if (role is null)
+            throw new UserRoleNotFoundException(userId, $"Role for user with id {userId} not found");
+
         var booking = await _bookingRepository.SelectBookingByIdAsync(bookingId, ct);
+
+        if (role.Value != Role.Admin.ToString())
+        {
+            if (booking.UserId != userId)
+                throw new BookingCancelAccessDeniedException(userId, $"User with id {userId} can't cancel booking " +
+                    $"with id {bookingId}. No access to this booking.");
+        }
 
         if (booking.Status == BookingStatus.Cancelled)
             throw new BookingAlreadyCancelledException(bookingId, $"Booking with id = {bookingId} already cancelled");
