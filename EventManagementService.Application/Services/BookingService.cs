@@ -30,13 +30,17 @@ public class BookingService : IBookingService
             if (eventTmp is null)
                 throw new EventNotFoundException(eventId, $"Absent event with id: {eventId}");
 
-            var isReservOk = eventTmp.TryReserveSeats();
-            if (isReservOk is false)
-                throw new NoAvailableSeatsException(eventId, $"No available seats for event with id {eventId}");
-
             var currentDt = DateTime.UtcNow;
             if (currentDt >= eventTmp.StartAt)
                 throw new EventAlreadyStartedException(eventId, $"Event with id {eventId} is already started");
+
+            var activeBookingsForUser = await _bookingRepository.SelectAllActiveBookingForUserAsync(userId, ct);
+            if (activeBookingsForUser.Count > 10)
+                throw new BookingUserOverflowException(userId, $"Booking for user with id {userId} is overflowed");
+
+            var isReservOk = eventTmp.TryReserveSeats();
+            if (isReservOk is false)
+                throw new NoAvailableSeatsException(eventId, $"No available seats for event with id {eventId}");            
 
             await _eventService.UpdateEventAsync(eventTmp, ct);
 

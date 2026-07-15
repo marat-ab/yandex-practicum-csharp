@@ -61,6 +61,25 @@ public class BookingRepository : IBookingRepository
         }
     }
 
+    public async Task<IReadOnlyList<Booking>> SelectAllActiveBookingForUserAsync(long userId, CancellationToken ct = default)
+    {
+        try
+        {
+            await _bookingSemaphore.WaitAsync(ct);
+
+            var result = await _dbc.Bookings
+                .Where(x => x.UserId == userId)
+                .Where(x => x.Status == BookingStatus.Confirmed || x.Status == BookingStatus.Pending )
+                .ToListAsync(ct);
+
+            return result;
+        }
+        finally
+        {
+            _bookingSemaphore.Release();
+        }
+    }
+
     public async Task<IReadOnlyList<Booking>> SelectAllBookingByStatusAsync(BookingStatus status, CancellationToken ct = default)
     {
         try
