@@ -13,6 +13,8 @@ public partial class BookingServiceTests
     public async Task CreateBookingForNotExistingEvent()
     {
         // Arrange
+        var userId = Guid.NewGuid();
+
         using var scope = _serviceProvider.CreateScope();
         var eventService = scope.ServiceProvider.GetRequiredService<IEventService>();
         var bookingService = scope.ServiceProvider.GetRequiredService<IBookingService>();
@@ -20,7 +22,7 @@ public partial class BookingServiceTests
         var eventId = Guid.NewGuid();
 
         // Act
-        Func<Task> act = async () => await bookingService.CreateBookingAsync(eventId);
+        Func<Task> act = async () => await bookingService.CreateBookingAsync(eventId, userId);
 
         // Assert
         await act.Should().ThrowAsync<EventNotFoundException>()
@@ -33,6 +35,8 @@ public partial class BookingServiceTests
     public async Task CreateMultipleBookingForExistingEventMoreThenAvailableSeats()
     {
         // Arrange
+        var userId = Guid.NewGuid();
+
         using var scope = _serviceProvider.CreateScope();
         var eventService = scope.ServiceProvider.GetRequiredService<IEventService>();
         var bookingService = scope.ServiceProvider.GetRequiredService<IBookingService>();
@@ -52,11 +56,11 @@ public partial class BookingServiceTests
 
             if (eventFromDb.AvailableSeats == 0)
             {
-                act = async () => await bookingService.CreateBookingAsync(eventId);
+                act = async () => await bookingService.CreateBookingAsync(eventId, userId);
                 break;
             }
 
-            await bookingService.CreateBookingAsync(eventId);
+            await bookingService.CreateBookingAsync(eventId, userId);
         }
 
         // Assert
@@ -70,6 +74,8 @@ public partial class BookingServiceTests
     public async Task CreateBookingForDeletedEvent()
     {
         // Arrange
+        var userId = Guid.NewGuid();
+
         using var scope = _serviceProvider.CreateScope();
         var eventService = scope.ServiceProvider.GetRequiredService<IEventService>();
         var bookingService = scope.ServiceProvider.GetRequiredService<IBookingService>();
@@ -79,7 +85,7 @@ public partial class BookingServiceTests
         // Act
         await eventService.RemoveEventAsync(eventId);
 
-        Func<Task> act = async () => await bookingService.CreateBookingAsync(eventId);
+        Func<Task> act = async () => await bookingService.CreateBookingAsync(eventId, userId);
 
         // Assert
         await act.Should().ThrowAsync<EventNotFoundException>()
@@ -92,6 +98,8 @@ public partial class BookingServiceTests
     public async Task GetBookingWithNotExistingId()
     {
         // Arrange
+        var userId = Guid.NewGuid();
+
         using var scope = _serviceProvider.CreateScope();
         var eventService = scope.ServiceProvider.GetRequiredService<IEventService>();
         var bookingService = scope.ServiceProvider.GetRequiredService<IBookingService>();
@@ -99,7 +107,7 @@ public partial class BookingServiceTests
         var bookingId = Guid.NewGuid();
 
         // Act
-        Func<Task> act = async () => await bookingService.GetBookingByIdAsync(bookingId);
+        Func<Task> act = async () => await bookingService.GetBookingByIdAsync(bookingId, userId);
 
         // Assert
         await act.Should().ThrowAsync<BookingNotFoundException>()
