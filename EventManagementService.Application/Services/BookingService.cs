@@ -26,7 +26,7 @@ public class BookingService : IBookingService
         _eventService = eventService;
     }
 
-    public async Task<Booking> CreateBookingAsync(Guid eventId, long userId, CancellationToken ct = default)
+    public async Task<Booking> CreateBookingAsync(Guid eventId, Guid userId, CancellationToken ct = default)
     {
         try
         {
@@ -69,7 +69,7 @@ public class BookingService : IBookingService
         }
     }
 
-    public async Task CancelBookingAsync(Guid bookingId, long userId, CancellationToken ct = default)
+    public async Task CancelBookingAsync(Guid bookingId, Guid userId, CancellationToken ct = default)
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
