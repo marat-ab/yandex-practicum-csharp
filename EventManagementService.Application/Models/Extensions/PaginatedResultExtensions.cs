@@ -1,6 +1,5 @@
 ﻿using EventManagementService.Application.Models.Dto;
 using EventManagementService.Domain.Models;
-using EventManagementService.Models.Extensions;
 
 namespace EventManagementService.Application.Models.Extensions;
 

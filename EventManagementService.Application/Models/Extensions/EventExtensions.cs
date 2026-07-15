@@ -2,7 +2,7 @@
 using EventManagementService.Domain.Models;
 using Microsoft.AspNetCore.Mvc.Diagnostics;
 
-namespace EventManagementService.Models.Extensions;
+namespace EventManagementService.Application.Models.Extensions;
 
 public static class EventExtensions
 {
