@@ -9,19 +9,15 @@ namespace EventManagementService.Application.Services;
 
 public class BookingService : IBookingService
 {
-    private readonly IHttpContextAccessor _httpContextAccessor;
-
     private readonly IBookingRepository _bookingRepository;
     private readonly IEventService _eventService;
 
     private static readonly SemaphoreSlim _bookingSemaphore = new(1, 1);
 
     public BookingService(
-        IHttpContextAccessor httpContextAccessor,
         IBookingRepository bookingRepository,
         IEventService eventService)
     {
-        _httpContextAccessor = httpContextAccessor;
         _bookingRepository = bookingRepository;
         _eventService = eventService;
     }
@@ -69,18 +65,11 @@ public class BookingService : IBookingService
         }
     }
 
-    public async Task CancelBookingAsync(Guid bookingId, Guid userId, CancellationToken ct = default)
+    public async Task CancelBookingAsync(Guid bookingId, Guid userId, Role role, CancellationToken ct = default)
     {
-        var user = _httpContextAccessor.HttpContext?.User;
-
-        var role = user?.FindFirst(ClaimTypes.Role);
-
-        if (role is null)
-            throw new UserRoleNotFoundException(userId, $"Role for user with id {userId} not found");
-
         var booking = await _bookingRepository.SelectBookingByIdAsync(bookingId, userId, ct);
 
-        if (role.Value != Role.Admin.ToString())
+        if (role != Role.Admin)
         {
             if (booking.UserId != userId)
                 throw new BookingCancelAccessDeniedException(userId, $"User with id {userId} can't cancel booking " +

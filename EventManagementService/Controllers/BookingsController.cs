@@ -1,6 +1,7 @@
 ﻿using EventManagementService.Application.Models.Dto;
 using EventManagementService.Application.Models.Extensions;
 using EventManagementService.Application.Services;
+using EventManagementService.Domain.Models.Auth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -45,19 +46,24 @@ public class BookingsController : ControllerBase
     public async Task<ActionResult> DeleteBookingById(Guid id)
     {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+        var userRoleClaim = User.FindFirst(ClaimTypes.Role);
 
         if (userIdClaim == null)
             return BadRequest("User id not found");
 
-        if (Guid.TryParse(userIdClaim.Value, out Guid userId))
+        if (userRoleClaim == null)
+            return BadRequest("Role not found");
+
+        if (Guid.TryParse(userIdClaim.Value, out Guid userId) 
+            && Enum.TryParse(userRoleClaim.Value, out Role role))
         {
-            await _bookingService.CancelBookingAsync(id, userId);
+            await _bookingService.CancelBookingAsync(id, userId, role);
 
             return NoContent();
         }
         else
         {
-            return BadRequest("Bad user id");
+            return BadRequest("Bad user id or role");
         }
     }
 }
