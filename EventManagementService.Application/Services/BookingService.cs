@@ -54,6 +54,18 @@ public class BookingService : IBookingService
         }
     }
 
+    public async Task CancelBookingAsync(Guid bookingId, CancellationToken ct = default)
+    {
+        var booking = await _bookingRepository.SelectBookingByIdAsync(bookingId, ct);
+
+        if (booking.Status == BookingStatus.Cancelled)
+            throw new BookingAlreadyCancelledException(bookingId, $"Booking with id = {bookingId} already cancelled");
+
+        booking.Status = BookingStatus.Cancelled;
+
+        await UpdateBookingAsync(bookingId, booking, ct);
+    }
+
     public async Task<Booking> GetBookingByIdAsync(Guid bookingId, CancellationToken ct = default)
     {
         var result = await _bookingRepository.SelectBookingByIdAsync(bookingId, ct);
@@ -68,8 +80,8 @@ public class BookingService : IBookingService
         return result;
     }
 
-    public async Task UpdateBookingAsync(Guid id, Booking newBooking, CancellationToken ct = default)
+    public async Task UpdateBookingAsync(Guid bookingId, Booking newBooking, CancellationToken ct = default)
     {
-        await _bookingRepository.UpdateBookingAsync(id, newBooking, ct);
+        await _bookingRepository.UpdateBookingAsync(bookingId, newBooking, ct);
     }
 }
