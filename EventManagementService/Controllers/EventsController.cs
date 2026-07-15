@@ -77,7 +77,7 @@ public class EventsController : ControllerBase
 
     // Booking
     [HttpPost("{eventId:Guid}/book")]
-    public async Task<ActionResult<BookingResponseDto>> BookingEvent(Guid eventId, [FromQuery] long userId)
+    public async Task<ActionResult<BookingResponseDto>> BookingEvent(Guid eventId, [FromQuery] Guid userId)
     {
         var bookingItem = await _bookingService.CreateBookingAsync(eventId, userId);
 
