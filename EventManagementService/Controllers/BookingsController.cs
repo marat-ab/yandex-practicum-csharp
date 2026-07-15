@@ -1,6 +1,7 @@
-﻿using EventManagementService.Models.Dto;
+﻿using EventManagementService.Application.Models.Dto;
+using EventManagementService.Application.Models.Extensions;
+using EventManagementService.Application.Services;
 using EventManagementService.Models.Extensions;
-using EventManagementService.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EventManagementService.Controllers;

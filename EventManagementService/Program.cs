@@ -1,8 +1,11 @@
-﻿using EventManagementService.DataAccess;
-using EventManagementService.HostedServices;
-using EventManagementService.Middlewares;
-using EventManagementService.Repositories;
-using EventManagementService.Services;
+﻿using EventManagementService.Application;
+using EventManagementService.Application.HostedServices;
+using EventManagementService.Application.Repositories;
+using EventManagementService.Application.Services;
+using EventManagementService.DataAccess;
+using EventManagementService.Infrastructure;
+using EventManagementService.Infrastructure.Repositories;
+using EventManagementService.Presentation.Middlewares;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,13 +13,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllers();
 
-builder.Services.AddScoped<IEventRepository, EventRepository>();
-builder.Services.AddScoped<IBookingRepository, BookingRepository>();
-
-builder.Services.AddScoped<IEventService, EventService>();
-builder.Services.AddScoped<IBookingService, BookingService>();
-
-builder.Services.AddHostedService<BookingHostedService>();
+builder.Services.AddApplication();
+builder.Services.AddInfrastructure();
 
 var connectionString = builder.Configuration.GetConnectionString("Default")
     ?? throw new InvalidOperationException("Connection string 'Default' not found.");

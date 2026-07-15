@@ -1,8 +1,8 @@
-﻿using EventManagementService.Exceptions;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
+using EventManagementService.Domain.Exceptions;
 
-namespace EventManagementService.Middlewares;
+namespace EventManagementService.Presentation.Middlewares;
 
 public class CustomExceptionHandlingMiddleware
 {

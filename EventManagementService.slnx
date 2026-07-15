@@ -1,7 +1,10 @@
 <Solution>
+  <Project Path="EventManagementService.Application/EventManagementService.Application.csproj" Id="01aecffb-a0dc-4cf5-85ea-3130a1a6b9ca" />
+  <Project Path="EventManagementService.Domain/EventManagementService.Domain.csproj" Id="eddc4683-2b6b-4942-be60-9dae5f461f36" />
+  <Project Path="EventManagementService.Infrastructure/EventManagementService.Infrastructure.csproj" Id="afd8fc01-01bc-4444-ba97-f96f25ff8a35" />
   <Project Path="EventManagementService.IntegrationTests/EventManagementService.IntegrationTests.csproj" Id="3d2d69b2-61f5-411b-b077-0a64ea03cd08">
     <Build Solution="Debug|*" Project="false" />
   </Project>
   <Project Path="EventManagementService.Tests/EventManagementService.Tests.csproj" Id="ddcc9040-0ca7-4515-a3bf-db98f8685e3a" />
-  <Project Path="EventManagementService/EventManagementService.csproj" />
+  <Project Path="EventManagementService/EventManagementService.Presentation.csproj" />
 </Solution>

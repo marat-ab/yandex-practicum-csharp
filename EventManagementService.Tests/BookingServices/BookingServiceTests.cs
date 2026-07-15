@@ -1,10 +1,10 @@
-﻿using EventManagementService.DataAccess;
-using EventManagementService.Models;
-using EventManagementService.Repositories;
-using EventManagementService.Services;
+﻿using EventManagementService.Application.Repositories;
+using EventManagementService.Application.Services;
+using EventManagementService.DataAccess;
+using EventManagementService.Domain.Models;
+using EventManagementService.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 
 namespace EventManagementService.Tests.BookingServices;
 
@@ -50,7 +50,7 @@ public partial class BookingServiceTests : IAsyncLifetime
         _serviceProvider = services.BuildServiceProvider();
     }
 
-   
+
     // IAsyncLifetime
     public async Task InitializeAsync()
     {
@@ -66,6 +66,6 @@ public partial class BookingServiceTests : IAsyncLifetime
 
     public async Task DisposeAsync()
     {
-        
+
     }
 }

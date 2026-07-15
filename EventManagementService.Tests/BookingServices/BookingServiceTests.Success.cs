@@ -1,12 +1,8 @@
-﻿using EventManagementService.Exceptions;
-using EventManagementService.Models;
-using EventManagementService.Models.Extensions;
-using EventManagementService.Services;
+﻿using EventManagementService.Application.Services;
+using EventManagementService.Domain.Exceptions;
+using EventManagementService.Domain.Models;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace EventManagementService.Tests.BookingServices;
 
@@ -54,7 +50,7 @@ public partial class BookingServiceTests
         var eventService = scope.ServiceProvider.GetRequiredService<IEventService>();
         var bookingService = scope.ServiceProvider.GetRequiredService<IBookingService>();
 
-        var eventId = _events[0].Id;        
+        var eventId = _events[0].Id;
         var countOfBookings = 10;
         _events[0].TotalSeats = countOfBookings;
         _events[0].AvailableSeats = countOfBookings;
@@ -76,7 +72,7 @@ public partial class BookingServiceTests
         // Assert
         ids.Count.Should().Be(countOfBookings);
         eventFromDb.AvailableSeats.Should().Be(expectedAvailableSeats);
-    }    
+    }
 
     // Получение брони по Id
     [Fact]
@@ -143,7 +139,7 @@ public partial class BookingServiceTests
         {
             var eventServiceArrange = scopeArrange.ServiceProvider.GetRequiredService<IEventService>();
             await eventServiceArrange.UpdateEventAsync(_events[0]);
-        }            
+        }
 
         var countOfConcurrencyRequests = 20;
         var expectedCountWithExceptionNotAvailable = 15;
@@ -156,7 +152,7 @@ public partial class BookingServiceTests
                 var bookingService = scope.ServiceProvider.GetRequiredService<IBookingService>();
                 await bookingService.CreateBookingAsync(eventId);
             }))
-            .ToList();        
+            .ToList();
 
         // Act
         var resultTask = Task.WhenAll(tasks);
@@ -168,7 +164,7 @@ public partial class BookingServiceTests
         catch { }
 
         var bookingsWithExceptionNotAvailable = 0;
-        foreach(var task in tasks)
+        foreach (var task in tasks)
         {
             if (task.IsFaulted && task.Exception.InnerException is NoAvailableSeatsException)
                 bookingsWithExceptionNotAvailable++;
@@ -222,10 +218,10 @@ public partial class BookingServiceTests
 
         // Act
         await Task.WhenAll(tasks);
-                
+
         var bookings = await bookingService.GetAllBookingByStatusAsync(BookingStatus.Pending);
         var ids = bookings.Select(x => x.Id).ToHashSet();
-        
+
         // Assert
         bookings.Count.Should().Be(countOfExpectedBookings);
         ids.Count.Should().Be(countOfExpectedBookings);

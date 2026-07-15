@@ -1,10 +1,6 @@
 ﻿using EventManagementService.DataAccess;
-using EventManagementService.Models;
-using EventManagementService.Repositories;
-using EventManagementService.Services;
+using EventManagementService.Domain.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Npgsql;
 using Testcontainers.PostgreSql;
 
@@ -41,7 +37,7 @@ public partial class EventRepositoryTests : IAsyncLifetime
             .Build();
     }
 
-    
+
     // IAsyncLifetime
     public async Task InitializeAsync()
     {
