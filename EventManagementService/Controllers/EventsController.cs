@@ -3,7 +3,7 @@ using EventManagementService.Application.Models.Extensions;
 using EventManagementService.Application.Services;
 using Microsoft.AspNetCore.Mvc;
 
-namespace EventManagementService.Controllers;
+namespace EventManagementService.Presentation.Controllers;
 
 [ApiController]
 [Route("/[controller]")]
@@ -77,9 +77,9 @@ public class EventsController : ControllerBase
 
     // Booking
     [HttpPost("{eventId:Guid}/book")]
-    public async Task<ActionResult<BookingResponseDto>> BookingEvent(Guid eventId)
+    public async Task<ActionResult<BookingResponseDto>> BookingEvent(Guid eventId, [FromQuery] long userId)
     {
-        var bookingItem = await _bookingService.CreateBookingAsync(eventId);
+        var bookingItem = await _bookingService.CreateBookingAsync(eventId, userId);
 
         var url = $"/bookings/{bookingItem.Id}";
         Response.Headers.Location = url;

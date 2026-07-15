@@ -2,8 +2,9 @@
 using EventManagementService.Application.HostedServices;
 using EventManagementService.Application.Repositories;
 using EventManagementService.Application.Services;
-using EventManagementService.DataAccess;
 using EventManagementService.Infrastructure;
+using EventManagementService.Infrastructure.DataAccess;
+using EventManagementService.Infrastructure.Models;
 using EventManagementService.Infrastructure.Repositories;
 using EventManagementService.Presentation.Middlewares;
 using Microsoft.EntityFrameworkCore;
@@ -21,6 +22,10 @@ var connectionString = builder.Configuration.GetConnectionString("Default")
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString));
+
+builder.Services.Configure<JWTSettings>(
+    builder.Configuration.GetSection("JWT")
+);
 
 builder.Services.AddSwaggerGen();
 

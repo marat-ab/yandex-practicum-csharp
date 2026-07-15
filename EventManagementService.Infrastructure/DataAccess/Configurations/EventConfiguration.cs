@@ -1,9 +1,8 @@
 ﻿using EventManagementService.Domain.Models;
-using EventManagementService.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace EventManagementService.DataAccess.Configurations;
+namespace EventManagementService.Infrastructure.DataAccess.Configurations;
 
 public class EventConfiguration : IEntityTypeConfiguration<Event>
 {

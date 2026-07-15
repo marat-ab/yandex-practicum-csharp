@@ -1,10 +1,9 @@
 ﻿using EventManagementService.Application.Models.Dto;
 using EventManagementService.Application.Models.Extensions;
 using EventManagementService.Application.Services;
-using EventManagementService.Models.Extensions;
 using Microsoft.AspNetCore.Mvc;
 
-namespace EventManagementService.Controllers;
+namespace EventManagementService.Presentation.Controllers;
 
 [ApiController]
 [Route("/[controller]")]

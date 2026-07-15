@@ -1,5 +1,4 @@
 ﻿using EventManagementService.Domain.Models;
-using EventManagementService.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -21,7 +20,7 @@ public class BookingConfiguration : IEntityTypeConfiguration<Booking>
         builder.Property(b => b.Status)
            .IsRequired()
            .HasConversion<string>();
-        
+
         builder.Property(b => b.CreatedAt)
            .IsRequired();
 

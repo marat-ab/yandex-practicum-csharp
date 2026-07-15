@@ -1,7 +1,7 @@
 ﻿using EventManagementService.Application.Repositories;
-using EventManagementService.DataAccess;
 using EventManagementService.Domain.Exceptions;
 using EventManagementService.Domain.Models;
+using EventManagementService.Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
 
 namespace EventManagementService.Infrastructure.Repositories;
