@@ -25,7 +25,7 @@ public class AuthController : ControllerBase
 
         var _ = await _userService.CreateUserAsync(userRequest.Login, userRequest.Password, role);
 
-        return Created();
+        return NoContent();
     }
 
     [HttpPost("login")]
