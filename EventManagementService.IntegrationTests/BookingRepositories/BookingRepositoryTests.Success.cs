@@ -1,4 +1,5 @@
 ﻿using EventManagementService.Domain.Models;
+using EventManagementService.Domain.Models.Auth;
 using EventManagementService.Infrastructure.Repositories;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
@@ -15,9 +16,16 @@ public partial class BookingRepositoryTests
         await ResetDatabaseAsync();
 
         // Arrange
-        var userId = Guid.NewGuid();
-
         await using var context = CreateContext();
+
+        var userId = Guid.NewGuid();
+        var userForAdd = new User(
+            id: userId,
+            login: "admin",
+            passwordHash: "240BE518FABD2724DDB6F04EEB1DA5967448D7E831C08C8FA822809F74C720A9",
+            role: Role.Admin);
+
+        context.Users.Add(userForAdd);
 
         var eventId = Guid.NewGuid();
         var eventForAdd = new Event(id: eventId,
@@ -68,9 +76,16 @@ public partial class BookingRepositoryTests
         await ResetDatabaseAsync();
 
         // Arrange
-        var userId = Guid.NewGuid();
-
         await using var context = CreateContext();
+
+        var userId = Guid.NewGuid();
+        var userForAdd = new User(
+            id: userId,
+            login: "admin",
+            passwordHash: "240BE518FABD2724DDB6F04EEB1DA5967448D7E831C08C8FA822809F74C720A9",
+            role: Role.Admin);
+
+        context.Users.Add(userForAdd);
 
         var eventId = Guid.NewGuid();
         var eventForAdd = new Event(id: eventId,
@@ -98,7 +113,7 @@ public partial class BookingRepositoryTests
 
         // Act
         var repository = new BookingRepository(context);
-        var bookingFromDb = await repository.SelectBookingByIdAsync(bookingId, userId);
+        var bookingFromDb = await repository.SelectBookingByIdAsync(bookingId);
 
         // Assert
         bookingFromDb.Should().NotBeNull();
@@ -120,9 +135,16 @@ public partial class BookingRepositoryTests
         await ResetDatabaseAsync();
 
         // Arrange
-        var userId = Guid.NewGuid();
-
         await using var context = CreateContext();
+
+        var userId = Guid.NewGuid();
+        var userForAdd = new User(
+            id: userId,
+            login: "admin",
+            passwordHash: "240BE518FABD2724DDB6F04EEB1DA5967448D7E831C08C8FA822809F74C720A9",
+            role: Role.Admin);
+
+        context.Users.Add(userForAdd);
 
         var eventId = Guid.NewGuid();
         var eventForAdd = new Event(id: eventId,
@@ -181,9 +203,16 @@ public partial class BookingRepositoryTests
         await ResetDatabaseAsync();
 
         // Arrange
-        var userId = Guid.NewGuid();
-
         await using var context = CreateContext();
+
+        var userId = Guid.NewGuid();
+        var userForAdd = new User(
+            id: userId,
+            login: "admin",
+            passwordHash: "240BE518FABD2724DDB6F04EEB1DA5967448D7E831C08C8FA822809F74C720A9",
+            role: Role.Admin);
+
+        context.Users.Add(userForAdd);
 
         var eventId = Guid.NewGuid();
         var eventForAdd = new Event(id: eventId,
