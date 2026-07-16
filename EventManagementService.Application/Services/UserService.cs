@@ -1,4 +1,5 @@
 ﻿using EventManagementService.Application.Repositories;
+using EventManagementService.Domain.Exceptions;
 using EventManagementService.Domain.Models.Auth;
 using EventManagementService.Domain.Services;
 using System;
@@ -40,10 +41,10 @@ internal class UserService : IUserService
         var user = await _userRepository.SelectUserByLoginAsync(login, ct);
 
         if (user is null)
-            throw new UnauthorizedAccessException($"User with login {login}, not found");
+            throw new UserNotFoundException(login, $"User with login {login}, not found");
 
         if (user.PasswordHash != passwordHash)
-            throw new UnauthorizedAccessException($"Bad password for {login}. Access denied");
+            throw new UserBadPasswordException(login, $"Bad password for {login}. Access denied");
 
         var result = _jwtService.CreateJWTToken(user.Id, login, user.Role);
 

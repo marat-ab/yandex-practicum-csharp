@@ -35,7 +35,7 @@ public class BookingRepository : IBookingRepository
         }
     }
 
-    public async Task<Booking> SelectBookingByIdAsync(Guid bookingId, Guid userId, CancellationToken ct = default)
+    public async Task<Booking> SelectBookingByIdAsync(Guid bookingId, CancellationToken ct = default)
     {
         try
         {
@@ -43,7 +43,6 @@ public class BookingRepository : IBookingRepository
 
             var result = await _dbc.Bookings
                 .Where(x => x.Id == bookingId)
-                .Where(x => x.UserId == userId)
                 .FirstOrDefaultAsync(ct);
 
             if (result != null)

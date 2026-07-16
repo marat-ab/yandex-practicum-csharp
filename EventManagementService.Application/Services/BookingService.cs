@@ -67,12 +67,15 @@ public class BookingService : IBookingService
 
     public async Task CancelBookingAsync(Guid bookingId, Guid userId, Role role, CancellationToken ct = default)
     {
-        var booking = await _bookingRepository.SelectBookingByIdAsync(bookingId, userId, ct);
+        var booking = await _bookingRepository.SelectBookingByIdAsync(bookingId, ct);
+
+        if (booking is null)
+            throw new BookingNotFoundException(bookingId, $"Booking with id = {bookingId} not found)");
 
         if (role != Role.Admin)
         {
             if (booking.UserId != userId)
-                throw new BookingCancelAccessDeniedException(userId, $"User with id {userId} can't cancel booking " +
+                throw new BookingAccessDeniedException(userId, $"User with id {userId} can't cancel booking " +
                     $"with id {bookingId}. No access to this booking.");
         }
 
@@ -86,9 +89,15 @@ public class BookingService : IBookingService
 
     public async Task<Booking> GetBookingByIdAsync(Guid bookingId, Guid userId, CancellationToken ct = default)
     {
-        var result = await _bookingRepository.SelectBookingByIdAsync(bookingId, userId, ct);
+        var booking = await _bookingRepository.SelectBookingByIdAsync(bookingId, ct);
 
-        return result;
+        if (booking is null)
+            throw new BookingNotFoundException(bookingId, $"Booking with id = {bookingId} not found");
+
+        if (booking.UserId != userId)
+            throw new BookingAccessDeniedException(bookingId, $"Booking with id = {bookingId} access denied");
+
+        return booking;
     }
 
     public async Task<IReadOnlyList<Booking>> GetAllBookingByStatusAsync(BookingStatus status, CancellationToken ct = default)
