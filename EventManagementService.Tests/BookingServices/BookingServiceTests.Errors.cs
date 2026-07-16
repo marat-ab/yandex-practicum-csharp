@@ -128,9 +128,8 @@ public partial class BookingServiceTests
 
         var eventId = _events[0].Id;
         _events[0].StartAt = new DateTime(DateTime.Now.Year, 01, 01);
-
         await eventService.UpdateEventAsync(_events[0]);
-
+        _events[0].StartAt = new DateTime(DateTime.Now.Year + 1, 01, 01);
 
         // Act
         Func<Task> act = async () => await bookingService.CreateBookingAsync(eventId, userId);
