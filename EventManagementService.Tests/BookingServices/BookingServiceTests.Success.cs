@@ -1,4 +1,5 @@
-﻿using EventManagementService.Application.Services;
+﻿using EventManagementService.Application.Repositories;
+using EventManagementService.Application.Services;
 using EventManagementService.Domain.Exceptions;
 using EventManagementService.Domain.Models;
 using FluentAssertions;
@@ -236,5 +237,42 @@ public partial class BookingServiceTests
         // Assert
         bookings.Count.Should().Be(countOfExpectedBookings);
         ids.Count.Should().Be(countOfExpectedBookings);
+    }
+
+    // Лимиты разных пользователей не влияют друг на друга
+    [Fact]
+    [Trait("Category", "Success")]
+    public async Task CreateBookingWithLimitsForMultiUsers()
+    {
+        // Arrange
+        var userId1 = Guid.NewGuid();
+        var userId2 = Guid.NewGuid();
+        var countOfBookingForSingleUser = 10;
+
+        using var scope = _serviceProvider.CreateScope();
+        var eventService = scope.ServiceProvider.GetRequiredService<IEventService>();
+        var bookingService = scope.ServiceProvider.GetRequiredService<IBookingService>();
+        var bookingRepository = scope.ServiceProvider.GetRequiredService<IBookingRepository>();
+
+        var eventId = _events[0].Id;
+        var countOfBookings = 30;
+        _events[0].TotalSeats = countOfBookings - 1;
+        _events[0].AvailableSeats = countOfBookings - 1;
+
+        await eventService.UpdateEventAsync(_events[0]);
+
+        // Act
+        for (int i = 0; i < countOfBookingForSingleUser; i++)
+            await bookingService.CreateBookingAsync(eventId, userId1);
+
+        for (int i = 0; i < countOfBookingForSingleUser; i++)
+            await bookingService.CreateBookingAsync(eventId, userId2);
+
+        // Assert
+        var countOfBookingsForUser1 = (await bookingRepository.SelectAllActiveBookingForUserAsync(userId1)).Count;
+        var countOfBookingsForUser2 = (await bookingRepository.SelectAllActiveBookingForUserAsync(userId2)).Count;
+
+        countOfBookingsForUser1.Should().Be(countOfBookingForSingleUser);
+        countOfBookingsForUser2.Should().Be(countOfBookingForSingleUser);
     }
 }

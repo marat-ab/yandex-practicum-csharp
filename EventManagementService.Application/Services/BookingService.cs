@@ -38,7 +38,7 @@ public class BookingService : IBookingService
                 throw new EventAlreadyStartedException(eventId, $"Event with id {eventId} is already started");
 
             var activeBookingsForUser = await _bookingRepository.SelectAllActiveBookingForUserAsync(userId, ct);
-            if (activeBookingsForUser.Count > 10)
+            if (activeBookingsForUser.Count >= 10)
                 throw new BookingUserOverflowException(userId, $"Booking for user with id {userId} is overflowed");
 
             var isReservOk = eventTmp.TryReserveSeats();

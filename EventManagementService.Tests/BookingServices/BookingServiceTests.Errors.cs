@@ -113,4 +113,61 @@ public partial class BookingServiceTests
         await act.Should().ThrowAsync<BookingNotFoundException>()
            .WithMessage($"Can't get booking with id = {bookingId}. It is absent");
     }
+
+    // Попытка забронировать прошедшее событие
+    [Fact]
+    [Trait("Category", "Success")]
+    public async Task CreateBookingForPastEvent()
+    {
+        // Arrange
+        var userId = Guid.NewGuid();
+
+        using var scope = _serviceProvider.CreateScope();
+        var eventService = scope.ServiceProvider.GetRequiredService<IEventService>();
+        var bookingService = scope.ServiceProvider.GetRequiredService<IBookingService>();
+
+        var eventId = _events[0].Id;
+        _events[0].StartAt = new DateTime(DateTime.Now.Year, 01, 01);
+
+        await eventService.UpdateEventAsync(_events[0]);
+
+
+        // Act
+        Func<Task> act = async () => await bookingService.CreateBookingAsync(eventId, userId);
+
+        // Assert
+        await act.Should().ThrowAsync<EventAlreadyStartedException>()
+           .WithMessage($"Event with id {eventId} is already started");
+    }
+
+    // При достижении лимита активных броней новая бронь не создаётся
+    [Fact]
+    [Trait("Category", "Success")]
+    public async Task CreateBookingWithLimitForSingleUser()
+    {
+        // Arrange
+        var userId = Guid.NewGuid();
+        var countOfBookingForSingleUser = 10;
+
+        using var scope = _serviceProvider.CreateScope();
+        var eventService = scope.ServiceProvider.GetRequiredService<IEventService>();
+        var bookingService = scope.ServiceProvider.GetRequiredService<IBookingService>();
+
+        var eventId = _events[0].Id;
+        var countOfBookings = 20;
+        _events[0].TotalSeats = countOfBookings - 1;
+        _events[0].AvailableSeats = countOfBookings - 1;
+
+        await eventService.UpdateEventAsync(_events[0]);
+
+        // Act
+        for (int i = 0; i < countOfBookingForSingleUser; i++)
+            await bookingService.CreateBookingAsync(eventId, userId);
+
+        Func<Task> act = async () => await bookingService.CreateBookingAsync(eventId, userId);
+
+        // Assert
+        await act.Should().ThrowAsync<BookingUserOverflowException>()
+           .WithMessage($"Booking for user with id {userId} is overflowed");
+    }    
 }
