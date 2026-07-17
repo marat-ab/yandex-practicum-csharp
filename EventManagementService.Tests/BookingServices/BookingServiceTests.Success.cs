@@ -291,6 +291,7 @@ public partial class BookingServiceTests
         var bookingRepository = scope.ServiceProvider.GetRequiredService<IBookingRepository>();
         
         var eventId = _events[0].Id;
+        var expectedAvailableSeats = _events[0].AvailableSeats;
 
         // Act
         var booking = await bookingService.CreateBookingAsync(eventId, userId);
@@ -299,6 +300,7 @@ public partial class BookingServiceTests
 
         // Assert
         bookingFromStore.Status.Should().Be(BookingStatus.Cancelled);
+        _events[0].AvailableSeats.Should().Be(expectedAvailableSeats);
     }
 
     // Администратор может отменить чужую бронь

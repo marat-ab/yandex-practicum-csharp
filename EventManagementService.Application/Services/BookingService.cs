@@ -85,6 +85,10 @@ public class BookingService : IBookingService
         booking.Cancel();
 
         await UpdateBookingAsync(bookingId, booking, ct);
+
+        var eventForBooking = await _eventService.GetEventByIdAsync(booking.EventId, ct);
+        eventForBooking.ReleaseSeats();
+        await _eventService.UpdateEventAsync(eventForBooking, ct);
     }
 
     public async Task<Booking> GetBookingByIdAsync(Guid bookingId, Guid userId, CancellationToken ct = default)
