@@ -9,7 +9,7 @@ using System.Text;
 
 namespace EventManagementService.Infrastructure.Repositories;
 
-internal class UserRepository : IUserRepository
+public class UserRepository : IUserRepository
 {
     private readonly AppDbContext _dbc;
 
@@ -20,7 +20,7 @@ internal class UserRepository : IUserRepository
         _dbc = dbc;
     }
 
-    public async Task<User> SelectUserByLoginAsync(string login, CancellationToken ct = default)
+    public async Task<User?> SelectUserByLoginAsync(string login, CancellationToken ct = default)
     {
         try
         {
@@ -30,15 +30,7 @@ internal class UserRepository : IUserRepository
                 .Where(x => x.Login == login)
                 .FirstOrDefault();
 
-            if (result != null)
-            {
-                return result;
-            }
-            else
-            {
-                throw new UserNotFoundException(login,
-                    $"Can't get user with login = {login}. It is absent");
-            }
+            return result;
         }
         finally
         {

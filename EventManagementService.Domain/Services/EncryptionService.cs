@@ -5,7 +5,7 @@ using System.Text;
 
 namespace EventManagementService.Domain.Services;
 
-internal class EncryptionService : IEncryptionService
+public class EncryptionService : IEncryptionService
 {
     public string CalcHash(string data)
     {

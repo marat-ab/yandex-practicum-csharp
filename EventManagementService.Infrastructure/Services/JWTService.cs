@@ -11,7 +11,7 @@ using System.Text;
 
 namespace EventManagementService.Infrastructure.Services;
 
-internal class JWTService : IJWTService
+public class JWTService : IJWTService
 {
     private readonly JWTSettings _jwtSettings;
 

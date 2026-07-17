@@ -8,7 +8,7 @@ using System.Text;
 
 namespace EventManagementService.Application.Services;
 
-internal class UserService : IUserService
+public class UserService : IUserService
 {
     private readonly IUserRepository _userRepository;
     private readonly IEncryptionService _encryptionService;
