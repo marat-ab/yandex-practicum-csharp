@@ -47,4 +47,15 @@ public sealed class Booking
 
         return this;
     }
+
+    public Booking Cancel()
+    {
+        if (Status == BookingStatus.Cancelled)
+            return this;
+
+        Status = BookingStatus.Cancelled;
+        ProcessedAt = DateTime.UtcNow;
+
+        return this;
+    }
 }

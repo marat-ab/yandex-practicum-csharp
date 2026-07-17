@@ -82,7 +82,7 @@ public class BookingService : IBookingService
         if (booking.Status == BookingStatus.Cancelled)
             throw new BookingAlreadyCancelledException(bookingId, $"Booking with id = {bookingId} already cancelled");
 
-        booking.Status = BookingStatus.Cancelled;
+        booking.Cancel();
 
         await UpdateBookingAsync(bookingId, booking, ct);
     }
