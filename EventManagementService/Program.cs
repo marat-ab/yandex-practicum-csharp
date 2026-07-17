@@ -3,6 +3,7 @@ using EventManagementService.Application.HostedServices;
 using EventManagementService.Application.Repositories;
 using EventManagementService.Application.Services;
 using EventManagementService.Domain;
+using EventManagementService.Domain.Models;
 using EventManagementService.Infrastructure;
 using EventManagementService.Infrastructure.DataAccess;
 using EventManagementService.Infrastructure.Models;
@@ -31,6 +32,10 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.Configure<JWTSettings>(
     builder.Configuration.GetSection("JWT")
+);
+
+builder.Services.Configure<SystemSettings>(
+    builder.Configuration.GetSection("SystemSettings")
 );
 
 builder.Services.AddSwaggerGen(options =>

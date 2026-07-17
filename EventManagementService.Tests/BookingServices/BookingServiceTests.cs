@@ -2,6 +2,7 @@
 using EventManagementService.Application.Services;
 using EventManagementService.Domain.Models;
 using EventManagementService.Infrastructure.DataAccess;
+using EventManagementService.Infrastructure.Models;
 using EventManagementService.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -46,6 +47,11 @@ public partial class BookingServiceTests : IAsyncLifetime
 
         services.AddScoped<IEventService, EventService>();
         services.AddScoped<IBookingService, BookingService>();
+
+        services.Configure<SystemSettings>(options =>
+        {
+            options.UserBookingLimit = 10;
+        });
 
         _serviceProvider = services.BuildServiceProvider();
     }

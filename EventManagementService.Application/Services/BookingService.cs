@@ -3,6 +3,7 @@ using EventManagementService.Domain.Exceptions;
 using EventManagementService.Domain.Models;
 using EventManagementService.Domain.Models.Auth;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 using System.Security.Claims;
 
 namespace EventManagementService.Application.Services;
@@ -12,14 +13,19 @@ public class BookingService : IBookingService
     private readonly IBookingRepository _bookingRepository;
     private readonly IEventService _eventService;
 
+    private readonly SystemSettings _systemSettings;
+
     private static readonly SemaphoreSlim _bookingSemaphore = new(1, 1);
 
     public BookingService(
         IBookingRepository bookingRepository,
-        IEventService eventService)
+        IEventService eventService,
+        IOptions<SystemSettings> options)
     {
         _bookingRepository = bookingRepository;
         _eventService = eventService;
+
+        _systemSettings = options.Value;
     }
 
     public async Task<Booking> CreateBookingAsync(Guid eventId, Guid userId, CancellationToken ct = default)
@@ -38,8 +44,9 @@ public class BookingService : IBookingService
                 throw new EventAlreadyStartedException(eventId, $"Event with id {eventId} is already started");
 
             var activeBookingsForUser = await _bookingRepository.SelectAllActiveBookingForUserAsync(userId, ct);
-            if (activeBookingsForUser.Count >= 10)
-                throw new BookingUserOverflowException(userId, $"Booking for user with id {userId} is overflowed");
+            if (activeBookingsForUser.Count >= _systemSettings.UserBookingLimit)
+                throw new BookingUserOverflowException(userId, $"Booking for user with id {userId} is overflowed. " +
+                    $"Limit: {_systemSettings.UserBookingLimit}");
 
             var isReservOk = eventTmp.TryReserveSeats();
             if (isReservOk is false)

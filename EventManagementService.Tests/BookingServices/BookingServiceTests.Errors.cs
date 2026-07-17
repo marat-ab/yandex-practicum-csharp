@@ -5,6 +5,7 @@ using EventManagementService.Domain.Models;
 using EventManagementService.Domain.Models.Auth;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace EventManagementService.Tests.BookingServices;
 
@@ -149,11 +150,11 @@ public partial class BookingServiceTests
     {
         // Arrange
         var userId = Guid.NewGuid();
-        var countOfBookingForSingleUser = 10;
-
+        
         using var scope = _serviceProvider.CreateScope();
         var eventService = scope.ServiceProvider.GetRequiredService<IEventService>();
         var bookingService = scope.ServiceProvider.GetRequiredService<IBookingService>();
+        var systemSettings = scope.ServiceProvider.GetRequiredService<IOptions<SystemSettings>>().Value;
 
         var eventId = _events[0].Id;
         var countOfBookings = 20;
@@ -163,14 +164,15 @@ public partial class BookingServiceTests
         await eventService.UpdateEventAsync(_events[0]);
 
         // Act
-        for (int i = 0; i < countOfBookingForSingleUser; i++)
+        for (int i = 0; i < systemSettings.UserBookingLimit; i++)
             await bookingService.CreateBookingAsync(eventId, userId);
 
         Func<Task> act = async () => await bookingService.CreateBookingAsync(eventId, userId);
 
         // Assert
         await act.Should().ThrowAsync<BookingUserOverflowException>()
-           .WithMessage($"Booking for user with id {userId} is overflowed");
+           .WithMessage($"Booking for user with id {userId} is overflowed. " +
+           $"Limit: {systemSettings.UserBookingLimit}");
     }
 
     // Обычный пользователь не может отменить чужую бронь
