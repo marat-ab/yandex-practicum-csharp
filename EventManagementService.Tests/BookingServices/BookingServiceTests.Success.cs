@@ -2,6 +2,7 @@
 using EventManagementService.Application.Services;
 using EventManagementService.Domain.Exceptions;
 using EventManagementService.Domain.Models;
+using EventManagementService.Domain.Models.Auth;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -275,4 +276,56 @@ public partial class BookingServiceTests
         countOfBookingsForUser1.Should().Be(countOfBookingForSingleUser);
         countOfBookingsForUser2.Should().Be(countOfBookingForSingleUser);
     }
+
+    // Владелец брони отменяет свою бронь
+    [Fact]
+    [Trait("Category", "Success")]
+    public async Task CancelSelfBooking()
+    {
+        // Arrange
+        var userId = Guid.NewGuid();
+        var userRole = Role.User;
+        using var scope = _serviceProvider.CreateScope();
+        var eventService = scope.ServiceProvider.GetRequiredService<IEventService>();
+        var bookingService = scope.ServiceProvider.GetRequiredService<IBookingService>();
+        var bookingRepository = scope.ServiceProvider.GetRequiredService<IBookingRepository>();
+        
+        var eventId = _events[0].Id;
+
+        // Act
+        var booking = await bookingService.CreateBookingAsync(eventId, userId);
+        await bookingService.CancelBookingAsync(booking.Id, userId, userRole);
+        var bookingFromStore = await bookingRepository.SelectBookingByIdAsync(booking.Id);
+
+        // Assert
+        bookingFromStore.Status.Should().Be(BookingStatus.Cancelled);
+    }
+
+    // Администратор может отменить чужую бронь
+    [Fact]
+    [Trait("Category", "Success")]
+    public async Task CancelNotSelfBookingByAdmin()
+    {
+        // Arrange
+        var userId = Guid.NewGuid();
+
+        var adminId = Guid.NewGuid();
+        var adminRole = Role.Admin;
+
+        using var scope = _serviceProvider.CreateScope();
+        var eventService = scope.ServiceProvider.GetRequiredService<IEventService>();
+        var bookingService = scope.ServiceProvider.GetRequiredService<IBookingService>();
+        var bookingRepository = scope.ServiceProvider.GetRequiredService<IBookingRepository>();
+
+        var eventId = _events[0].Id;
+
+        // Act
+        var booking = await bookingService.CreateBookingAsync(eventId, userId);
+        await bookingService.CancelBookingAsync(booking.Id, adminId, adminRole);
+        var bookingFromStore = await bookingRepository.SelectBookingByIdAsync(booking.Id);
+
+        // Assert
+        bookingFromStore.Status.Should().Be(BookingStatus.Cancelled);
+    }
+
 }

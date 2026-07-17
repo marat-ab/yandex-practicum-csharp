@@ -1,5 +1,8 @@
-﻿using EventManagementService.Application.Services;
+﻿using EventManagementService.Application.Repositories;
+using EventManagementService.Application.Services;
 using EventManagementService.Domain.Exceptions;
+using EventManagementService.Domain.Models;
+using EventManagementService.Domain.Models.Auth;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -168,5 +171,59 @@ public partial class BookingServiceTests
         // Assert
         await act.Should().ThrowAsync<BookingUserOverflowException>()
            .WithMessage($"Booking for user with id {userId} is overflowed");
-    }    
+    }
+
+    // Обычный пользователь не может отменить чужую бронь
+    [Fact]
+    [Trait("Category", "Success")]
+    public async Task CancelNotSelfBookingByUser()
+    {
+        // Arrange
+        var user1Id = Guid.NewGuid();
+
+        var user2Id = Guid.NewGuid();
+        var user2Role = Role.User;
+
+        using var scope = _serviceProvider.CreateScope();
+        var eventService = scope.ServiceProvider.GetRequiredService<IEventService>();
+        var bookingService = scope.ServiceProvider.GetRequiredService<IBookingService>();
+        var bookingRepository = scope.ServiceProvider.GetRequiredService<IBookingRepository>();
+
+        var eventId = _events[0].Id;
+
+        // Act
+        var booking = await bookingService.CreateBookingAsync(eventId, user1Id);
+        Func<Task> act = async () => await bookingService.CancelBookingAsync(booking.Id, user2Id, user2Role);
+
+        // Assert
+        await act.Should().ThrowAsync<BookingAccessDeniedException>()
+           .WithMessage($"User with id {user2Id} can't cancel booking " +
+                    $"with id {booking.Id}. No access to this booking.");
+    }
+
+
+    // Двойная отмена одного и того же бронирования
+    [Fact]
+    [Trait("Category", "Success")]
+    public async Task DoubleCancellation()
+    {
+        // Arrange
+        var userId = Guid.NewGuid();
+        var userRole = Role.User;
+        using var scope = _serviceProvider.CreateScope();
+        var eventService = scope.ServiceProvider.GetRequiredService<IEventService>();
+        var bookingService = scope.ServiceProvider.GetRequiredService<IBookingService>();
+        var bookingRepository = scope.ServiceProvider.GetRequiredService<IBookingRepository>();
+
+        var eventId = _events[0].Id;
+
+        // Act
+        var booking = await bookingService.CreateBookingAsync(eventId, userId);
+        await bookingService.CancelBookingAsync(booking.Id, userId, userRole);
+        Func<Task> act = async () => await bookingService.CancelBookingAsync(booking.Id, userId, userRole);
+
+        // Assert
+        await act.Should().ThrowAsync<BookingAlreadyCancelledException>()
+           .WithMessage($"Booking with id = {booking.Id} already cancelled");
+    }
 }
