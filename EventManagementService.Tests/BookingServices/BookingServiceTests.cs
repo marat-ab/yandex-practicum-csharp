@@ -1,7 +1,8 @@
 ﻿using EventManagementService.Application.Repositories;
 using EventManagementService.Application.Services;
-using EventManagementService.DataAccess;
 using EventManagementService.Domain.Models;
+using EventManagementService.Infrastructure.DataAccess;
+using EventManagementService.Infrastructure.Models;
 using EventManagementService.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,20 +16,20 @@ public partial class BookingServiceTests : IAsyncLifetime
                 title: "event 1",
                 description: "Description of event 1",
                 totalSeats: 1,
-                startAt: new DateTime(2026, 01, 01),
-                endAt: new DateTime(2026, 01, 03)),
+                startAt: new DateTime(DateTime.Now.Year + 1, 01, 01),
+                endAt: new DateTime(DateTime.Now.Year + 1, 01, 03)),
             new Event(id: Guid.NewGuid(),
                 title: "event 2",
                 description: "Description of event 2",
                 totalSeats: 1,
-                startAt: new DateTime(2026, 02, 04),
-                endAt: new DateTime(2026, 02, 05)),
+                startAt: new DateTime(DateTime.Now.Year + 1, 02, 04),
+                endAt: new DateTime(DateTime.Now.Year + 1, 02, 05)),
             new Event(id: Guid.NewGuid(),
                 title: "event 3",
                 description: "Description of event 3",
                 totalSeats: 1,
-                startAt: new DateTime(2026, 03, 07),
-                endAt: new DateTime(2026, 03, 10))];
+                startAt: new DateTime(DateTime.Now.Year + 1, 03, 07),
+                endAt: new DateTime(DateTime.Now.Year + 1, 03, 10))];
 
     private readonly ServiceProvider _serviceProvider;
 
@@ -46,6 +47,11 @@ public partial class BookingServiceTests : IAsyncLifetime
 
         services.AddScoped<IEventService, EventService>();
         services.AddScoped<IBookingService, BookingService>();
+
+        services.Configure<SystemSettings>(options =>
+        {
+            options.UserBookingLimit = 10;
+        });
 
         _serviceProvider = services.BuildServiceProvider();
     }

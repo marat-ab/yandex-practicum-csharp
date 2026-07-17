@@ -63,8 +63,14 @@ public class CustomExceptionHandlingMiddleware
             ValidationException _ => StatusCodes.Status400BadRequest,
             ArgumentException _ => StatusCodes.Status400BadRequest,
             EventNotFoundException _ => StatusCodes.Status404NotFound,
+            EventAlreadyStartedException _ => StatusCodes.Status400BadRequest,
             BookingNotFoundException _ => StatusCodes.Status404NotFound,
+            BookingUserOverflowException _ => StatusCodes.Status409Conflict,
+            BookingAccessDeniedException _ => StatusCodes.Status403Forbidden,
+            BookingAlreadyCancelledException _ => StatusCodes.Status400BadRequest,
             NoAvailableSeatsException _ => StatusCodes.Status409Conflict,
+            UserNotFoundException _ => StatusCodes.Status404NotFound,
+            UserBadPasswordException _ => StatusCodes.Status404NotFound,
             _ => StatusCodes.Status500InternalServerError
         };
 }

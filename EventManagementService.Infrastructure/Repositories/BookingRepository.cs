@@ -1,7 +1,7 @@
 ﻿using EventManagementService.Application.Repositories;
-using EventManagementService.DataAccess;
 using EventManagementService.Domain.Exceptions;
 using EventManagementService.Domain.Models;
+using EventManagementService.Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
 
 namespace EventManagementService.Infrastructure.Repositories;
@@ -61,6 +61,25 @@ public class BookingRepository : IBookingRepository
         }
     }
 
+    public async Task<IReadOnlyList<Booking>> SelectAllActiveBookingForUserAsync(Guid userId, CancellationToken ct = default)
+    {
+        try
+        {
+            await _bookingSemaphore.WaitAsync(ct);
+
+            var result = await _dbc.Bookings
+                .Where(x => x.UserId == userId)
+                .Where(x => x.Status == BookingStatus.Confirmed || x.Status == BookingStatus.Pending )
+                .ToListAsync(ct);
+
+            return result;
+        }
+        finally
+        {
+            _bookingSemaphore.Release();
+        }
+    }
+
     public async Task<IReadOnlyList<Booking>> SelectAllBookingByStatusAsync(BookingStatus status, CancellationToken ct = default)
     {
         try
@@ -79,20 +98,20 @@ public class BookingRepository : IBookingRepository
         }
     }
 
-    public async Task UpdateBookingAsync(Guid id, Booking newBooking, CancellationToken ct = default)
+    public async Task UpdateBookingAsync(Guid bookingId, Booking newBooking, CancellationToken ct = default)
     {
         try
         {
             await _bookingSemaphore.WaitAsync(ct);
 
             var bookingForUpdate = await _dbc.Bookings
-                .Where(x => x.Id == id)
+                .Where(x => x.Id == bookingId)
                 .FirstOrDefaultAsync(ct);
 
             if (bookingForUpdate is null)
             {
-                throw new BookingNotFoundException(id,
-                   $"Can't get booking with id = {id}. It is absent");
+                throw new BookingNotFoundException(bookingId,
+                   $"Can't get booking with id = {bookingId}. It is absent");
             }
 
             bookingForUpdate.EventId = newBooking.EventId;
