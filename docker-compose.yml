@@ -88,6 +88,7 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
+      
   # ─────────────────────────── Сервисы ───────────────────────────
   users-service:
     image: mcr.microsoft.com/dotnet/sdk:10.0
@@ -109,6 +110,28 @@ services:
       - "5273:8080"
     depends_on:
       users-db:
+        condition: service_healthy
+  
+  events-service:
+    image: mcr.microsoft.com/dotnet/sdk:10.0
+    container_name: eventapi-events-service
+    working_dir: /src
+    command:
+      - dotnet
+      - run
+      - --project
+      - Events/EventsService.Presentation/EventsService.Presentation.csproj
+      - --urls
+      - http://0.0.0.0:8080
+    volumes:
+      - .:/src
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__Default: Host=users-db;Port=5432;Database=events;Username=postgres;Password=postgres
+    ports:
+      - "5274:8080"
+    depends_on:
+      events-db:
         condition: service_healthy
 volumes:
   users-db-data:
