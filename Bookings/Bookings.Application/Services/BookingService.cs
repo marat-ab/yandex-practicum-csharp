@@ -9,7 +9,6 @@ namespace Bookings.Application.Services;
 public class BookingService : IBookingService
 {
     private readonly IBookingRepository _bookingRepository;
-    private readonly IEventService _eventService;
 
     private readonly SystemSettings _systemSettings;
 
@@ -17,11 +16,9 @@ public class BookingService : IBookingService
 
     public BookingService(
         IBookingRepository bookingRepository,
-        IEventService eventService,
         IOptions<SystemSettings> options)
     {
         _bookingRepository = bookingRepository;
-        _eventService = eventService;
 
         _systemSettings = options.Value;
     }

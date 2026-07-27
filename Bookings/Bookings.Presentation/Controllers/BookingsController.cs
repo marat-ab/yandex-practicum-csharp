@@ -66,4 +66,29 @@ public class BookingsController : ControllerBase
             return BadRequest("Bad user id or role");
         }
     }
+
+    [HttpPost("{eventId:Guid}/book")]
+    public async Task<ActionResult<BookingResponseDto>> BookingEvent(Guid eventId)
+    {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+
+        if (userIdClaim == null)
+            return BadRequest("User id not found");
+
+        if (Guid.TryParse(userIdClaim.Value, out Guid userId))
+        {
+            var bookingItem = await _bookingService.CreateBookingAsync(eventId, userId);
+
+            var url = $"/bookings/{bookingItem.Id}";
+            Response.Headers.Location = url;
+
+            var result = bookingItem.ToBookingResponseDto();
+
+            return Accepted(result);
+        }
+        else
+        {
+            return BadRequest("Bad user id");
+        }
+    }
 }
