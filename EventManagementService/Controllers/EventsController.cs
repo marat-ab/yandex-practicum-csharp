@@ -1,10 +1,13 @@
 ﻿using EventManagementService.Application.Models.Dto;
 using EventManagementService.Application.Models.Extensions;
 using EventManagementService.Application.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
-namespace EventManagementService.Controllers;
+namespace EventManagementService.Presentation.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("/[controller]")]
 public class EventsController : ControllerBase
@@ -21,6 +24,7 @@ public class EventsController : ControllerBase
     }
 
     // Events
+    [AllowAnonymous]
     [HttpGet]
     public async Task<ActionResult<IReadOnlyList<PaginatedResultResponseDto>>> GetAllEvents(
         [FromQuery] string? title,
@@ -35,6 +39,7 @@ public class EventsController : ControllerBase
         return Ok(result);
     }
 
+    [AllowAnonymous]
     [HttpGet("{id:Guid}")]
     public async Task<ActionResult<EventResponseDto>> GetEventById(Guid id)
     {
@@ -43,6 +48,7 @@ public class EventsController : ControllerBase
         return Ok(eventItem.ToEventResponseDto());
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<ActionResult<EventResponseDto>> AddEvent([FromBody] EventRequestDto eventRequest)
     {
@@ -58,6 +64,7 @@ public class EventsController : ControllerBase
             result);
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpPut("{id:Guid}")]
     public async Task<ActionResult> UpdateEvent(Guid id, [FromBody] EventRequestDto eventForUpdate)
     {
@@ -67,6 +74,7 @@ public class EventsController : ControllerBase
         return NoContent();
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpDelete("{id:Guid}")]
     public async Task<ActionResult> DeleteEvent(Guid id)
     {
@@ -79,13 +87,25 @@ public class EventsController : ControllerBase
     [HttpPost("{eventId:Guid}/book")]
     public async Task<ActionResult<BookingResponseDto>> BookingEvent(Guid eventId)
     {
-        var bookingItem = await _bookingService.CreateBookingAsync(eventId);
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
 
-        var url = $"/bookings/{bookingItem.Id}";
-        Response.Headers.Location = url;
+        if (userIdClaim == null)        
+            return BadRequest("User id not found");
 
-        var result = bookingItem.ToBookingResponseDto();
+        if (Guid.TryParse(userIdClaim.Value, out Guid userId))
+        {
+            var bookingItem = await _bookingService.CreateBookingAsync(eventId, userId);
 
-        return Accepted(result);
+            var url = $"/bookings/{bookingItem.Id}";
+            Response.Headers.Location = url;
+
+            var result = bookingItem.ToBookingResponseDto();
+
+            return Accepted(result);
+        }
+        else
+        {
+            return BadRequest("Bad user id");
+        }        
     }
 }

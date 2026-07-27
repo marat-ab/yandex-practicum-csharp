@@ -1,5 +1,5 @@
-﻿using EventManagementService.DataAccess;
-using EventManagementService.Domain.Models;
+﻿using EventManagementService.Domain.Models;
+using EventManagementService.Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using Testcontainers.PostgreSql;

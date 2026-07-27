@@ -1,8 +1,8 @@
 ﻿using EventManagementService.Domain.Models;
-using EventManagementService.Models;
+using EventManagementService.Domain.Models.Auth;
 using Microsoft.EntityFrameworkCore;
 
-namespace EventManagementService.DataAccess;
+namespace EventManagementService.Infrastructure.DataAccess;
 
 public class AppDbContext : DbContext
 {
@@ -11,6 +11,7 @@ public class AppDbContext : DbContext
 
     public DbSet<Event> Events => Set<Event>();
     public DbSet<Booking> Bookings => Set<Booking>();
+    public DbSet<User> Users => Set<User>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

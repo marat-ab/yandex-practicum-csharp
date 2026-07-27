@@ -1,4 +1,5 @@
 ﻿using EventManagementService.Domain.Models;
+using EventManagementService.Domain.Models.Auth;
 using EventManagementService.Infrastructure.Repositories;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
@@ -17,13 +18,22 @@ public partial class BookingRepositoryTests
         // Arrange
         await using var context = CreateContext();
 
+        var userId = Guid.NewGuid();
+        var userForAdd = new User(
+            id: userId,
+            login: "admin",
+            passwordHash: "240BE518FABD2724DDB6F04EEB1DA5967448D7E831C08C8FA822809F74C720A9",
+            role: Role.Admin);
+
+        context.Users.Add(userForAdd);
+
         var eventId = Guid.NewGuid();
         var eventForAdd = new Event(id: eventId,
             title: "Some event",
             description: "Description of event",
             totalSeats: 1,
-            startAt: new DateTime(2026, 01, 01, 0, 0, 0, DateTimeKind.Utc),
-            endAt: new DateTime(2026, 01, 03, 0, 0, 0, DateTimeKind.Utc));
+            startAt: new DateTime(DateTime.Now.Year + 1, 01, 01, 0, 0, 0, DateTimeKind.Utc),
+            endAt: new DateTime(DateTime.Now.Year + 1, 01, 03, 0, 0, 0, DateTimeKind.Utc));
 
         context.Events.Add(eventForAdd);
 
@@ -32,6 +42,7 @@ public partial class BookingRepositoryTests
 
         var newBooking = new Booking(id: bookingId,
             eventId: eventId,
+            userId: userId,
             status: BookingStatus.Pending,
             createdAt: createdAt);
 
@@ -67,21 +78,31 @@ public partial class BookingRepositoryTests
         // Arrange
         await using var context = CreateContext();
 
+        var userId = Guid.NewGuid();
+        var userForAdd = new User(
+            id: userId,
+            login: "admin",
+            passwordHash: "240BE518FABD2724DDB6F04EEB1DA5967448D7E831C08C8FA822809F74C720A9",
+            role: Role.Admin);
+
+        context.Users.Add(userForAdd);
+
         var eventId = Guid.NewGuid();
         var eventForAdd = new Event(id: eventId,
             title: "Some event",
             description: "Description of event",
             totalSeats: 1,
-            startAt: new DateTime(2026, 01, 01, 0, 0, 0, DateTimeKind.Utc),
-            endAt: new DateTime(2026, 01, 03, 0, 0, 0, DateTimeKind.Utc));
+            startAt: new DateTime(DateTime.Now.Year + 1, 01, 01, 0, 0, 0, DateTimeKind.Utc),
+            endAt: new DateTime(DateTime.Now.Year + 1, 01, 03, 0, 0, 0, DateTimeKind.Utc));
 
         context.Events.Add(eventForAdd);
 
         var bookingId = Guid.NewGuid();
-        var createdAt = new DateTime(2026, 01, 05, 0, 0, 0, DateTimeKind.Utc);
+        var createdAt = new DateTime(DateTime.Now.Year + 1, 01, 05, 0, 0, 0, DateTimeKind.Utc);
 
         var newBooking = new Booking(id: bookingId,
             eventId: eventId,
+            userId: userId,
             status: BookingStatus.Pending,
             createdAt: createdAt);
 
@@ -116,13 +137,22 @@ public partial class BookingRepositoryTests
         // Arrange
         await using var context = CreateContext();
 
+        var userId = Guid.NewGuid();
+        var userForAdd = new User(
+            id: userId,
+            login: "admin",
+            passwordHash: "240BE518FABD2724DDB6F04EEB1DA5967448D7E831C08C8FA822809F74C720A9",
+            role: Role.Admin);
+
+        context.Users.Add(userForAdd);
+
         var eventId = Guid.NewGuid();
         var eventForAdd = new Event(id: eventId,
             title: "Some event",
             description: "Description of event",
             totalSeats: 1,
-            startAt: new DateTime(2026, 01, 01, 0, 0, 0, DateTimeKind.Utc),
-            endAt: new DateTime(2026, 01, 03, 0, 0, 0, DateTimeKind.Utc));
+            startAt: new DateTime(DateTime.Now.Year + 1, 01, 01, 0, 0, 0, DateTimeKind.Utc),
+            endAt: new DateTime(DateTime.Now.Year + 1, 01, 03, 0, 0, 0, DateTimeKind.Utc));
 
         context.Events.Add(eventForAdd);
 
@@ -131,13 +161,15 @@ public partial class BookingRepositoryTests
 
         var booking1 = new Booking(id: booking1Id,
             eventId: eventId,
+            userId: userId,
             status: BookingStatus.Pending,
             createdAt: DateTime.UtcNow.AddMinutes(-1));
 
-        var createdAt = new DateTime(2026, 01, 05, 0, 0, 0, DateTimeKind.Utc);
+        var createdAt = new DateTime(DateTime.Now.Year + 1, 01, 05, 0, 0, 0, DateTimeKind.Utc);
 
         var booking2 = new Booking(id: booking2Id,
             eventId: eventId,
+            userId: userId,
             status: BookingStatus.Confirmed,
             createdAt: createdAt);
 
@@ -173,26 +205,37 @@ public partial class BookingRepositoryTests
         // Arrange
         await using var context = CreateContext();
 
+        var userId = Guid.NewGuid();
+        var userForAdd = new User(
+            id: userId,
+            login: "admin",
+            passwordHash: "240BE518FABD2724DDB6F04EEB1DA5967448D7E831C08C8FA822809F74C720A9",
+            role: Role.Admin);
+
+        context.Users.Add(userForAdd);
+
         var eventId = Guid.NewGuid();
         var eventForAdd = new Event(id: eventId,
             title: "Some event",
             description: "Description of event",
             totalSeats: 1,
-            startAt: new DateTime(2026, 01, 01, 0, 0, 0, DateTimeKind.Utc),
-            endAt: new DateTime(2026, 01, 03, 0, 0, 0, DateTimeKind.Utc));
+            startAt: new DateTime(DateTime.Now.Year + 1, 01, 01, 0, 0, 0, DateTimeKind.Utc),
+            endAt: new DateTime(DateTime.Now.Year + 1, 01, 03, 0, 0, 0, DateTimeKind.Utc));
 
         context.Events.Add(eventForAdd);
 
         var bookingId = Guid.NewGuid();
-        var createdAt = new DateTime(2026, 01, 05, 0, 0, 0, DateTimeKind.Utc);
+        var createdAt = new DateTime(DateTime.Now.Year + 1, 01, 05, 0, 0, 0, DateTimeKind.Utc);
 
         var newBooking = new Booking(id: bookingId,
             eventId: eventId,
+            userId: userId,
             status: BookingStatus.Pending,
             createdAt: createdAt);
 
         var bookingForUpdate = new Booking(id: bookingId,
             eventId: eventId,
+            userId: userId,
             status: BookingStatus.Confirmed,
             createdAt: createdAt);
 
