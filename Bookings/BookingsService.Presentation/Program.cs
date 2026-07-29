@@ -29,6 +29,10 @@ builder.Services.Configure<SystemSettings>(
     builder.Configuration.GetSection("SystemSettings")
 );
 
+builder.Services.Configure<KafkaSettings>(
+    builder.Configuration.GetSection("Kafka")
+);
+
 builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new OpenApiInfo
