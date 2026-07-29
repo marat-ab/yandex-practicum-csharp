@@ -128,9 +128,12 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ConnectionStrings__Default: Host=events-db;Port=5432;Database=events;Username=postgres;Password=postgres
+      Kafka__BootstrapServers: kafka:29092
     ports:
       - "5274:8080"
     depends_on:
+      kafka:
+        condition: service_healthy
       events-db:
         condition: service_healthy
 
@@ -150,9 +153,12 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ConnectionStrings__Default: Host=bookings-db;Port=5432;Database=bookings;Username=postgres;Password=postgres
+      Kafka__BootstrapServers: kafka:29092
     ports:
       - "5275:8080"
     depends_on:
+      kafka:
+        condition: service_healthy
       bookings-db:
         condition: service_healthy
 volumes:
