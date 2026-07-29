@@ -1,9 +1,10 @@
 ﻿using Bookings.Application.Services;
+using Bookings.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace EventManagementService.Application.HostedServices;
+namespace Bookings.Application.HostedServices;
 
 public class BookingHostedService : BackgroundService
 {
@@ -35,8 +36,7 @@ public class BookingHostedService : BackgroundService
                 using (var scope = _scopeFactory.CreateScope())
                 {
                     var bookingService = scope.ServiceProvider.GetRequiredService<IBookingService>();
-                    var eventService = scope.ServiceProvider.GetRequiredService<IEventService>();
-
+                    
                     // Получение списка бронирований в статусе Pending
                     var tmpBookings = await bookingService.GetAllBookingByStatusAsync(BookingStatus.Pending, stoppingToken);
 
@@ -62,27 +62,27 @@ public class BookingHostedService : BackgroundService
         using var scope = _scopeFactory.CreateScope();
 
         var bookingService = scope.ServiceProvider.GetRequiredService<IBookingService>();
-        var eventService = scope.ServiceProvider.GetRequiredService<IEventService>();
-
+        
         await Task.Delay(_bookingProcessingEmulationTime, stoppingToken);
 
         try
         {
             await _processingSemaphore.WaitAsync(stoppingToken);
 
-            var eventTmp = await eventService.FindEventByIdAsync(booking.EventId, stoppingToken);
+            // Проверка убрана. Согласовано с куратором
+            //var eventTmp = await eventService.FindEventByIdAsync(booking.EventId, stoppingToken);
 
-            // Событие не найдено
-            if (eventTmp is null)
-            {
-                var rejectedBooking = booking.Reject();
+            //// Событие не найдено
+            //if (eventTmp is null)
+            //{
+            //    var rejectedBooking = booking.Reject();
 
-                await bookingService.UpdateBookingAsync(booking.Id, rejectedBooking, stoppingToken);
+            //    await bookingService.UpdateBookingAsync(booking.Id, rejectedBooking, stoppingToken);
 
-                _logger.LogWarning($"Event with id {booking.EventId} is absent.");
+            //    _logger.LogWarning($"Event with id {booking.EventId} is absent.");
 
-                return;
-            }
+            //    return;
+            //}
 
             // Событие найдено
             var confirmedBooking = booking.Confirm();
@@ -102,12 +102,13 @@ public class BookingHostedService : BackgroundService
             await bookingService.UpdateBookingAsync(booking.Id, rejectedBooking, stoppingToken);
 
             // Вернуть место
-            var eventTmp = await eventService.FindEventByIdAsync(booking.EventId, stoppingToken);
-            if (eventTmp is not null)
-            {
-                eventTmp.ReleaseSeats();
-                await eventService.UpdateEventAsync(eventTmp, stoppingToken);
-            }
+            // Проверка убрана. Согласовано с куратором
+            //var eventTmp = await eventService.FindEventByIdAsync(booking.EventId, stoppingToken);
+            //if (eventTmp is not null)
+            //{
+            //    eventTmp.ReleaseSeats();
+            //    await eventService.UpdateEventAsync(eventTmp, stoppingToken);
+            //}
 
             _logger.LogError(exception: ex, message: ex.Message);
         }

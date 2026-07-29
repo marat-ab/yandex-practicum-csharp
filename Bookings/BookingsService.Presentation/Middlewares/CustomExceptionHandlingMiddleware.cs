@@ -1,7 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Bookings.Domain.Exceptions;
+using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
-using EventManagementService.Domain.Exceptions;
-using Bookings.Domain.Exceptions;
 
 namespace Bookings.Presentation.Middlewares;
 
@@ -62,7 +61,7 @@ public class CustomExceptionHandlingMiddleware
         => ex switch
         {
             ValidationException _ => StatusCodes.Status400BadRequest,
-            ArgumentException _ => StatusCodes.Status400BadRequest,           
+            ArgumentException _ => StatusCodes.Status400BadRequest,
             BookingNotFoundException _ => StatusCodes.Status404NotFound,
             BookingUserOverflowException _ => StatusCodes.Status409Conflict,
             BookingAccessDeniedException _ => StatusCodes.Status403Forbidden,

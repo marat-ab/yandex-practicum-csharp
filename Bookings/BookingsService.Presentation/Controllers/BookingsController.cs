@@ -10,7 +10,7 @@ namespace Bookings.Presentation.Controllers;
 
 [Authorize]
 [ApiController]
-[Route("/[controller]")]
+[Route("/")]
 public class BookingsController : ControllerBase
 {
     private readonly IBookingService _bookingService;
@@ -20,7 +20,7 @@ public class BookingsController : ControllerBase
         _bookingService = bookingService;
     }
 
-    [HttpGet("{id:Guid}")]
+    [HttpGet("bookings/{id:Guid}")]
     public async Task<ActionResult<BookingResponseDto>> GetBookingById(Guid id)
     {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
@@ -42,7 +42,7 @@ public class BookingsController : ControllerBase
         }
     }
 
-    [HttpDelete("{id:Guid}")]
+    [HttpDelete("bookings/{id:Guid}")]
     public async Task<ActionResult> DeleteBookingById(Guid id)
     {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
@@ -67,7 +67,7 @@ public class BookingsController : ControllerBase
         }
     }
 
-    [HttpPost("{eventId:Guid}/book")]
+    [HttpPost("events/{eventId:Guid}/book")]
     public async Task<ActionResult<BookingResponseDto>> BookingEvent(Guid eventId)
     {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);

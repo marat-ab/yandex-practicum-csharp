@@ -1,5 +1,5 @@
-﻿using Bookings.Application.Services;
-using EventManagementService.Application.HostedServices;
+﻿using Bookings.Application.HostedServices;
+using Bookings.Application.Services;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Bookings.Application;

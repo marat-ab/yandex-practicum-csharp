@@ -19,10 +19,10 @@
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="10.1.7" />
 	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Bookings.Application\Bookings.Application.csproj" />
-    <ProjectReference Include="..\Bookings.Domain\Bookings.Domain.csproj" />
-    <ProjectReference Include="..\Bookings.Infrastructure\Bookings.Infrastructure.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\BookingsService.Application\BookingsService.Application.csproj" />
+	  <ProjectReference Include="..\BookingsService.Domain\BookingsService.Domain.csproj" />
+	  <ProjectReference Include="..\BookingsService.Infrastructure\BookingsService.Infrastructure.csproj" />
+	</ItemGroup>
 
 </Project>
