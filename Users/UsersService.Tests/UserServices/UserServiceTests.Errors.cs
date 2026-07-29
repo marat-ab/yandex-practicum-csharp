@@ -1,18 +1,12 @@
-﻿using EventManagementService.Application.Repositories;
-using EventManagementService.Application.Services;
-using EventManagementService.Domain.Exceptions;
-using EventManagementService.Domain.Models;
-using EventManagementService.Domain.Models.Auth;
-using EventManagementService.Infrastructure.Models;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System.Data;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
+using UsersService.Application.Services;
+using UsersService.Domain.Exceptions;
+using UsersService.Domain.Models.Auth;
+using UsersService.Infrastructure.Models;
 
-namespace EventManagementService.Tests.UserServices;
+namespace UsersService.Tests.UserServices;
 
 public partial class UserServiceTests
 {

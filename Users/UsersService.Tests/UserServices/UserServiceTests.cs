@@ -1,15 +1,14 @@
-﻿using EventManagementService.Application.Repositories;
-using EventManagementService.Application.Services;
-using EventManagementService.Domain.Models;
-using EventManagementService.Domain.Services;
-using EventManagementService.Infrastructure.DataAccess;
-using EventManagementService.Infrastructure.Models;
-using EventManagementService.Infrastructure.Repositories;
-using EventManagementService.Infrastructure.Services;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using UsersService.Application.Repositories;
+using UsersService.Application.Services;
+using UsersService.Domain.Services;
+using UsersService.Infrastructure.DataAccess;
+using UsersService.Infrastructure.Models;
+using UsersService.Infrastructure.Repositories;
+using UsersService.Infrastructure.Services;
 
-namespace EventManagementService.Tests.UserServices;
+namespace UsersService.Tests.UserServices;
 
 public partial class UserServiceTests : IAsyncLifetime
 {

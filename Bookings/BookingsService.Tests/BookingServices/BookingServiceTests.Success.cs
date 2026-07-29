@@ -1,12 +1,11 @@
-﻿using EventManagementService.Application.Repositories;
-using EventManagementService.Application.Services;
-using EventManagementService.Domain.Exceptions;
-using EventManagementService.Domain.Models;
-using EventManagementService.Domain.Models.Auth;
+﻿using Bookings.Domain.Models;
+using Bookings.Domain.Models.Auth;
+using BookingsService.Application.Repositories;
+using BookingsService.Application.Services;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace EventManagementService.Tests.BookingServices;
+namespace BookingsService.Tests.BookingServices;
 
 public partial class BookingServiceTests
 {
@@ -17,30 +16,18 @@ public partial class BookingServiceTests
     {
         // Arrange
         using var scope = _serviceProvider.CreateScope();
-        var eventService = scope.ServiceProvider.GetRequiredService<IEventService>();
         var bookingService = scope.ServiceProvider.GetRequiredService<IBookingService>();
 
         var eventId = Guid.NewGuid();
         var userId = Guid.NewGuid();
-        var newEvent = new Event(id: eventId,
-               title: "event 4",
-               description: "Description of event 4",
-               totalSeats: 1,
-               startAt: new DateTime(DateTime.Now.Year + 1, 01, 01),
-               endAt: new DateTime(DateTime.Now.Year + 1, 01, 03));
-
-        var expectedAvailableSeats = 0;
+        
         var expectedBookingStatus = BookingStatus.Pending;
-
-        await eventService.AddEventAsync(newEvent);
 
         // Act
         var booking = await bookingService.CreateBookingAsync(eventId, userId);
-        var eventAfterBooking = await eventService.GetEventByIdAsync(eventId);
 
         // Assert
         booking.Status.Should().Be(expectedBookingStatus);
-        eventAfterBooking.AvailableSeats.Should().Be(expectedAvailableSeats);
     }
 
     // Создание нескольких броней для одного события 
@@ -50,19 +37,12 @@ public partial class BookingServiceTests
     {
         // Arrange
         using var scope = _serviceProvider.CreateScope();
-        var eventService = scope.ServiceProvider.GetRequiredService<IEventService>();
         var bookingService = scope.ServiceProvider.GetRequiredService<IBookingService>();
 
         var userId = Guid.NewGuid();
 
-        var eventId = _events[0].Id;
+        var eventId = Guid.NewGuid();
         var countOfBookings = 10;
-        _events[0].TotalSeats = countOfBookings;
-        _events[0].AvailableSeats = countOfBookings;
-
-        await eventService.UpdateEventAsync(_events[0]);
-
-        var expectedAvailableSeats = 0;
 
         // Act
         var ids = new HashSet<Guid>();
@@ -72,11 +52,8 @@ public partial class BookingServiceTests
             ids.Add(booking.Id);
         }
 
-        var eventFromDb = await eventService.GetEventByIdAsync(eventId);
-
         // Assert
         ids.Count.Should().Be(countOfBookings);
-        eventFromDb.AvailableSeats.Should().Be(expectedAvailableSeats);
     }
 
     // Получение брони по Id
@@ -88,10 +65,9 @@ public partial class BookingServiceTests
         var userId = Guid.NewGuid();
 
         using var scope = _serviceProvider.CreateScope();
-        var eventService = scope.ServiceProvider.GetRequiredService<IEventService>();
         var bookingService = scope.ServiceProvider.GetRequiredService<IBookingService>();
 
-        var eventId = _events[0].Id;
+        var eventId = Guid.NewGuid();
 
         // Act
         var booking = await bookingService.CreateBookingAsync(eventId, userId);
@@ -112,11 +88,11 @@ public partial class BookingServiceTests
         var userId = Guid.NewGuid();
 
         using var scope = _serviceProvider.CreateScope();
-        var eventService = scope.ServiceProvider.GetRequiredService<IEventService>();
         var bookingService = scope.ServiceProvider.GetRequiredService<IBookingService>();
 
-        var eventId = _events[0].Id;
+        var eventId = Guid.NewGuid();
         var expectedStatus = newBookingStatus;
+
         // Act
         var booking = await bookingService.CreateBookingAsync(eventId, userId);
         var updatedBooking = newBookingStatus switch
@@ -132,68 +108,7 @@ public partial class BookingServiceTests
         bookingFromService.Status.Should().Be(newBookingStatus);
         bookingFromService.ProcessedAt.Should().NotBeNull();
     }
-
-    // Защита от овербукинга
-    [Fact]
-    [Trait("Category", "Success")]
-    public async Task OverbookingProtection()
-    {
-        // Arrange
-        var userId = Guid.NewGuid();
-
-        var countOfSeats = 5;
-        var eventId = _events[0].Id;
-        _events[0].TotalSeats = countOfSeats;
-        _events[0].AvailableSeats = countOfSeats;
-
-        using (var scopeArrange = _serviceProvider.CreateScope())
-        {
-            var eventServiceArrange = scopeArrange.ServiceProvider.GetRequiredService<IEventService>();
-            await eventServiceArrange.UpdateEventAsync(_events[0]);
-        }
-
-        var countOfConcurrencyRequests = 20;
-        var expectedCountWithExceptionNotAvailable = 15;
-        var expectedAvailableSeats = 0;
-
-        var tasks = Enumerable.Range(0, countOfConcurrencyRequests)
-            .Select(_ => Task.Run(async () =>
-            {
-                using var scope = _serviceProvider.CreateScope();
-                var bookingService = scope.ServiceProvider.GetRequiredService<IBookingService>();
-                await bookingService.CreateBookingAsync(eventId, userId);
-            }))
-            .ToList();
-
-        // Act
-        var resultTask = Task.WhenAll(tasks);
-
-        try
-        {
-            await resultTask;
-        }
-        catch { }
-
-        var bookingsWithExceptionNotAvailable = 0;
-        foreach (var task in tasks)
-        {
-            if (task.IsFaulted && task.Exception.InnerException is NoAvailableSeatsException)
-                bookingsWithExceptionNotAvailable++;
-        }
-
-        using var scopeAct = _serviceProvider.CreateScope();
-        var eventService = scopeAct.ServiceProvider.GetRequiredService<IEventService>();
-        var bookingService = scopeAct.ServiceProvider.GetRequiredService<IBookingService>();
-
-        var bookings = await bookingService.GetAllBookingByStatusAsync(BookingStatus.Pending);
-        var eventValue = await eventService.GetEventByIdAsync(eventId);
-
-        // Assert
-        bookings.Count.Should().Be(countOfSeats);
-        bookingsWithExceptionNotAvailable.Should().Be(expectedCountWithExceptionNotAvailable);
-        eventValue.AvailableSeats.Should().Be(expectedAvailableSeats);
-    }
-
+       
     // Тест на уникальность Id при конкурентных запросах
     [Fact]
     [Trait("Category", "Success")]
@@ -203,15 +118,10 @@ public partial class BookingServiceTests
         var userId = Guid.NewGuid();
 
         using var scope = _serviceProvider.CreateScope();
-        var eventService = scope.ServiceProvider.GetRequiredService<IEventService>();
         var bookingService = scope.ServiceProvider.GetRequiredService<IBookingService>();
 
         var countOfSeats = 10;
-        var eventId = _events[0].Id;
-        _events[0].TotalSeats = countOfSeats;
-        _events[0].AvailableSeats = countOfSeats;
-
-        await eventService.UpdateEventAsync(_events[0]);
+        var eventId = Guid.NewGuid();
 
         var countOfExpectedBookings = 10;
 
@@ -251,16 +161,11 @@ public partial class BookingServiceTests
         var countOfBookingForSingleUser = 10;
 
         using var scope = _serviceProvider.CreateScope();
-        var eventService = scope.ServiceProvider.GetRequiredService<IEventService>();
         var bookingService = scope.ServiceProvider.GetRequiredService<IBookingService>();
         var bookingRepository = scope.ServiceProvider.GetRequiredService<IBookingRepository>();
 
-        var eventId = _events[0].Id;
+        var eventId = Guid.NewGuid();
         var countOfBookings = 30;
-        _events[0].TotalSeats = countOfBookings - 1;
-        _events[0].AvailableSeats = countOfBookings - 1;
-
-        await eventService.UpdateEventAsync(_events[0]);
 
         // Act
         for (int i = 0; i < countOfBookingForSingleUser; i++)
@@ -286,12 +191,10 @@ public partial class BookingServiceTests
         var userId = Guid.NewGuid();
         var userRole = Role.User;
         using var scope = _serviceProvider.CreateScope();
-        var eventService = scope.ServiceProvider.GetRequiredService<IEventService>();
         var bookingService = scope.ServiceProvider.GetRequiredService<IBookingService>();
         var bookingRepository = scope.ServiceProvider.GetRequiredService<IBookingRepository>();
-        
-        var eventId = _events[0].Id;
-        var expectedAvailableSeats = _events[0].AvailableSeats;
+
+        var eventId = Guid.NewGuid();
 
         // Act
         var booking = await bookingService.CreateBookingAsync(eventId, userId);
@@ -300,7 +203,6 @@ public partial class BookingServiceTests
 
         // Assert
         bookingFromStore.Status.Should().Be(BookingStatus.Cancelled);
-        _events[0].AvailableSeats.Should().Be(expectedAvailableSeats);
     }
 
     // Администратор может отменить чужую бронь
@@ -315,11 +217,10 @@ public partial class BookingServiceTests
         var adminRole = Role.Admin;
 
         using var scope = _serviceProvider.CreateScope();
-        var eventService = scope.ServiceProvider.GetRequiredService<IEventService>();
         var bookingService = scope.ServiceProvider.GetRequiredService<IBookingService>();
         var bookingRepository = scope.ServiceProvider.GetRequiredService<IBookingRepository>();
 
-        var eventId = _events[0].Id;
+        var eventId = Guid.NewGuid();
 
         // Act
         var booking = await bookingService.CreateBookingAsync(eventId, userId);

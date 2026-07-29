@@ -1,10 +1,10 @@
-﻿using EventManagementService.Application.Services;
-using EventManagementService.Domain.Exceptions;
-using EventManagementService.Domain.Models;
+﻿using EventsService.Application.Services;
+using EventsService.Domain.Exceptions;
+using EventsService.Domain.Models;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace EventManagementService.Tests.EventServices;
+namespace EventsService.Tests.EventServices;
 
 public partial class EventServiceTests
 {
