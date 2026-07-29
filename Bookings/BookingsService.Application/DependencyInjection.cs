@@ -1,8 +1,8 @@
-﻿using Bookings.Application.HostedServices;
-using Bookings.Application.Services;
+﻿using BookingsService.Application.HostedServices;
+using BookingsService.Application.Services;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Bookings.Application;
+namespace BookingsService.Application;
 
 public static class DependencyInjection
 {

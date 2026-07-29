@@ -1,10 +1,10 @@
-﻿using Bookings.Application.Models.Dto;
-using Bookings.Application.Services;
-using Bookings.Domain.Models.Auth;
+﻿using Bookings.Domain.Models.Auth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using Bookings.Application.Models.Extensions;
+using BookingsService.Application.Models.Dto;
+using BookingsService.Application.Models.Extensions;
+using BookingsService.Application.Services;
 
 namespace Bookings.Presentation.Controllers;
 

@@ -1,7 +1,7 @@
-﻿using Bookings.Application.Models.Dto;
-using Bookings.Domain.Models;
+﻿using Bookings.Domain.Models;
+using BookingsService.Application.Models.Dto;
 
-namespace Bookings.Application.Models.Extensions;
+namespace BookingsService.Application.Models.Extensions;
 
 public static class BookingExtensions
 {

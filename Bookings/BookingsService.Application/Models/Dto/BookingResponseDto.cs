@@ -1,6 +1,6 @@
 ﻿using Bookings.Domain.Models;
 
-namespace Bookings.Application.Models.Dto;
+namespace BookingsService.Application.Models.Dto;
 
 public sealed class BookingResponseDto
 {

@@ -1,6 +1,6 @@
 ﻿using Bookings.Domain.Models;
 
-namespace Bookings.Application.Repositories;
+namespace BookingsService.Application.Repositories;
 
 public interface IBookingRepository
 {

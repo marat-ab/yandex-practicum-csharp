@@ -1,7 +1,7 @@
 ﻿using Bookings.Domain.Models;
 using Bookings.Domain.Models.Auth;
 
-namespace Bookings.Application.Services;
+namespace BookingsService.Application.Services;
 
 public interface IBookingService
 {

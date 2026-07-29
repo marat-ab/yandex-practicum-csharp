@@ -1,15 +1,16 @@
-﻿using Bookings.Application.Repositories;
-using Bookings.Domain.Exceptions;
+﻿using Bookings.Domain.Exceptions;
 using Bookings.Domain.Models;
 using Bookings.Domain.Models.Auth;
+using BookingsService.Application.Brokers;
+using BookingsService.Application.Repositories;
 using Microsoft.Extensions.Options;
 
-namespace Bookings.Application.Services;
+namespace BookingsService.Application.Services;
 
 public class BookingService : IBookingService
 {
     private readonly IBookingRepository _bookingRepository;
-
+    
     private readonly SystemSettings _systemSettings;
 
     private static readonly SemaphoreSlim _bookingSemaphore = new(1, 1);
@@ -18,7 +19,7 @@ public class BookingService : IBookingService
         IBookingRepository bookingRepository,
         IOptions<SystemSettings> options)
     {
-        _bookingRepository = bookingRepository;
+        _bookingRepository = bookingRepository;        
 
         _systemSettings = options.Value;
     }

@@ -1,14 +1,17 @@
-﻿using Bookings.Application.Services;
-using Bookings.Domain.Models;
+﻿using Bookings.Domain.Models;
+using BookingsService.Application.Brokers;
+using BookingsService.Application.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace Bookings.Application.HostedServices;
+namespace BookingsService.Application.HostedServices;
 
 public class BookingHostedService : BackgroundService
 {
     private readonly IServiceScopeFactory _scopeFactory;
+    private readonly IBookingProducer _bookingProducer;
+
     private readonly ILogger<BookingHostedService> _logger;
 
     private readonly TimeSpan _bookingCheckCycleDelay = TimeSpan.FromSeconds(1);
@@ -18,9 +21,11 @@ public class BookingHostedService : BackgroundService
 
     public BookingHostedService(
         IServiceScopeFactory scopeFactory,
+        IBookingProducer bookingProducer,
         ILogger<BookingHostedService> logger)
     {
         _scopeFactory = scopeFactory;
+        _bookingProducer = bookingProducer;
         _logger = logger;
     }
 
@@ -88,6 +93,8 @@ public class BookingHostedService : BackgroundService
             var confirmedBooking = booking.Confirm();
 
             await bookingService.UpdateBookingAsync(booking.Id, confirmedBooking, stoppingToken);
+
+            await _bookingProducer.BookingConfirmedAsync(confirmedBooking.EventId);
 
         }
         catch (OperationCanceledException)

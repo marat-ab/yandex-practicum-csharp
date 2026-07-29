@@ -1,7 +1,7 @@
-﻿using Bookings.Application.Repositories;
-using Bookings.Domain.Exceptions;
+﻿using Bookings.Domain.Exceptions;
 using Bookings.Domain.Models;
 using Bookings.Infrastructure.DataAccess;
+using BookingsService.Application.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace Bookings.Infrastructure.Repositories;
