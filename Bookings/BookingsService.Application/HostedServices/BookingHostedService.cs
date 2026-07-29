@@ -73,23 +73,7 @@ public class BookingHostedService : BackgroundService
         try
         {
             await _processingSemaphore.WaitAsync(stoppingToken);
-
-            // Проверка убрана. Согласовано с куратором
-            //var eventTmp = await eventService.FindEventByIdAsync(booking.EventId, stoppingToken);
-
-            //// Событие не найдено
-            //if (eventTmp is null)
-            //{
-            //    var rejectedBooking = booking.Reject();
-
-            //    await bookingService.UpdateBookingAsync(booking.Id, rejectedBooking, stoppingToken);
-
-            //    _logger.LogWarning($"Event with id {booking.EventId} is absent.");
-
-            //    return;
-            //}
-
-            // Событие найдено
+                        
             var confirmedBooking = booking.Confirm();
 
             await bookingService.UpdateBookingAsync(booking.Id, confirmedBooking, stoppingToken);
@@ -108,16 +92,7 @@ public class BookingHostedService : BackgroundService
             var rejectedBooking = booking.Reject();
 
             await bookingService.UpdateBookingAsync(booking.Id, rejectedBooking, stoppingToken);
-
-            // Вернуть место
-            // Проверка убрана. Согласовано с куратором
-            //var eventTmp = await eventService.FindEventByIdAsync(booking.EventId, stoppingToken);
-            //if (eventTmp is not null)
-            //{
-            //    eventTmp.ReleaseSeats();
-            //    await eventService.UpdateEventAsync(eventTmp, stoppingToken);
-            //}
-
+                        
             _logger.LogError(exception: ex, message: ex.Message);
         }
         finally

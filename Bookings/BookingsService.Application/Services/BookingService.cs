@@ -29,29 +29,12 @@ public class BookingService : IBookingService
         try
         {
             await _bookingSemaphore.WaitAsync(ct);
-
-            // Проверки убраны. Согласовано с куратором
-            //var eventTmp = await _eventService.FindEventByIdAsync(eventId, ct);
-
-            //if (eventTmp is null)
-            //    throw new EventNotFoundException(eventId, $"Absent event with id: {eventId}");
-
-            //var currentDt = DateTime.UtcNow;
-            //if (currentDt >= eventTmp.StartAt)
-            //    throw new EventAlreadyStartedException(eventId, $"Event with id {eventId} is already started");
-
+                       
             var activeBookingsForUser = await _bookingRepository.SelectAllActiveBookingForUserAsync(userId, ct);
             if (activeBookingsForUser.Count >= _systemSettings.UserBookingLimit)
                 throw new BookingUserOverflowException(userId, $"Booking for user with id {userId} is overflowed. " +
                     $"Limit: {_systemSettings.UserBookingLimit}");
-
-            // Проверка убрана. Согласовано с куратором
-            //var isReservOk = eventTmp.TryReserveSeats();
-            //if (isReservOk is false)
-            //    throw new NoAvailableSeatsException(eventId, $"No available seats for event with id {eventId}");
-
-            //await _eventService.UpdateEventAsync(eventTmp, ct);
-
+                        
             var newGuid = Guid.NewGuid();
             var createdAt = DateTime.UtcNow;
             var newBooking = new Booking(id: newGuid,
@@ -90,11 +73,6 @@ public class BookingService : IBookingService
         booking.Cancel();
 
         await UpdateBookingAsync(bookingId, booking, ct);
-
-        // Проверка убрана. Согласовано с куратором
-        //var eventForBooking = await _eventService.GetEventByIdAsync(booking.EventId, ct);
-        //eventForBooking.ReleaseSeats();
-        //await _eventService.UpdateEventAsync(eventForBooking, ct);
     }
 
     public async Task<Booking> GetBookingByIdAsync(Guid bookingId, Guid userId, CancellationToken ct = default)

@@ -24,8 +24,4 @@
     <Project Path="Users/UsersService.Infrastructure/UsersService.Infrastructure.csproj" Id="ae29886b-c242-46c3-ab8c-61d0a81552c4" />
     <Project Path="Users/UsersService.Presentation/UsersService.Presentation.csproj" Id="0028cddc-2e3a-48f5-9154-9f6a675bfc4d" />
   </Folder>
-  <Project Path="EventManagementService.Application/EventManagementService.Application.csproj" Id="01aecffb-a0dc-4cf5-85ea-3130a1a6b9ca" />
-  <Project Path="EventManagementService.Domain/EventManagementService.Domain.csproj" Id="eddc4683-2b6b-4942-be60-9dae5f461f36" />
-  <Project Path="EventManagementService.Infrastructure/EventManagementService.Infrastructure.csproj" Id="afd8fc01-01bc-4444-ba97-f96f25ff8a35" />
-  <Project Path="EventManagementService/EventManagementService.Presentation.csproj" />
 </Solution>
