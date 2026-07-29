@@ -127,11 +127,33 @@ services:
       - .:/src
     environment:
       ASPNETCORE_ENVIRONMENT: Development
-      ConnectionStrings__Default: Host=users-db;Port=5432;Database=events;Username=postgres;Password=postgres
+      ConnectionStrings__Default: Host=events-db;Port=5432;Database=events;Username=postgres;Password=postgres
     ports:
       - "5274:8080"
     depends_on:
       events-db:
+        condition: service_healthy
+
+  bookings-service:
+    image: mcr.microsoft.com/dotnet/sdk:10.0
+    container_name: eventapi-bookings-service
+    working_dir: /src
+    command:
+      - dotnet
+      - run
+      - --project
+      - Bookings/BookingsService.Presentation/BookingsService.Presentation.csproj
+      - --urls
+      - http://0.0.0.0:8080
+    volumes:
+      - .:/src
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__Default: Host=bookings-db;Port=5432;Database=bookings;Username=postgres;Password=postgres
+    ports:
+      - "5275:8080"
+    depends_on:
+      bookings-db:
         condition: service_healthy
 volumes:
   users-db-data:

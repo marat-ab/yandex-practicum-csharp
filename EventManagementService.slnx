@@ -1,9 +1,9 @@
 <Solution>
   <Folder Name="/Bookings/">
-    <Project Path="Bookings/Bookings.Application/Bookings.Application.csproj" Id="65da1c16-07f1-461d-b9b2-ac74dae88653" />
-    <Project Path="Bookings/Bookings.Domain/Bookings.Domain.csproj" />
-    <Project Path="Bookings/Bookings.Infrastructure/Bookings.Infrastructure.csproj" />
-    <Project Path="Bookings/Bookings.Presentation/Bookings.Presentation.csproj" Id="6e227c91-8254-4e3f-94cd-9415affd7377" />
+    <Project Path="Bookings/BookingsService.Application/BookingsService.Application.csproj" />
+    <Project Path="Bookings/BookingsService.Domain/BookingsService.Domain.csproj" />
+    <Project Path="Bookings/BookingsService.Infrastructure/BookingsService.Infrastructure.csproj" />
+    <Project Path="Bookings/BookingsService.Presentation/BookingsService.Presentation.csproj" />
   </Folder>
   <Folder Name="/Events/">
     <Project Path="Events/EventsService.Application/EventsService.Application.csproj" Id="0263ed2e-fb0c-49bf-abe6-8619a794c3d4" />
