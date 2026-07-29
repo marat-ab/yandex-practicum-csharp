@@ -1,5 +1,6 @@
 ﻿using BrokerLibrary.Kafka;
 using Confluent.Kafka;
+using Confluent.Kafka.Admin;
 using EventsService.Application.Services;
 using EventsService.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
@@ -33,9 +34,18 @@ internal class BookingConfirmedHostedService : BackgroundService
         _kafkaSettings = options.Value;
     }
 
-    protected override Task ExecuteAsync(CancellationToken stoppingToken)
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        return Task.Run(() => Consume(stoppingToken), stoppingToken);        
+        try
+        {
+            await CreateTopicAsync();
+
+            await Task.Run(() => Consume(stoppingToken), stoppingToken);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(exception: ex, message: "Some error occur when work with broker");
+        }        
     }
 
     private async Task Consume(CancellationToken stoppingToken)
@@ -106,6 +116,38 @@ internal class BookingConfirmedHostedService : BackgroundService
         finally
         {
             consumer.Close();
+        }
+    }
+
+    public async Task CreateTopicAsync()
+    {
+        var config = new AdminClientConfig
+        {
+            BootstrapServers = _kafkaSettings.BootstrapServers
+        };
+
+        using var adminClient = new AdminClientBuilder(config).Build();
+
+        var topicSpecification = new TopicSpecification
+        {
+            Name = KafkaTopics.BookingConfirmed,
+            NumPartitions = 1,
+            ReplicationFactor = 1
+        };
+
+        try
+        {
+            await adminClient.CreateTopicsAsync(new[] { topicSpecification },
+                new CreateTopicsOptions
+                {
+                    OperationTimeout = TimeSpan.FromSeconds(10),
+                    RequestTimeout = TimeSpan.FromSeconds(15)
+                });
+
+        }
+        catch (CreateTopicsException ex) when (ex.Results.All(x => x.Error.Code == ErrorCode.TopicAlreadyExists))
+        {
+            
         }
     }
 }
