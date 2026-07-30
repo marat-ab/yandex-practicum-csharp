@@ -34,7 +34,9 @@ public partial class BookingRepositoryTests
 
         // Assert
         await using var verifyContext = CreateContext();
-        var bookingFromDb = await verifyContext.Bookings.Include(x => x.EventId).FirstOrDefaultAsync();
+        var bookingFromDb = await verifyContext.Bookings
+            .Where(x => x.EventId == eventId)
+            .FirstOrDefaultAsync();
 
         bookingFromDb.Should().NotBeNull();
 
