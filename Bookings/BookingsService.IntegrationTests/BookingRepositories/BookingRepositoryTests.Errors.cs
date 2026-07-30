@@ -1,8 +1,8 @@
-﻿using EventManagementService.Domain.Exceptions;
-using EventManagementService.Infrastructure.Repositories;
+﻿using Bookings.Domain.Exceptions;
+using Bookings.Infrastructure.Repositories;
 using FluentAssertions;
 
-namespace EventManagementService.IntegrationTests.BookingRepositories;
+namespace BookingsService.IntegrationTests.BookingRepositories;
 
 public partial class BookingRepositoryTests
 {

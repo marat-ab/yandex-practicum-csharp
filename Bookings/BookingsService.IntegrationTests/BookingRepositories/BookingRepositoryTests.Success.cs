@@ -1,10 +1,9 @@
-﻿using EventManagementService.Domain.Models;
-using EventManagementService.Domain.Models.Auth;
-using EventManagementService.Infrastructure.Repositories;
+﻿using Bookings.Domain.Models;
+using Bookings.Infrastructure.Repositories;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 
-namespace EventManagementService.IntegrationTests.BookingRepositories;
+namespace BookingsService.IntegrationTests.BookingRepositories;
 
 public partial class BookingRepositoryTests
 {
@@ -19,24 +18,7 @@ public partial class BookingRepositoryTests
         await using var context = CreateContext();
 
         var userId = Guid.NewGuid();
-        var userForAdd = new User(
-            id: userId,
-            login: "admin",
-            passwordHash: "240BE518FABD2724DDB6F04EEB1DA5967448D7E831C08C8FA822809F74C720A9",
-            role: Role.Admin);
-
-        context.Users.Add(userForAdd);
-
         var eventId = Guid.NewGuid();
-        var eventForAdd = new Event(id: eventId,
-            title: "Some event",
-            description: "Description of event",
-            totalSeats: 1,
-            startAt: new DateTime(DateTime.Now.Year + 1, 01, 01, 0, 0, 0, DateTimeKind.Utc),
-            endAt: new DateTime(DateTime.Now.Year + 1, 01, 03, 0, 0, 0, DateTimeKind.Utc));
-
-        context.Events.Add(eventForAdd);
-
         var bookingId = Guid.NewGuid();
         var createdAt = new DateTime(2026, 01, 05, 0, 0, 0, DateTimeKind.Utc);
 
@@ -46,16 +28,13 @@ public partial class BookingRepositoryTests
             status: BookingStatus.Pending,
             createdAt: createdAt);
 
-        var expectedBooking = newBooking;
-        expectedBooking.Event = eventForAdd;
-
         // Act
         var repository = new BookingRepository(context);
         await repository.InsertBookingAsync(newBooking);
 
         // Assert
         await using var verifyContext = CreateContext();
-        var bookingFromDb = await verifyContext.Bookings.Include(x => x.Event).FirstOrDefaultAsync();
+        var bookingFromDb = await verifyContext.Bookings.Include(x => x.EventId).FirstOrDefaultAsync();
 
         bookingFromDb.Should().NotBeNull();
 
@@ -64,8 +43,6 @@ public partial class BookingRepositoryTests
         bookingFromDb.Status.Should().Be(BookingStatus.Pending);
         bookingFromDb.CreatedAt.Should().Be(createdAt);
         bookingFromDb.ProcessedAt.Should().BeNull();
-
-        bookingFromDb.Event!.Id.Should().Be(eventId);
     }
 
     // Получение брони по Id
@@ -79,24 +56,7 @@ public partial class BookingRepositoryTests
         await using var context = CreateContext();
 
         var userId = Guid.NewGuid();
-        var userForAdd = new User(
-            id: userId,
-            login: "admin",
-            passwordHash: "240BE518FABD2724DDB6F04EEB1DA5967448D7E831C08C8FA822809F74C720A9",
-            role: Role.Admin);
-
-        context.Users.Add(userForAdd);
-
         var eventId = Guid.NewGuid();
-        var eventForAdd = new Event(id: eventId,
-            title: "Some event",
-            description: "Description of event",
-            totalSeats: 1,
-            startAt: new DateTime(DateTime.Now.Year + 1, 01, 01, 0, 0, 0, DateTimeKind.Utc),
-            endAt: new DateTime(DateTime.Now.Year + 1, 01, 03, 0, 0, 0, DateTimeKind.Utc));
-
-        context.Events.Add(eventForAdd);
-
         var bookingId = Guid.NewGuid();
         var createdAt = new DateTime(DateTime.Now.Year + 1, 01, 05, 0, 0, 0, DateTimeKind.Utc);
 
@@ -123,8 +83,6 @@ public partial class BookingRepositoryTests
         bookingFromDb.Status.Should().Be(BookingStatus.Pending);
         bookingFromDb.CreatedAt.Should().Be(createdAt);
         bookingFromDb.ProcessedAt.Should().BeNull();
-
-        bookingFromDb.Event!.Id.Should().Be(eventId);
     }
 
     // Получение брони по статусу
@@ -138,24 +96,8 @@ public partial class BookingRepositoryTests
         await using var context = CreateContext();
 
         var userId = Guid.NewGuid();
-        var userForAdd = new User(
-            id: userId,
-            login: "admin",
-            passwordHash: "240BE518FABD2724DDB6F04EEB1DA5967448D7E831C08C8FA822809F74C720A9",
-            role: Role.Admin);
-
-        context.Users.Add(userForAdd);
-
         var eventId = Guid.NewGuid();
-        var eventForAdd = new Event(id: eventId,
-            title: "Some event",
-            description: "Description of event",
-            totalSeats: 1,
-            startAt: new DateTime(DateTime.Now.Year + 1, 01, 01, 0, 0, 0, DateTimeKind.Utc),
-            endAt: new DateTime(DateTime.Now.Year + 1, 01, 03, 0, 0, 0, DateTimeKind.Utc));
-
-        context.Events.Add(eventForAdd);
-
+        
         var booking1Id = Guid.NewGuid();
         var booking2Id = Guid.NewGuid();
 
@@ -191,8 +133,6 @@ public partial class BookingRepositoryTests
         bookingFromDb.Status.Should().Be(BookingStatus.Confirmed);
         bookingFromDb.CreatedAt.Should().Be(createdAt);
         bookingFromDb.ProcessedAt.Should().BeNull();
-
-        bookingFromDb.Event!.Id.Should().Be(eventId);
     }
 
     // Обновление брони
@@ -206,24 +146,7 @@ public partial class BookingRepositoryTests
         await using var context = CreateContext();
 
         var userId = Guid.NewGuid();
-        var userForAdd = new User(
-            id: userId,
-            login: "admin",
-            passwordHash: "240BE518FABD2724DDB6F04EEB1DA5967448D7E831C08C8FA822809F74C720A9",
-            role: Role.Admin);
-
-        context.Users.Add(userForAdd);
-
         var eventId = Guid.NewGuid();
-        var eventForAdd = new Event(id: eventId,
-            title: "Some event",
-            description: "Description of event",
-            totalSeats: 1,
-            startAt: new DateTime(DateTime.Now.Year + 1, 01, 01, 0, 0, 0, DateTimeKind.Utc),
-            endAt: new DateTime(DateTime.Now.Year + 1, 01, 03, 0, 0, 0, DateTimeKind.Utc));
-
-        context.Events.Add(eventForAdd);
-
         var bookingId = Guid.NewGuid();
         var createdAt = new DateTime(DateTime.Now.Year + 1, 01, 05, 0, 0, 0, DateTimeKind.Utc);
 

@@ -1,9 +1,9 @@
-﻿using EventManagementService.Domain.Exceptions;
-using EventManagementService.Domain.Models;
-using EventManagementService.Infrastructure.Repositories;
+﻿using EventsService.Domain.Exceptions;
+using EventsService.Domain.Models;
+using EventsService.Infrastructure.Repositories;
 using FluentAssertions;
 
-namespace EventManagementService.IntegrationTests.EventRepositories;
+namespace EventsService.IntegrationTests.EventRepositories;
 
 public partial class EventRepositoryTests
 {

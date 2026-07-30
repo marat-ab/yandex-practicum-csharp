@@ -1,10 +1,10 @@
-﻿using EventManagementService.Domain.Models;
-using EventManagementService.Infrastructure.DataAccess;
+﻿using EventsService.Domain.Models;
+using EventsService.Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using Testcontainers.PostgreSql;
 
-namespace EventManagementService.IntegrationTests.EventRepositories;
+namespace EventsService.IntegrationTests.EventRepositories;
 
 public partial class EventRepositoryTests : IAsyncLifetime
 {

@@ -1,9 +1,9 @@
-﻿using EventManagementService.Infrastructure.DataAccess;
+﻿using Bookings.Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using Testcontainers.PostgreSql;
 
-namespace EventManagementService.IntegrationTests.BookingRepositories;
+namespace BookingsService.IntegrationTests.BookingRepositories;
 
 public partial class BookingRepositoryTests : IAsyncLifetime
 {
@@ -15,7 +15,6 @@ public partial class BookingRepositoryTests : IAsyncLifetime
             .WithDatabase("eventapi")
             .Build();
     }
-
 
     // IAsyncLifetime
     public async Task InitializeAsync()
