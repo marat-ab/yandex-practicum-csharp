@@ -161,6 +161,11 @@ services:
         condition: service_healthy
       bookings-db:
         condition: service_healthy
+  # ─────────────────────────── Кэш ───────────────────────────
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379" 
 volumes:
   users-db-data:
   events-db-data:
