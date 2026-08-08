@@ -66,4 +66,30 @@ internal class RedisCacheService : ICacheService
 
         return result;
     }
+
+    public async Task<IReadOnlyList<Event>?> FindTopEventsAsync(int countInTop)
+    {
+        const string key = "events:top10";
+
+        RedisValue cached = await _db.StringGetAsync(key);
+
+        if (cached.HasValue)
+        {
+            return JsonSerializer.Deserialize<List<Event>>(cached.ToString());
+        }
+
+        var events = await _eventRepository.SelectAllEventsAsync();
+
+        var topEvents = events.Events
+            .Select(x => new { Event = x, PrcSales = (x.TotalSeats - x.AvailableSeats) / x.TotalSeats })
+            .OrderByDescending(x => x.PrcSales)
+            .Take(countInTop)
+            .Select(x => x.Event)
+            .ToList();
+
+        string json = JsonSerializer.Serialize(topEvents);
+        await _db.StringSetAsync(key, json, TimeSpan.FromSeconds(_redisSettings.EventsTtlSeconds));
+
+        return topEvents;
+    }
 }

@@ -99,4 +99,14 @@ public class EventService : IEventService
     {
         await _eventRepository.DeleteEventAsync(id, ct);
     }
+
+    public async Task<IReadOnlyList<Event>> GetTopEvents(int countInTop, CancellationToken ct = default)
+    {
+        var result = await _cacheService.FindTopEventsAsync(countInTop);
+
+        if (result is null)
+            return [];
+
+        return result;
+    }
 }

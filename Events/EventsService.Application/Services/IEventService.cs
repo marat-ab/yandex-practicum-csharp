@@ -21,4 +21,6 @@ public interface IEventService
     Task UpdateEventAsync(Event eventForUpdate, CancellationToken ct = default);
 
     Task RemoveEventAsync(Guid id, CancellationToken ct = default);
+
+    Task<IReadOnlyList<Event>> GetTopEvents(int countInTop, CancellationToken ct = default);
 }
