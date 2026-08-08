@@ -1,0 +1,28 @@
+﻿using Bookings.Domain.Exceptions;
+using Bookings.Infrastructure.Repositories;
+using FluentAssertions;
+
+namespace BookingsService.IntegrationTests.BookingRepositories;
+
+public partial class BookingRepositoryTests
+{
+    // Получение брони по несуществующему id
+    [Fact]
+    [Trait("Category", "Success")]
+    public async Task GetBookingWithNotExistingId()
+    {
+        await ResetDatabaseAsync();
+
+        // Arrange
+        await using var context = CreateContext();
+        var bookingId = Guid.NewGuid();
+
+        // Act
+        var repository = new BookingRepository(context);
+        Func<Task> act = async () => await repository.SelectBookingByIdAsync(bookingId);
+
+        // Assert
+        await act.Should().ThrowAsync<BookingNotFoundException>()
+           .WithMessage($"Can't get booking with id = {bookingId}. It is absent");
+    }
+}

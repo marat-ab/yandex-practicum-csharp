@@ -1,102 +1,63 @@
-# Сборка, публикация и запуск проекта 
+# Состав системы
 
-## Сборка проекта
+Система состоит из трех микросервисов, трех баз данных и брокера (Kafka).
 
-Для сборки проекта выполните следующую команду из каталога с решением:
+## Микросервис UsersService
 
-`$ dotnet build ./EventManagementService/EventManagementService.csproj`
+Исходный код сервиса лежит в каталоге Users, состоит из следующих проектов:
 
-## Публикация проекта
+* UsersService.Application - бизнес логика и абстракции. Зависит только от Domain.
+* UsersService.Domain - компоненты описывающие предметную область, не зависящие от технологий. Не зависит от внешних проектов.
+* UsersService.Infrastructure - реализации, которые зависят от внешних технологий. Зависит от Application и Domain.
+* UsersService.Presentation - контроллеры и middlewares. Зависит от Domain, Application и Infrastructure.
+* UsersService.Tests - юнит тесты
 
-Для Windows в каталоге с решением выполнить:
+UsersService работает с БД users.
 
-`$ dotnet publish ./EventManagementService/EventManagementService.csproj -c Release -r win-x64`
+Для работы с сервисом через Swagger запустите проект и перейдите в браузере по следующему адресу:
+`http://localhost:5273/swagger/index.html`
 
-Для Linux в каталоге с проектом выполнить:
+## Микросервис EventsService
 
-`$ dotnet publish ./EventManagementService/EventManagementService.csproj -c Release -r linux-x64`
+Исходный код сервиса лежит в каталоге Events, состоит из следующих проектов:
 
-## Сборка и запуск проекта
+* EventsService.Application - бизнес логика и абстракции. Зависит только от Domain.
+* EventsService.Domain - компоненты описывающие предметную область, не зависящие от технологий. Не зависит от внешних проектов.
+* EventsService.Infrastructure - реализации, которые зависят от внешних технологий. Зависит от Application и Domain.
+* EventsService.Presentation - контроллеры и middlewares. Зависит от Domain, Application и Infrastructure.
+* EventsService.Tests - юнит тесты
 
-Для сборки с последующим запуском проекта выполните следующую команду из каталога с решением:
+UsersService работает с БД events.
 
-`$ dotnet run --project ./EventManagementService/EventManagementService.csproj`
+Для работы с сервисом через Swagger запустите проект и перейдите в браузере по следующему адресу:
+`http://localhost:5274/swagger/index.html`
 
-## Запуск тестов
+## Микросервис BookingsService
 
-Для запуска тестирования следующую команду из каталога с решением:
+Исходный код сервиса лежит в каталоге Bookings, состоит из следующих проектов:
 
-`$ dotnet test`
+* BookingsService.Application - бизнес логика и абстракции. Зависит только от Domain.
+* BookingsService.Domain - компоненты описывающие предметную область, не зависящие от технологий. Не зависит от внешних проектов.
+* BookingsService.Infrastructure - реализации, которые зависят от внешних технологий. Зависит от Application и Domain.
+* BookingsService.Presentation - контроллеры и middlewares. Зависит от Domain, Application и Infrastructure.
+* BookingsService.Tests - юнит тесты
 
-## Загрузка и установка зависимостей
+UsersService работает с БД bookings.
 
-Для загрузки и установки зависимостей проекта выполните следующую команду из каталога с решением:
+Для работы с сервисом через Swagger запустите проект и перейдите в браузере по следующему адресу:
+`http://localhost:5275/swagger/index.html`
 
-`$ dotnet restore ./EventManagementService/EventManagementService.csproj`
+# Запуск всей системы
 
-# Работа со Swagger
+Описание контейнера с Kafka, базами данных и сервисами представлено в `docker-compose.yml`. Для запуска всех элементов системы в корне репозитория выполните команду: `docker compose up -d`, для остановки: `docker compose down`.
 
-Для работы со Swagger запустите проект и перейдите в браузере по следующему адресу:
-`http://localhost:port/swagger/index.html`
+# Логика фоновой обработки (поток данных BookingConfirmed)
 
-На место `port` впишите порт, с которым запустился EventManagementService.
-
-# Архитектура проекта
-
-Проект разделен на четыре слоя:
-
-* EventManagementService.Domain - компоненты описывающие предметную область, не зависящие от технологий. Не зависит от внешних проектов.
-* EventManagementService.Application - бизнес логика и абстракции. Зависит только от Domain.
-* EventManagementService.Infrastructure - реализации, которые зависят от внешних технологий. Зависит от Application и Domain.
-* EventManagementService.Presentation - контроллеры и middlewares. Зависит от Domain, Application и Infrastructure.
-
-# Логика фоновой обработки
-
-Для бронирования события используется эндпоинт `/events/{id}/book`, при работе с которым передается `id` события для бронирования. Если событие с указанным `id` есть, то клиенту возвращается ответ `202 Accepted`. В фоновом режиме выполняется задача обновления статусов бронирований в рамках Background-сервиса `BookingHostedService`. В этом сервисе, один раз в секунду, из базы данных, в которой хранится информация о бронировании, извлекаются все бронирования со статусом `Pending`, для каждого экземпляра создается задача имитирующая работу с внешней системой с паузой на две секунды. Выполняется ожидание всех запущенных задач, после этого обновляется статус всех бронирований на `Confirmed` с установкой значения для `ProcessedAt`.
+Для бронирования события используется эндпоинт `/events/{id}/book`, при работе с которым передается `id` события для бронирования. Если событие с указанным `id` есть, то клиенту возвращается ответ `202 Accepted`. В фоновом режиме выполняется задача обновления статусов бронирований в рамках Background-сервиса `BookingHostedService` в сервисе BookingsService. В этом сервисе, один раз в секунду, из базы данных, в которой хранится информация о бронировании, извлекаются все бронирования со статусом `Pending`, для каждого экземпляра создается задача имитирующая работу с внешней системой с паузой на две секунды. Выполняется ожидание всех запущенных задач, после этого обновляется статус всех бронирований на `Confirmed` с установкой значения для `ProcessedAt`. Id события, для которого было подтверждено бронирование, отправляется в брокер Kafka, в топик booking-confirmed. Сервис EventsService подписывается на топик booking-confirmed, если там обнаруживает событие, то извлекает из его EventId и для такого события из БД уменьшает количество свободных мест.
 
 # Использованные примитивы синхронизации
 
-Для синхронизации доступа к коллекциям, с которыми работают `EventService` и `BookingService`, используется `SemaphoreSlim`.
-
-# Работа с БД
-## Требование PostgreSQL для запуска приложения
-
-В проекте используется база данных PostgreSQL. Описание контейнера с БД представлено в `docker-compose.yml`. Для запуска БД в корне репозитория выполните команду: `docker compose up -d`, для остановки: `docker compose down`.
-
-Для подключения к БД используется строка подключения из файла `appsettings.json` раздел `ConnectionStrings`:
-``` json
-"ConnectionStrings": {
-  "Default": "Host=localhost;Port=5432;Database=eventapi;Username=postgres;Password=postgres"
-},
-```
-
-Параметры подключения:
-
-* `Host` - хост, на котором развернута БД;
-* `Port` - порт, через который можно подключиться к БД;
-* `Database` - имя БД;
-* `Username` - имя пользователя, под которым будет осуществляться подключение к БД;
-* `Password` - пароль пользователя.
-
-Схема БД создаётся автоматически при запуске через `EnsureCreated`.
-
-В тестах используется InMemory-вариант БД.
-
-## Миграции
-
-Схема БД управляется миграциями EF Core. 
-
-На текущий момент создана одна миграция с именем `InitialCreate`, команда для создания миграции: 
-`dotnet ef migrations add InitialCreate`.
-
-Миграция применяется автоматически при запуске проекта, для этого в `Program.cs` предусмотрен следующий вызов:
-``` csharp
-using (var scope = app.Services.CreateScope())
-{
-    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    db.Database.Migrate();
-}
-```
+Для синхронизации доступа к коллекциям используется `SemaphoreSlim`.
 
 # Аутентификации и авторизация
 
@@ -115,12 +76,9 @@ using (var scope = app.Services.CreateScope())
 
 # Тесты
 
-Тесты разделены на две группы:
+У каждого микросервиса есть проект с unit-тестами, он имеет имя `[Сервис].Tests`.
 
-* Unit-тесты - проект `EventManagementService.Tests`
-* Интеграционные тесты - проект `EventManagementService.IntegrationTests`
-
-Для запуска интеграционных тестов нужен Docker.
+У микросервисов EventsService и BookingsService есть проект с интеграционными тестами, он имеет имя `[Сервис].IntegrationTests`.
 
 # HTTP API
 
@@ -242,5 +200,3 @@ using (var scope = app.Services.CreateScope())
 1. Пользователь получает список событий через `GET /events`, находит среди них подходящее и запоминает его `id`.
 2. Выполняет бронирование события через `POST /events/{id}/book`, где `id` - это идентификатор интересующего события. Из заголовка Location либо тела ответа извлекает и запоминает id бронирования.
 3. Периодически проверяет статус бронирования через `GET /bookings/{id}`, где `id` - это идентификатор бронирования.
-
-Сценарий с овербукингом: если общее количество мест у события пять, а количество попыток бронирования (`POST /events/{id}/book`) больше пяти, то все последующие попытки забронировать место на такое событие будут сопровождаться выдачей кода ответа 409.

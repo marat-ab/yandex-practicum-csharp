@@ -1,0 +1,188 @@
+﻿using Bookings.Domain.Models;
+using Bookings.Infrastructure.Repositories;
+using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
+
+namespace BookingsService.IntegrationTests.BookingRepositories;
+
+public partial class BookingRepositoryTests
+{
+    // Создание брони
+    [Fact]
+    [Trait("Category", "Success")]
+    public async Task CreateBooking()
+    {
+        await ResetDatabaseAsync();
+
+        // Arrange
+        await using var context = CreateContext();
+
+        var userId = Guid.NewGuid();
+        var eventId = Guid.NewGuid();
+        var bookingId = Guid.NewGuid();
+        var createdAt = new DateTime(2026, 01, 05, 0, 0, 0, DateTimeKind.Utc);
+
+        var newBooking = new Booking(id: bookingId,
+            eventId: eventId,
+            userId: userId,
+            status: BookingStatus.Pending,
+            createdAt: createdAt);
+
+        // Act
+        var repository = new BookingRepository(context);
+        await repository.InsertBookingAsync(newBooking);
+
+        // Assert
+        await using var verifyContext = CreateContext();
+        var bookingFromDb = await verifyContext.Bookings
+            .Where(x => x.EventId == eventId)
+            .FirstOrDefaultAsync();
+
+        bookingFromDb.Should().NotBeNull();
+
+        bookingFromDb.Id.Should().Be(bookingId);
+        bookingFromDb.EventId.Should().Be(eventId);
+        bookingFromDb.Status.Should().Be(BookingStatus.Pending);
+        bookingFromDb.CreatedAt.Should().Be(createdAt);
+        bookingFromDb.ProcessedAt.Should().BeNull();
+    }
+
+    // Получение брони по Id
+    [Fact]
+    [Trait("Category", "Success")]
+    public async Task GetBookingById()
+    {
+        await ResetDatabaseAsync();
+
+        // Arrange
+        await using var context = CreateContext();
+
+        var userId = Guid.NewGuid();
+        var eventId = Guid.NewGuid();
+        var bookingId = Guid.NewGuid();
+        var createdAt = new DateTime(DateTime.Now.Year + 1, 01, 05, 0, 0, 0, DateTimeKind.Utc);
+
+        var newBooking = new Booking(id: bookingId,
+            eventId: eventId,
+            userId: userId,
+            status: BookingStatus.Pending,
+            createdAt: createdAt);
+
+        var expectedBooking = newBooking;
+
+        context.Bookings.Add(newBooking);
+        await context.SaveChangesAsync();
+
+        // Act
+        var repository = new BookingRepository(context);
+        var bookingFromDb = await repository.SelectBookingByIdAsync(bookingId);
+
+        // Assert
+        bookingFromDb.Should().NotBeNull();
+
+        bookingFromDb.Id.Should().Be(bookingId);
+        bookingFromDb.EventId.Should().Be(eventId);
+        bookingFromDb.Status.Should().Be(BookingStatus.Pending);
+        bookingFromDb.CreatedAt.Should().Be(createdAt);
+        bookingFromDb.ProcessedAt.Should().BeNull();
+    }
+
+    // Получение брони по статусу
+    [Fact]
+    [Trait("Category", "Success")]
+    public async Task GetBookingByStatus()
+    {
+        await ResetDatabaseAsync();
+
+        // Arrange
+        await using var context = CreateContext();
+
+        var userId = Guid.NewGuid();
+        var eventId = Guid.NewGuid();
+        
+        var booking1Id = Guid.NewGuid();
+        var booking2Id = Guid.NewGuid();
+
+        var booking1 = new Booking(id: booking1Id,
+            eventId: eventId,
+            userId: userId,
+            status: BookingStatus.Pending,
+            createdAt: DateTime.UtcNow.AddMinutes(-1));
+
+        var createdAt = new DateTime(DateTime.Now.Year + 1, 01, 05, 0, 0, 0, DateTimeKind.Utc);
+
+        var booking2 = new Booking(id: booking2Id,
+            eventId: eventId,
+            userId: userId,
+            status: BookingStatus.Confirmed,
+            createdAt: createdAt);
+
+        context.Bookings.Add(booking1);
+        context.Bookings.Add(booking2);
+        await context.SaveChangesAsync();
+
+        var expectedBooking = booking2;
+
+        // Act
+        var repository = new BookingRepository(context);
+        var bookingFromDb = (await repository.SelectAllBookingByStatusAsync(BookingStatus.Confirmed))[0];
+
+        // Assert
+        bookingFromDb.Should().NotBeNull();
+
+        bookingFromDb.Id.Should().Be(booking2Id);
+        bookingFromDb.EventId.Should().Be(eventId);
+        bookingFromDb.Status.Should().Be(BookingStatus.Confirmed);
+        bookingFromDb.CreatedAt.Should().Be(createdAt);
+        bookingFromDb.ProcessedAt.Should().BeNull();
+    }
+
+    // Обновление брони
+    [Fact]
+    [Trait("Category", "Success")]
+    public async Task UpdateBooking()
+    {
+        await ResetDatabaseAsync();
+
+        // Arrange
+        await using var context = CreateContext();
+
+        var userId = Guid.NewGuid();
+        var eventId = Guid.NewGuid();
+        var bookingId = Guid.NewGuid();
+        var createdAt = new DateTime(DateTime.Now.Year + 1, 01, 05, 0, 0, 0, DateTimeKind.Utc);
+
+        var newBooking = new Booking(id: bookingId,
+            eventId: eventId,
+            userId: userId,
+            status: BookingStatus.Pending,
+            createdAt: createdAt);
+
+        var bookingForUpdate = new Booking(id: bookingId,
+            eventId: eventId,
+            userId: userId,
+            status: BookingStatus.Confirmed,
+            createdAt: createdAt);
+
+        var expectedBooking = bookingForUpdate;
+
+        context.Bookings.Add(newBooking);
+        await context.SaveChangesAsync();
+
+        // Act
+        var repository = new BookingRepository(context);
+        await repository.UpdateBookingAsync(bookingId, bookingForUpdate);
+
+        // Assert
+        await using var verifyContext = CreateContext();
+        var bookingFromDb = await verifyContext.Bookings.FirstOrDefaultAsync();
+
+        bookingFromDb.Should().NotBeNull();
+
+        bookingFromDb.Id.Should().Be(bookingId);
+        bookingFromDb.EventId.Should().Be(eventId);
+        bookingFromDb.Status.Should().Be(BookingStatus.Confirmed);
+        bookingFromDb.CreatedAt.Should().Be(createdAt);
+        bookingFromDb.ProcessedAt.Should().BeNull();
+    }
+}

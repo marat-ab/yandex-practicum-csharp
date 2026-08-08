@@ -1,0 +1,15 @@
+﻿using System.ComponentModel.DataAnnotations;
+using UsersService.Domain.Models.Auth;
+
+namespace UsersService.Application.Models.Dto;
+
+public class UserRegisterRequestDto
+{
+    [Required(ErrorMessage = "Логин (Login) обязателен для заполнения")]
+    public string Login { get; init; } = string.Empty;
+
+    [Required(ErrorMessage = "Пароль (Password) обязателен для заполнения")]
+    public string Password { get; init; } = string.Empty;
+
+    public Role? Role { get; init; }
+}

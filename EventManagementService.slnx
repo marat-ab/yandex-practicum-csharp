@@ -1,8 +1,42 @@
 <Solution>
-  <Project Path="EventManagementService.Application/EventManagementService.Application.csproj" Id="01aecffb-a0dc-4cf5-85ea-3130a1a6b9ca" />
-  <Project Path="EventManagementService.Domain/EventManagementService.Domain.csproj" Id="eddc4683-2b6b-4942-be60-9dae5f461f36" />
-  <Project Path="EventManagementService.Infrastructure/EventManagementService.Infrastructure.csproj" Id="afd8fc01-01bc-4444-ba97-f96f25ff8a35" />
-  <Project Path="EventManagementService.IntegrationTests/EventManagementService.IntegrationTests.csproj" Id="3d2d69b2-61f5-411b-b077-0a64ea03cd08" />
-  <Project Path="EventManagementService.Tests/EventManagementService.Tests.csproj" Id="ddcc9040-0ca7-4515-a3bf-db98f8685e3a" />
-  <Project Path="EventManagementService/EventManagementService.Presentation.csproj" />
+  <Folder Name="/Bookings/">
+    <Project Path="Bookings/BookingsService.Application/BookingsService.Application.csproj">
+      <Build Solution="Debug|*" Project="false" />
+    </Project>
+    <Project Path="Bookings/BookingsService.Domain/BookingsService.Domain.csproj">
+      <Build Solution="Debug|*" Project="false" />
+    </Project>
+    <Project Path="Bookings/BookingsService.Infrastructure/BookingsService.Infrastructure.csproj">
+      <Build Solution="Debug|*" Project="false" />
+    </Project>
+    <Project Path="Bookings/BookingsService.IntegrationTests/BookingsService.IntegrationTests.csproj" Id="080a981e-4d5a-4e08-9ed4-4b299f070754" />
+    <Project Path="Bookings/BookingsService.Presentation/BookingsService.Presentation.csproj">
+      <Build Solution="Debug|*" Project="false" />
+    </Project>
+    <Project Path="Bookings/BookingsService.Tests/BookingsService.Tests.csproj" Id="4881ac80-335f-4ef5-96ee-2d075db41a70">
+      <Build Solution="Debug|*" Project="false" />
+    </Project>
+  </Folder>
+  <Folder Name="/Events/">
+    <Project Path="Events/EventsService.Application/EventsService.Application.csproj" Id="0263ed2e-fb0c-49bf-abe6-8619a794c3d4" />
+    <Project Path="Events/EventsService.Domain/EventsService.Domain.csproj" />
+    <Project Path="Events/EventsService.Infrastructure/EventsService.Infrastructure.csproj" Id="ff518ee2-7bca-469c-9c29-093413a547db" />
+    <Project Path="Events/EventsService.IntegrationTests/EventsService.IntegrationTests.csproj" Id="30523a4e-f69a-4417-a445-458080e4b5d2" />
+    <Project Path="Events/EventsService.Presentation/EventsService.Presentation.csproj" Id="1c6a2745-8889-43a5-8fde-e6111d0f7358" />
+    <Project Path="Events/EventsService.Tests/EventsService.Tests.csproj" Id="64d62d3b-c918-4d9c-a38a-c9e344d54572">
+      <Build Solution="Debug|*" Project="false" />
+    </Project>
+  </Folder>
+  <Folder Name="/Users/">
+    <Project Path="Users/UsersService.Application/UsersService.Application.csproj" Id="6abe56f9-d417-42cc-bce0-500bcbf6540f" />
+    <Project Path="Users/UsersService.Domain/UsersService.Domain.csproj" Id="17408536-9890-4684-91ac-8be27ff3a834" />
+    <Project Path="Users/UsersService.Infrastructure/UsersService.Infrastructure.csproj" Id="ae29886b-c242-46c3-ab8c-61d0a81552c4" />
+    <Project Path="Users/UsersService.Presentation/UsersService.Presentation.csproj" Id="0028cddc-2e3a-48f5-9154-9f6a675bfc4d" />
+    <Project Path="Users/UsersService.Tests/UsersService.Tests.csproj" Id="20b27be5-4e62-4906-9d53-aad2654e20fa">
+      <Build Solution="Debug|*" Project="false" />
+    </Project>
+  </Folder>
+  <Project Path="BrokerLibrary/BrokerLibrary.csproj" Id="34822c72-567a-48d8-896d-069deef87922">
+    <Build Solution="Debug|*" Project="false" />
+  </Project>
 </Solution>
