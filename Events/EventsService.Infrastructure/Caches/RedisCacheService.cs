@@ -30,7 +30,7 @@ internal class RedisCacheService : ICacheService
         _redisSettings = options.Value;
     }
 
-    public async Task<Event?> FindEventByIdAsync(Guid eventId)
+    public async Task<Event> GetEventByIdAsync(Guid eventId)
     {
         string key = $"event:{eventId}";
 
@@ -42,9 +42,6 @@ internal class RedisCacheService : ICacheService
         }
 
         var eventItem = await _eventRepository.SelectEventByIdAsync(eventId);
-
-        if (eventItem is null)
-            return null;
 
         string json = JsonSerializer.Serialize(eventItem);
         await _db.StringSetAsync(key, json, TimeSpan.FromSeconds(_redisSettings.EventsTtlSeconds));

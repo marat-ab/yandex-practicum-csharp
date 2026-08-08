@@ -6,10 +6,14 @@ namespace EventsService.Application.Services;
 
 public class EventService : IEventService
 {
+    private readonly ICacheService _cacheService;
     private readonly IEventRepository _eventRepository;
 
-    public EventService(IEventRepository eventRepository)
+    public EventService(
+        ICacheService cacheService,
+        IEventRepository eventRepository)
     {
+        _cacheService = cacheService;
         _eventRepository = eventRepository;
     }
 
@@ -38,7 +42,7 @@ public class EventService : IEventService
 
     public async Task<Event> GetEventByIdAsync(Guid id, CancellationToken ct = default)
     {
-        var result = await _eventRepository.SelectEventByIdAsync(id, ct);
+        var result = await _cacheService.GetEventByIdAsync(id);
 
         return result;
     }

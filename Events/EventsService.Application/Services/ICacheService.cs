@@ -7,7 +7,7 @@ namespace EventsService.Application.Services;
 
 public interface ICacheService
 {
-    Task<Event?> FindEventByIdAsync(Guid eventId);
+    Task<Event> GetEventByIdAsync(Guid eventId);
     Task SetEventAsync(Event eventItem);
     Task<bool> DeleteEventByIdAsync(Guid eventId);
 }
