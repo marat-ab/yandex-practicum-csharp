@@ -19,15 +19,19 @@ public class RedisCacheService : ICacheService
     private readonly IDatabase _db;
     private readonly RedisSettings _redisSettings;
 
+    private readonly ILogger<RedisCacheService> _logger;
+
     public RedisCacheService(
         IEventRepository eventRepository,
         IConnectionMultiplexer connection,
+        ILogger<RedisCacheService> logger,
         IOptions<RedisSettings> options)
     {
         _eventRepository = eventRepository;
         _db = connection.GetDatabase();
+        _logger = logger;
 
-        _redisSettings = options.Value;
+        _redisSettings = options.Value;        
     }
 
     public async Task<Event> GetEventByIdAsync(Guid eventId)
@@ -45,7 +49,7 @@ public class RedisCacheService : ICacheService
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.Message);
+            _logger.LogError(exception: ex, message: "Can't get string from cache");
         }
 
         var eventItem = await _eventRepository.SelectEventByIdAsync(eventId);
@@ -57,7 +61,7 @@ public class RedisCacheService : ICacheService
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.Message);
+            _logger.LogError(exception: ex, message: "Can't set string to cache");
         }
 
         return eventItem;
@@ -96,7 +100,7 @@ public class RedisCacheService : ICacheService
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.Message);
+            _logger.LogError(exception: ex, message: "Can't get string from cache");
         }
 
         var events = await _eventRepository.SelectAllEventsAsync();
@@ -116,7 +120,7 @@ public class RedisCacheService : ICacheService
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.Message);
+            _logger.LogError(exception: ex, message: "Can't set string to cache");
         }
 
         return topEvents;

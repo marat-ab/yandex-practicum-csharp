@@ -1,10 +1,12 @@
-﻿using EventsService.Application.Repositories;
+﻿using Castle.Core.Logging;
+using EventsService.Application.Repositories;
 using EventsService.Application.Services;
 using EventsService.Domain.Exceptions;
 using EventsService.Domain.Models;
 using EventsService.Infrastructure.Caches;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Moq;
 using StackExchange.Redis;
@@ -52,6 +54,7 @@ public partial class EventServiceTests
         var mockEventRepository = new Mock<IEventRepository>();
         var mockConnectionMultiplexer = new Mock<IConnectionMultiplexer>();
         var mockRedisDatabase = new Mock<IDatabase>();
+        var logger = NullLogger<RedisCacheService>.Instance;
 
         mockConnectionMultiplexer.Setup(mock => mock.GetDatabase())
            .Returns(mockRedisDatabase.Object);
@@ -60,7 +63,7 @@ public partial class EventServiceTests
             .ReturnsAsync(_events[0]);
 
         var cacheService = new RedisCacheService(mockEventRepository.Object, mockConnectionMultiplexer.Object,
-            options);
+            logger, options);
 
         var eventService = new EventService(cacheService, mockEventRepository.Object);
 
