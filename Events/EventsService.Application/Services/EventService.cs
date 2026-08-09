@@ -93,11 +93,15 @@ public class EventService : IEventService
     public async Task UpdateEventAsync(Event eventValue, CancellationToken ct = default)
     {
         await _eventRepository.UpdateEventAsync(eventValue, ct);
+
+        await _cacheService.DeleteEventByIdAsync(eventValue.Id);
     }
 
     public async Task RemoveEventAsync(Guid id, CancellationToken ct = default)
     {
         await _eventRepository.DeleteEventAsync(id, ct);
+
+        await _cacheService.DeleteEventByIdAsync(id);
     }
 
     public async Task<IReadOnlyList<Event>> GetTopEvents(int countInTop, CancellationToken ct = default)
