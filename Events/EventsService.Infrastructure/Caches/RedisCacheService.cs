@@ -34,17 +34,31 @@ public class RedisCacheService : ICacheService
     {
         string key = $"event:{eventId}";
 
-        RedisValue cached = await _db.StringGetAsync(key);
-
-        if (cached.HasValue)
+        try
         {
-            return JsonSerializer.Deserialize<Event>(cached.ToString());
+            RedisValue cached = await _db.StringGetAsync(key);
+
+            if (cached.HasValue)
+            {
+                return JsonSerializer.Deserialize<Event>(cached.ToString());
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
         }
 
         var eventItem = await _eventRepository.SelectEventByIdAsync(eventId);
 
         string json = JsonSerializer.Serialize(eventItem);
-        await _db.StringSetAsync(key, json, TimeSpan.FromSeconds(_redisSettings.EventsTtlSeconds));
+        try
+        {
+            await _db.StringSetAsync(key, json, TimeSpan.FromMinutes(_redisSettings.EventsTtlMinutes));
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
 
         return eventItem;
     }
@@ -55,7 +69,7 @@ public class RedisCacheService : ICacheService
 
         string json = JsonSerializer.Serialize(eventItem);
         
-        await _db.StringSetAsync(key, json, TimeSpan.FromSeconds(_redisSettings.EventsTtlSeconds));
+        await _db.StringSetAsync(key, json, TimeSpan.FromMinutes(_redisSettings.EventsTtlMinutes));
     }
 
     public async Task<bool> DeleteEventByIdAsync(Guid eventId)
@@ -69,13 +83,20 @@ public class RedisCacheService : ICacheService
 
     public async Task<IReadOnlyList<Event>?> FindTopEventsAsync(int countInTop)
     {
-        const string key = "events:top10";
+        string key = "events:top10";
 
-        RedisValue cached = await _db.StringGetAsync(key);
-
-        if (cached.HasValue)
+        try
         {
-            return JsonSerializer.Deserialize<List<Event>>(cached.ToString());
+            RedisValue cached = await _db.StringGetAsync(key);
+
+            if (cached.HasValue)
+            {
+                return JsonSerializer.Deserialize<List<Event>>(cached.ToString());
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
         }
 
         var events = await _eventRepository.SelectAllEventsAsync();
@@ -88,7 +109,15 @@ public class RedisCacheService : ICacheService
             .ToList();
 
         string json = JsonSerializer.Serialize(topEvents);
-        await _db.StringSetAsync(key, json, TimeSpan.FromSeconds(_redisSettings.EventsTtlSeconds));
+
+        try
+        {
+            await _db.StringSetAsync(key, json, TimeSpan.FromMinutes(_redisSettings.TopEventsTtlMinutes));
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
 
         return topEvents;
     }

@@ -44,7 +44,11 @@ builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
     var redisSettings = sp.GetRequiredService<IOptions<RedisSettings>>()
         .Value;
 
-    return ConnectionMultiplexer.Connect(redisSettings.RedisServer);
+    var options = ConfigurationOptions.Parse(redisSettings.RedisServer);
+
+    options.AbortOnConnectFail = false;
+
+    return ConnectionMultiplexer.Connect(options);
 });
 
 builder.Services.AddSwaggerGen(options =>

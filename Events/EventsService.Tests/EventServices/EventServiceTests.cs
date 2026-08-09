@@ -61,7 +61,7 @@ public partial class EventServiceTests : IAsyncLifetime
         services.Configure<RedisSettings>(options =>
         {
             options.RedisServer = "localhost:6379";
-            options.EventsTtlSeconds = 10;
+            options.EventsTtlMinutes = 10;
         });
 
         _serviceProvider = services.BuildServiceProvider();

@@ -8,5 +8,7 @@ public class RedisSettings
 {
     public string RedisServer { get; set; } = string.Empty;
 
-    public int EventsTtlSeconds { get; set; }
+    public int EventsTtlMinutes { get; set; }
+
+    public int TopEventsTtlMinutes { get; set; }
 }
