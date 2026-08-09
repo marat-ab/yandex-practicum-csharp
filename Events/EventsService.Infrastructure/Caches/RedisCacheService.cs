@@ -13,7 +13,7 @@ using static Confluent.Kafka.ConfigPropertyNames;
 
 namespace EventsService.Infrastructure.Caches;
 
-internal class RedisCacheService : ICacheService
+public class RedisCacheService : ICacheService
 {
     private readonly IEventRepository _eventRepository;
     private readonly IDatabase _db;
