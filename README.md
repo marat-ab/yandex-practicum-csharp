@@ -27,7 +27,7 @@ UsersService работает с БД users.
 * EventsService.Presentation - контроллеры и middlewares. Зависит от Domain, Application и Infrastructure.
 * EventsService.Tests - юнит тесты
 
-UsersService работает с БД events.
+EventsService работает с БД events.
 
 Для работы с сервисом через Swagger запустите проект и перейдите в браузере по следующему адресу:
 `http://localhost:5274/swagger/index.html`
@@ -42,7 +42,7 @@ UsersService работает с БД events.
 * BookingsService.Presentation - контроллеры и middlewares. Зависит от Domain, Application и Infrastructure.
 * BookingsService.Tests - юнит тесты
 
-UsersService работает с БД bookings.
+BookingsService работает с БД bookings.
 
 Для работы с сервисом через Swagger запустите проект и перейдите в браузере по следующему адресу:
 `http://localhost:5275/swagger/index.html`
