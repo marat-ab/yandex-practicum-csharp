@@ -103,14 +103,7 @@ public class RedisCacheService : ICacheService
             _logger.LogError(exception: ex, message: "Can't get string from cache");
         }
 
-        var events = await _eventRepository.SelectAllEventsAsync();
-
-        var topEvents = events.Events
-            .Select(x => new { Event = x, PrcSales = (x.TotalSeats - x.AvailableSeats) / x.TotalSeats })
-            .OrderByDescending(x => x.PrcSales)
-            .Take(countInTop)
-            .Select(x => x.Event)
-            .ToList();
+        var topEvents = await _eventRepository.SelectTopEvents(countInTop);
 
         string json = JsonSerializer.Serialize(topEvents);
 

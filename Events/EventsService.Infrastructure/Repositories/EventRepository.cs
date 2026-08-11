@@ -91,6 +91,20 @@ public class EventRepository : IEventRepository
         }
     }
 
+    public async Task<IReadOnlyList<Event>?> SelectTopEvents(int countInTop, CancellationToken ct = default)
+    {
+        var events = await SelectAllEventsAsync();
+
+        var topEvents = events.Events
+            .Select(x => new { Event = x, PrcSales = (x.TotalSeats - x.AvailableSeats) / x.TotalSeats })
+            .OrderByDescending(x => x.PrcSales)
+            .Take(countInTop)
+            .Select(x => x.Event)
+            .ToList();
+
+        return topEvents;
+    }
+
     public async Task<Event> InsertEventAsync(Event newEvent, CancellationToken ct = default)
     {
         try
