@@ -2,6 +2,11 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
+using Serilog;
+using Serilog.Formatting.Compact;
 using System.Text;
 using UsersService.Application;
 using UsersService.Domain;
@@ -11,6 +16,8 @@ using UsersService.Infrastructure.Models;
 using UsersService.Presentation.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var configuration = builder.Configuration;
 
 builder.Services.AddControllers();
 
@@ -27,6 +34,26 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.Configure<JWTSettings>(
     builder.Configuration.GetSection("JWT")
 );
+
+const string serviceName = "events-service-api";
+const string serviceVersion = "1.0.0";
+
+builder.Services
+    .AddOpenApi()
+    .AddOpenTelemetry()
+    .ConfigureResource(resource => resource
+        .AddService(
+            serviceName: serviceName,
+            serviceVersion: serviceVersion))
+    .WithTracing(tracing => tracing
+        .AddAspNetCoreInstrumentation()
+        .AddHttpClientInstrumentation()
+        .AddEntityFrameworkCoreInstrumentation()
+        .AddOtlpExporter(o => o.Endpoint = new Uri(configuration["Otlp:Endpoint"]!)))
+    .WithMetrics(metrics => metrics
+        .AddAspNetCoreInstrumentation()
+        .AddRuntimeInstrumentation()
+        .AddPrometheusExporter());
 
 builder.Services.AddSwaggerGen(options =>
 {
@@ -84,6 +111,8 @@ using (var scope = app.Services.CreateScope())
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     db.Database.Migrate();
 }
+
+app.MapPrometheusScrapingEndpoint(); // доступен по /metrics 
 
 // Configure the HTTP request pipeline.
 app.UseMiddleware<CustomExceptionHandlingMiddleware>();
