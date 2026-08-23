@@ -27,7 +27,7 @@ UsersService работает с БД users.
 * EventsService.Presentation - контроллеры и middlewares. Зависит от Domain, Application и Infrastructure.
 * EventsService.Tests - юнит тесты
 
-UsersService работает с БД events.
+EventsService работает с БД events.
 
 Для работы с сервисом через Swagger запустите проект и перейдите в браузере по следующему адресу:
 `http://localhost:5274/swagger/index.html`
@@ -42,7 +42,7 @@ UsersService работает с БД events.
 * BookingsService.Presentation - контроллеры и middlewares. Зависит от Domain, Application и Infrastructure.
 * BookingsService.Tests - юнит тесты
 
-UsersService работает с БД bookings.
+BookingsService работает с БД bookings.
 
 Для работы с сервисом через Swagger запустите проект и перейдите в браузере по следующему адресу:
 `http://localhost:5275/swagger/index.html`
@@ -73,6 +73,12 @@ UsersService работает с БД bookings.
 * ExpirationTimeMinutes: время жизни токена в минутах
 
 Секрет должен должен загружаться из защищённых источников, таких как переменные окружения (Environment Variables) или Secret Manager. Допускается хранение в файле конфигурации (например в appsettings.Production.json), но при условии, что он не хранится в репозитории с исходным кодом.
+
+# Кэширование
+
+Топ-10 кэш обновляется по TTL. Значение TTL задается через файл конфигурации "Redis.TopEventsTtlMinutes" в минутах, можно ориентироваться на значение 10 минут. Отдельная стратегия инвалидации здесь не используется, т.к. небольшое устаревание не критично.
+
+Для отдельного события используется TTL (Redis.EventsTtlMinutes) и инвалидация при записи - при изменении/удалении события соответствующий ключ удаляется из кэша. Следующий читающий запрос обратится к базе и прогреет кэш заново. Удаление по TTL добавлено, чтобы события в кэше не застревали "на вечно", если, начиная с какого момента времени, событием больше никто не интересуется, т.е. GET /events/{id} больше не вызывается.
 
 # Тесты
 

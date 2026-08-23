@@ -1,10 +1,12 @@
 ﻿using EventsService.Application.Repositories;
 using EventsService.Application.Services;
 using EventsService.Domain.Models;
+using EventsService.Infrastructure.Caches;
 using EventsService.Infrastructure.DataAccess;
 using EventsService.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Moq;
 
 namespace EventsService.Tests.EventServices;
 
@@ -44,6 +46,23 @@ public partial class EventServiceTests : IAsyncLifetime
 
         services.AddScoped<IEventRepository, EventRepository>();
         services.AddScoped<IEventService, EventService>();
+
+        var mockCacheService = new Mock<ICacheService>();
+        mockCacheService.Setup(mock => mock.GetEventByIdAsync(It.IsAny<Guid>()))
+            .Returns(async (Guid eventId) =>
+            {
+                using var scope = _serviceProvider.CreateScope();
+                var eventRepository = scope.ServiceProvider.GetRequiredService<IEventRepository>();
+                var eventItem = await eventRepository.SelectEventByIdAsync(eventId);
+                return eventItem;
+            });
+        services.AddScoped<ICacheService>(_ => mockCacheService.Object);
+
+        services.Configure<RedisSettings>(options =>
+        {
+            options.RedisServer = "localhost:6379";
+            options.EventsTtlMinutes = 10;
+        });
 
         _serviceProvider = services.BuildServiceProvider();
     }

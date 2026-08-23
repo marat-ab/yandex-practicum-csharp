@@ -1,14 +1,16 @@
 ﻿using EventsService.Application;
 using EventsService.Domain;
+using EventsService.Domain.Models;
 using EventsService.Infrastructure;
+using EventsService.Infrastructure.DataAccess;
+using EventsService.Presentation.Middlewares;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
+using StackExchange.Redis;
 using System.Text;
-using EventsService.Infrastructure.DataAccess;
-using EventsService.Domain.Models;
-using EventsService.Presentation.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,6 +34,22 @@ builder.Services.Configure<SystemSettings>(
 builder.Services.Configure<KafkaSettings>(
     builder.Configuration.GetSection("Kafka")
 );
+
+builder.Services.Configure<RedisSettings>(
+    builder.Configuration.GetSection("Redis")
+);
+
+builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
+{
+    var redisSettings = sp.GetRequiredService<IOptions<RedisSettings>>()
+        .Value;
+
+    var options = ConfigurationOptions.Parse(redisSettings.RedisServer);
+
+    options.AbortOnConnectFail = false;
+
+    return ConnectionMultiplexer.Connect(options);
+});
 
 builder.Services.AddSwaggerGen(options =>
 {

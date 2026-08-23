@@ -13,6 +13,7 @@ namespace EventsService.Presentation.Controllers;
 public class EventsController : ControllerBase
 {
     private readonly IEventService _eventService;
+    private readonly int _topEventsCount = 10;
 
     public EventsController(IEventService eventService)
     {
@@ -42,6 +43,17 @@ public class EventsController : ControllerBase
         var eventItem = await _eventService.GetEventByIdAsync(id);
 
         return Ok(eventItem.ToEventResponseDto());
+    }
+
+    [AllowAnonymous]
+    [HttpGet("top")]
+    public async Task<ActionResult<List<EventResponseDto>>> GetTopEvents()
+    {
+        var eventItems = await _eventService.GetTopEvents(_topEventsCount);
+
+        var result = eventItems.Select(x => x.ToEventResponseDto()).ToList();
+
+        return Ok(result);
     }
 
     [Authorize(Roles = "Admin")]

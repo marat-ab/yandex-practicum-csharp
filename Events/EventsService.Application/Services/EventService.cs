@@ -6,10 +6,14 @@ namespace EventsService.Application.Services;
 
 public class EventService : IEventService
 {
+    private readonly ICacheService _cacheService;
     private readonly IEventRepository _eventRepository;
 
-    public EventService(IEventRepository eventRepository)
+    public EventService(
+        ICacheService cacheService,
+        IEventRepository eventRepository)
     {
+        _cacheService = cacheService;
         _eventRepository = eventRepository;
     }
 
@@ -38,7 +42,7 @@ public class EventService : IEventService
 
     public async Task<Event> GetEventByIdAsync(Guid id, CancellationToken ct = default)
     {
-        var result = await _eventRepository.SelectEventByIdAsync(id, ct);
+        var result = await _cacheService.GetEventByIdAsync(id);
 
         return result;
     }
@@ -89,10 +93,24 @@ public class EventService : IEventService
     public async Task UpdateEventAsync(Event eventValue, CancellationToken ct = default)
     {
         await _eventRepository.UpdateEventAsync(eventValue, ct);
+
+        await _cacheService.DeleteEventByIdAsync(eventValue.Id);
     }
 
     public async Task RemoveEventAsync(Guid id, CancellationToken ct = default)
     {
         await _eventRepository.DeleteEventAsync(id, ct);
+
+        await _cacheService.DeleteEventByIdAsync(id);
+    }
+
+    public async Task<IReadOnlyList<Event>> GetTopEvents(int countInTop, CancellationToken ct = default)
+    {
+        var result = await _cacheService.FindTopEventsAsync(countInTop);
+
+        if (result is null)
+            return [];
+
+        return result;
     }
 }

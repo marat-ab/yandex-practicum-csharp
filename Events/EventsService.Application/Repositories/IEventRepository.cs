@@ -14,6 +14,8 @@ public interface IEventRepository
 
     Task<Event> SelectEventByIdAsync(Guid id, CancellationToken ct = default);
 
+    Task<IReadOnlyList<Event>?> SelectTopEvents(int countInTop, CancellationToken ct = default);
+
     Task<Event> InsertEventAsync(Event newEvent, CancellationToken ct = default);
 
     Task UpdateEventAsync(Event eventValue, CancellationToken ct = default);
