@@ -17,8 +17,6 @@ using UsersService.Presentation.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var configuration = builder.Configuration;
-
 builder.Services.AddControllers();
 
 builder.Services.AddDomain();
@@ -35,7 +33,9 @@ builder.Services.Configure<JWTSettings>(
     builder.Configuration.GetSection("JWT")
 );
 
-const string serviceName = "events-service-api";
+var configuration = builder.Configuration;
+
+const string serviceName = "users-service";
 const string serviceVersion = "1.0.0";
 
 builder.Services
