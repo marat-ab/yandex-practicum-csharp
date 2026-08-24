@@ -80,7 +80,7 @@ public class BookingHostedService : BackgroundService
 
             await _bookingProducer.BookingConfirmedAsync(confirmedBooking.EventId);
 
-            _logger.LogInformation($"Booking confirmed with id: {confirmedBooking.EventId}");
+            _logger.LogInformation("Booking confirmed with id: {EventId}", confirmedBooking.EventId);
         }
         catch (OperationCanceledException)
         {

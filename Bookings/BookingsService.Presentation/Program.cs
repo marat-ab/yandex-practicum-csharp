@@ -1,9 +1,9 @@
 ﻿using Bookings.Domain;
 using Bookings.Domain.Models;
 using Bookings.Infrastructure.DataAccess;
-using Bookings.Presentation.Middlewares;
 using BookingsService.Application;
 using BookingsService.Infrastructure;
+using BookingsService.Presentation.Middlewares;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;

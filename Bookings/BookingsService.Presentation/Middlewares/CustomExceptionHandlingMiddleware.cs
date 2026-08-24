@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 
-namespace Bookings.Presentation.Middlewares;
+namespace BookingsService.Presentation.Middlewares;
 
 public class CustomExceptionHandlingMiddleware
 {
