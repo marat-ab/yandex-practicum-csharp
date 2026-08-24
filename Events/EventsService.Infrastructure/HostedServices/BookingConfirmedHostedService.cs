@@ -77,21 +77,21 @@ internal class BookingConfirmedHostedService : BackgroundService
 
                     if (eventTmp is null)
                     {
-                        _logger.LogWarning($"Absent event with id: {bookingConfirmed.EventId}");
+                        _logger.LogWarning("Absent event with id: {EventId}", bookingConfirmed.EventId);
                         continue;
                     }
 
                     var currentDt = DateTime.UtcNow;
                     if (currentDt >= eventTmp.StartAt)
                     {
-                        _logger.LogWarning($"Event with id {bookingConfirmed.EventId} is already started");
+                        _logger.LogWarning("Event with id {EventId} is already started", bookingConfirmed.EventId);
                         continue;
                     }
 
                     var isReservOk = eventTmp.TryReserveSeats();
                     if (isReservOk is false)
                     {
-                        _logger.LogWarning($"No available seats for event with id {bookingConfirmed.EventId}");
+                        _logger.LogWarning("No available seats for event with id {EventId}", bookingConfirmed.EventId);
                         continue;
                     }
 
@@ -99,7 +99,7 @@ internal class BookingConfirmedHostedService : BackgroundService
 
                     consumer.Commit(consumeResult);
 
-                    _logger.LogInformation($"Event reseved by booking with id: {bookingConfirmed.EventId}");
+                    _logger.LogInformation("Event reseved by booking with id: {EventId}", bookingConfirmed.EventId);
                 }
 
                 await Task.Delay(_bookingConfirmedCheckCycleDelay, stoppingToken);
